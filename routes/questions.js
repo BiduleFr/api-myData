@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const { title, content, userId } = req.body;
-        const newQuestion = await Question.create({ title, content, userId });
+        const newQuestion = await Question.create({ title, content });
         res.status(201).json({ message: 'Question créée avec succès !', question: newQuestion });
     } catch (error) {
         res.status(500).json({ error: 'Impossible de créer la question.' });
