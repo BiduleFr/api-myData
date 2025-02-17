@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
 // Créer une question
 router.post('/', async (req, res) => {
     try {
-        const { title, content, userId } = req.body;
+        const { title, content } = req.body;
         const newQuestion = await Question.create({ title, content });
         res.status(201).json({ message: 'Question créée avec succès !', question: newQuestion });
     } catch (error) {
