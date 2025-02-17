@@ -9,11 +9,11 @@ const Question = sequelize.define('Question', {
     content: {
         type: DataTypes.TEXT,
         allowNull: false
-    },
-    userId: {
-        type: DataTypes.INTEGER,
-        allowNull: false
     }
+    // userId: {
+    //     type: DataTypes.INTEGER,
+    //     allowNull: false
+    // }
 }, { timestamps: true });
 
 module.exports = Question;
