@@ -9,6 +9,10 @@ const Question = sequelize.define('Question', {
     content: {
         type: DataTypes.TEXT,
         allowNull: false
+    },
+    responseType: {
+        type: DataTypes.STRING,
+        allowNull: false
     }
     // userId: {
     //     type: DataTypes.INTEGER,
