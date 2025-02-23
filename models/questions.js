@@ -11,7 +11,7 @@ const Question = sequelize.define('Question', {
         allowNull: false
     },
     responseType: {
-        type: DataTypes.STRING,
+        type: DataTypes.ENUM('Cursor', 'Text', 'Number'),
         allowNull: false
     }
     // userId: {
