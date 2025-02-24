@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
         const questions = await Question.findAll();
         res.json(questions);
     } catch (error) {
-        res.status(500).json({ error: 'Impossible de récupérer les questions.' });
+        res.status(500).json({ error: 'Impossible de récupérer les questions.', error });
     }
 });
 
