@@ -18,8 +18,8 @@ router.get('/', async (req, res) => {
 // Créer une question
 router.post('/', async (req, res) => {
     try {
-        const { title, content } = req.body;
-        const newQuestion = await Question.create({ title, content });
+        const { title, content, responseType } = req.body;
+        const newQuestion = await Question.create({ title, content, responseType });
         res.status(201).json({ message: 'Question créée avec succès !', question: newQuestion });
     } catch (error) {
         console.error(error);
@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, content } = req.body;
+        const { title, content, responseType } = req.body;
         const question = await Question.findByPk(id);
         if (!question) return res.status(404).json({ error: 'Question non trouvée.' });
 
