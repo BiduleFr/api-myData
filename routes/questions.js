@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, content, responseType } = req.body;
+        const { title, content } = req.body;
         const question = await Question.findByPk(id);
         if (!question) return res.status(404).json({ error: 'Question non trouvée.' });
 

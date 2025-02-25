@@ -13,9 +13,9 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
     },
 });
 
-sequelize.sync({ force: true }).then(() => {
-    console.log("Base de données synchronisée !");
-});
+// sequelize.sync({ force: true }).then(() => {
+//     console.log("Base de données synchronisée !");
+// });
 
 module.exports = sequelize;
 
