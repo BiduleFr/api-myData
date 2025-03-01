@@ -31,11 +31,11 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, content } = req.body;
+        const { title, content, responseType } = req.body;
         const question = await Question.findByPk(id);
         if (!question) return res.status(404).json({ error: 'Question non trouvée.' });
 
-        await question.update({ title, content });
+        await question.update({ title, content, responseType });
         res.json({ message: 'Question mise à jour avec succès !', question });
     } catch (error) {
         res.status(500).json({ error: 'Impossible de mettre à jour la question.' });
