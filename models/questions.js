@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../sequelize');
+const { response } = require('express');
 
 const Question = sequelize.define('Question', {
     title: {
@@ -13,11 +14,15 @@ const Question = sequelize.define('Question', {
     responseType: {
         type: DataTypes.ENUM('Cursor', 'Text', 'Number'),
         allowNull: false
+    },
+    positionQuestion: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    userId: {
+        type: DataTypes.INTEGER,
+        allowNull: true
     }
-    // userId: {
-    //     type: DataTypes.INTEGER,
-    //     allowNull: false
-    // }
 }, { timestamps: true });
 
 module.exports = Question;
