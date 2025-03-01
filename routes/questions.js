@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Question = require('../models/question');
+const Question = require('../models/questions');
 require("dotenv").config();
 
 // Récupérer toutes les questions
