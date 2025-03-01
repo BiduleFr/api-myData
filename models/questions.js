@@ -19,9 +19,9 @@ const Question = sequelize.define('Question', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    userId: {
+    questionId: {
         type: DataTypes.INTEGER,
-        allowNull: true
+        allowNull: false
     }
 }, { timestamps: true });
 
