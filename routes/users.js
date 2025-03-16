@@ -14,13 +14,24 @@ router.get('/', async (req, res) => {
 
 
 // Créer un utilisateur
-router.post('/', async (req, res) => {
+router.post('/login', async (req, res) => {
     try {
-        const { username, email, password } = req.body;
-        const newUser = await User.create({ username, email, password });
-        res.status(201).json({ message: 'Utilisateur créé avec succès !', user: newUser });
+        const { email, password } = req.body;
+
+        // Vérifier si l'utilisateur existe
+        const user = await User.findOne({ where: { email } });
+        if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé.' });
+
+        // Vérifier le mot de passe
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) return res.status(401).json({ error: 'Mot de passe incorrect.' });
+
+        // Générer un token JWT
+        const token = jwt.sign({ id: user.id, email: user.email }, 'VOTRE_CLE_SECRETE', { expiresIn: '24h' });
+
+        res.json({ message: 'Connexion réussie !', token, user });
     } catch (error) {
-        res.status(500).json({ error: 'Impossible de créer l\'utilisateur.' });
+        res.status(500).json({ error: 'Impossible de se connecter.' });
     }
 });
 
