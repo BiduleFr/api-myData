@@ -12,6 +12,26 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.post('/users', async (req, res) => {
+    try {
+        const { username, email, password } = req.body;
+
+        // Vérifier si l'email est déjà utilisé
+        const existingUser = await User.findOne({ where: { email } });
+        if (existingUser) return res.status(400).json({ error: 'Cet email est déjà utilisé.' });
+
+        // Hasher le mot de passe
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Créer l'utilisateur
+        const newUser = await User.create({ username, email, password: hashedPassword });
+
+        res.status(201).json({ message: 'Utilisateur créé avec succès !', user: newUser });
+    } catch (error) {
+        res.status(500).json({ error: 'Impossible de créer l\'utilisateur.' });
+    }
+});
+
 
 // Créer un utilisateur
 router.post('/login', async (req, res) => {
