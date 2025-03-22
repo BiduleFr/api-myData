@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
+const bcrypt = require('bcrypt');
 
 // Récupérer tous les utilisateurs
 router.get('/', async (req, res) => {
