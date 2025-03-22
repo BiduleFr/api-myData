@@ -13,8 +13,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Commentaire
-
 router.post('/', async (req, res) => {
     try {
         const { username, email, password } = req.body;
