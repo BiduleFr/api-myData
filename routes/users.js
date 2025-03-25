@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 
+
 // Récupérer tous les utilisateurs
 router.get('/', async (req, res) => {
     try {
@@ -13,23 +14,23 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/login', async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { email, password } = req.body;
 
-        // Vérifier si l'email est déjà utilisé
-        const existingUser = await User.findOne({ where: { email } });
-        if (existingUser) return res.status(400).json({ error: 'Cet email est déjà utilisé.' });
+        // Vérifier si l'utilisateur existe
+        const user = await User.findOne({ where: { email } });
+        if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé.' });
 
-        // Hasher le mot de passe
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // Vérifier le mot de passe
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) return res.status(401).json({ error: 'Mot de passe incorrect.' });
 
-        // Créer l'utilisateur
-        const newUser = await User.create({ username, email, password: hashedPassword });
-
-        res.status(201).json({ message: 'Utilisateur créé avec succès !', user: newUser });
+        // Supprimer la génération du token et renvoyer seulement l'utilisateur
+        res.json({ message: 'Connexion réussie !', user });
     } catch (error) {
-        res.status(500).json({ error: 'Impossible de créer l\'utilisateur.' });
+        console.error(error);
+        res.status(500).json({ error: 'Impossible de se connecter.' });
     }
 });
 
