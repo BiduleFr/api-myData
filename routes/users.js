@@ -16,6 +16,28 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
     try {
+        const { username, email, password } = req.body;
+
+        // Vérifier si l'utilisateur existe déjà
+        const existingUser = await User.findOne({ where: { email } });
+        if (existingUser) return res.status(400).json({ error: 'Cet email est déjà utilisé.' });
+
+        // Hasher le mot de passe
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Créer un nouvel utilisateur
+        const newUser = await User.create({ username, email, password: hashedPassword });
+
+        res.status(201).json({ message: 'Utilisateur créé avec succès !', user: newUser });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Erreur lors de la création de l\'utilisateur.' });
+    }
+});
+
+
+router.post('/login', async (req, res) => {
+    try {
         const { email, password } = req.body;
 
         // Vérifier si l'utilisateur existe
@@ -36,7 +58,7 @@ router.post('/', async (req, res) => {
 
 
 // Créer un utilisateur
-router.post('/', async (req, res) => {
+router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
