@@ -16,6 +16,7 @@ app.use(express.json());
 
 const userRoutes = require('./routes/users');
 const questionRoutes = require('./routes/questions');
+const reponseRoutes = require('./routes/reponses');
 
 const { Sequelize } = require('sequelize');
 
@@ -26,8 +27,7 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
 
 app.use('/api/users', userRoutes);
 app.use('/api/questions', questionRoutes);
-
-console.log('DATABASE_URL:', process.env.DATABASE_URL);
+app.use('/api/reponses', reponseRoutes);
 
 // Test de connexion à la base de données
 (async () => {
