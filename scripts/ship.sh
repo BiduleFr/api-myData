@@ -15,6 +15,8 @@ git add -A
 
 if git diff --cached --quiet; then
   echo "Aucun changement a commit."
+  bash scripts/check-public.sh "$PUBLIC_URL" "$PREV_ASSET"
+  echo "Termine: aucun commit, validation publique OK."
   exit 0
 fi
 
