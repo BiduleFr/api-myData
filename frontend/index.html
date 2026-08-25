@@ -28,6 +28,8 @@
     .notice { padding:12px 14px; border-radius:8px; background:#ecfdf5; color:#166534; margin:16px 0; display:none; } .notice.show { display:block; }
     .history { display:grid; gap:14px; } .record { background:white; border:1px solid var(--line); border-radius:10px; padding:18px; } .record-head { display:flex; justify-content:space-between; margin-bottom:10px; } .record-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; color:var(--muted); } .record-grid b { display:block; color:var(--ink); margin-top:2px; }
     .empty { padding:30px; text-align:center; background:white; border:1px dashed #cbd5e1; border-radius:10px; color:var(--muted); }
+    .module-list { display:grid; gap:10px; margin:18px 0; } .module { display:flex; align-items:center; gap:12px; padding:14px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; } .module input { width:auto; accent-color:var(--blue); } .module span { display:grid; gap:3px; } .module small { color:var(--muted); font-weight:400; } .settings-subtitle { margin-top:28px; }
+    @keyframes pop { 0% { transform:scale(.96); opacity:.5; } 70% { transform:scale(1.02); } 100% { transform:scale(1); opacity:1; } } .notice.show { animation:pop .35s ease-out; }
     @media (max-width:700px) { main { padding:24px 14px 45px; } .choices,.fields { grid-template-columns:1fr; } .field.full { grid-column:auto; } .form-head { display:block; } .layer { align-items:flex-start; } }
   </style>
 </head>
@@ -59,7 +61,29 @@
     document.getElementById('daily-form').addEventListener('submit', event => { event.preventDefault(); const data = Object.fromEntries(new FormData(event.target)); data.date = new Date().toISOString().slice(0,10); data.addictions = getAddictions().filter((_, i) => data[`addiction-${i}`]).join(', '); getAddictions().forEach((_, i) => delete data[`addiction-${i}`]); const records = getRecords().filter(record => record.date !== data.date); records.unshift(data); localStorage.setItem(storageKey, JSON.stringify(records)); document.getElementById('saved').classList.add('show'); });
     function display(value) { return value || 'Non renseigné'; }
     function renderHistory() { const records = getRecords(); const list = document.getElementById('history-list'); if (!records.length) { list.innerHTML = '<div class="empty">Aucune journée enregistrée. Commencez votre premier questionnaire.</div>'; return; } list.innerHTML = records.map(record => `<article class="record"><div class="record-head"><strong>${record.date}</strong><span>${display(record.mood)}</span></div><div class="record-grid"><div>Sommeil<b>${display(record.sleepHours)} h - ${display(record.sleepQuality)}</b></div><div>Nourriture<b>${display(record.foodQuality)}</b></div><div>Sport<b>${display(record.sportMinutes)} min</b></div><div>Énergie<b>${display(record.energy)}/10</b></div><div>Addictions évitées<b>${display(record.addictions)}</b></div><div>Victoire<b>${display(record.achievement)}</b></div></div></article>`).join(''); }
-    renderAddictions();
+    const moduleSettings = [
+      { id:'foundations', label:'Sommeil, nutrition & mouvement', hint:'Les besoins essentiels et votre énergie.' },
+      { id:'health', label:'Corps, santé & addictions', hint:'Vos constantes, ressentis et habitudes.' },
+      { id:'growth', label:'Humeur, liens & accomplissement', hint:'Votre équilibre personnel et vos petites victoires.' }
+    ];
+    const moduleKey = 'mydata-modules';
+    const getModules = () => JSON.parse(localStorage.getItem(moduleKey) || JSON.stringify(moduleSettings.map(module => module.id)));
+    function applyModules() { document.querySelectorAll('#questionnaire .section').forEach((section, index) => { section.style.display = getModules().includes(moduleSettings[index].id) ? '' : 'none'; }); }
+    function renderSettings() {
+      const panel = document.querySelector('#settings .panel');
+      if (!document.getElementById('module-list')) { const title = document.createElement('h2'); title.textContent = 'Mes thèmes du quotidien'; const hint = document.createElement('p'); hint.className = 'muted'; hint.textContent = 'Activez seulement les sujets qui vous font du bien. Ce choix reste enregistré pour les prochains jours.'; const list = document.createElement('div'); list.id = 'module-list'; list.className = 'module-list'; panel.prepend(list); panel.prepend(hint); panel.prepend(title); }
+      document.getElementById('module-list').innerHTML = moduleSettings.map(module => `<label class="module"><input type="checkbox" value="${module.id}" ${getModules().includes(module.id) ? 'checked' : ''}><span><strong>${module.label}</strong><small>${module.hint}</small></span></label>`).join('');
+      document.getElementById('addictions').value = getAddictions().join(', ');
+    }
+    function saveAddictions() { saveSettings(); }
+    function saveSettings() {
+      const names = document.getElementById('addictions').value.split(',').map(name => name.trim()).filter(Boolean);
+      const selected = [...document.querySelectorAll('#module-list input:checked')].map(input => input.value);
+      localStorage.setItem(addictionKey, JSON.stringify(names.length ? names : defaultAddictions)); localStorage.setItem(moduleKey, JSON.stringify(selected.length ? selected : ['foundations']));
+      document.getElementById('settings-saved').classList.add('show'); applyModules();
+    }
+    function showView(id) { document.querySelectorAll('.view').forEach(view => view.classList.remove('active')); document.getElementById(id).classList.add('active'); if (id === 'questionnaire') { renderAddictions(); applyModules(); } if (id === 'settings') renderSettings(); window.scrollTo(0, 0); }
+    renderAddictions(); applyModules();
   </script>
 </body>
 </html>
