@@ -8,6 +8,7 @@
     "validate:backend": "node --check index.js && node --check sequelize.js && node --check routes/users.js && node --check routes/entries.js && node --check routes/preferences.js && node --check routes/config.js",
     "validate:frontend": "npm --prefix frontend run build",
     "validate": "npm run validate:backend && npm run validate:frontend",
+    "check:public": "bash scripts/check-public.sh",
     "ship": "bash scripts/ship.sh"
   },
   "keywords": [],
