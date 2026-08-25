@@ -19,6 +19,7 @@ export default function Dashboard() {
   const [config, setConfig] = useState(null);
   const [entry, setEntry] = useState(null);
   const [history, setHistory] = useState([]);
+  const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,12 +27,14 @@ export default function Dashboard() {
     Promise.all([
       api.getConfig(),
       api.getEntry(date, token),
-      api.getHistory({ limit: 14 }, token)
+      api.getHistory({ limit: 14 }, token),
+      api.getGoals(token)
     ])
-      .then(([cfg, todayEntry, hist]) => {
+      .then(([cfg, todayEntry, hist, gs]) => {
         setConfig(cfg.modules);
         setEntry(todayEntry);
         setHistory(hist);
+        setGoals(gs || []);
       })
       .finally(() => setLoading(false));
   }, [token]);
@@ -101,6 +104,25 @@ export default function Dashboard() {
             <Link to="/statistiques" className="text-sm text-brand-600 font-semibold">Voir les statistiques →</Link>
           </div>
           <LineChart data={history.map((h) => ({ value: h.globalScore }))} height={140} />
+        </div>
+
+        <div className="card p-6">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold text-slate-500">Objectifs actifs</h2>
+            <Link to="/objectifs" className="text-sm text-brand-600 font-semibold">Gerer →</Link>
+          </div>
+          {goals.length === 0 ? (
+            <p className="text-sm text-slate-400">Ajoutez votre premier objectif pour suivre vos progres.</p>
+          ) : (
+            <div className="space-y-2">
+              {goals.slice(0, 3).map((g) => (
+                <div key={g.id} className="flex items-center justify-between text-sm">
+                  <span className="text-slate-600">🎯 {g.title}</span>
+                  <span className="text-slate-400">{g.period === 'week' ? 'Hebdo' : 'Mensuel'}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="text-center">

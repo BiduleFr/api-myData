@@ -5,6 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 const LS_PREFS = 'elan_prefs';
 const LS_ENTRIES = 'elan_entries';
 const LS_MODULES = 'elan_modules_schema';
+const LS_GOALS = 'elan_goals';
 
 function readJSON(key, fallback) {
   try {
@@ -59,6 +60,15 @@ function localGetModules() {
 
 function localSaveModules(modules) {
   writeJSON(LS_MODULES, modules || []);
+}
+
+function localGetGoals() {
+  return readJSON(LS_GOALS, []);
+}
+
+function localSaveGoals(goals) {
+  writeJSON(LS_GOALS, goals || []);
+  return goals || [];
 }
 
 function localGetEntry(date) {
@@ -166,6 +176,14 @@ export const api = {
     } catch {
       return localSaveEntry(payload);
     }
+  },
+
+  getGoals: async () => {
+    return localGetGoals();
+  },
+
+  saveGoals: async (goals) => {
+    return localSaveGoals(goals);
   }
 };
 

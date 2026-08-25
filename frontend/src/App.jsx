@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import Questionnaire from './pages/Questionnaire.jsx';
 import Stats from './pages/Stats.jsx';
 import Customize from './pages/Customize.jsx';
+import Objectives from './pages/Objectives.jsx';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
       <Route path="/" element={<Dashboard />} />
       <Route path="/questionnaire" element={<Questionnaire />} />
       <Route path="/statistiques" element={<Stats />} />
+      <Route path="/objectifs" element={<Objectives />} />
       <Route path="/personnaliser" element={<Customize />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
