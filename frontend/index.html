@@ -50,6 +50,13 @@
     <section id="history" class="view"><div class="form-head"><div><p class="eyebrow">Mes données</p><h1>Mon historique</h1></div><button class="secondary" type="button" onclick="showView('home')">Accueil</button></div><div id="history-list" class="history"></div></section>
     <section id="settings" class="view"><div class="form-head"><div><p class="eyebrow">Personnalisation</p><h1>Mes addictions</h1></div><button class="secondary" type="button" onclick="showView('home')">Accueil</button></div><div class="panel"><p class="muted">Modifiez cette liste selon votre situation. Séparez chaque addiction par une virgule.</p><label for="addictions">Liste personnelle</label><textarea id="addictions" rows="4" placeholder="sucre, cigarette, alcool, porno, TikTok, drogues"></textarea><div class="actions"><button class="primary" type="button" onclick="saveAddictions()">Enregistrer la liste</button></div><div id="settings-saved" class="notice">Liste mise à jour.</div></div></section>
   </main>
+  <style>
+    .optional { background:#f0fdf4; border-color:#16a34a; }
+    .metric { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px; }
+    .settings-group { margin-top:22px; padding-top:18px; border-top:1px solid var(--line); }
+    .bar { height:12px; border-radius:20px; background:#e5e7eb; overflow:hidden; } .bar i { display:block; height:100%; background:#10b981; border-radius:inherit; }
+    @media (max-width:700px) { .metric { grid-template-columns:1fr; } }
+  </style>
   <script>
     const defaultAddictions = ['Sucre', 'Cigarette', 'Alcool', 'Porno', 'TikTok', 'Drogues'];
     const storageKey = 'mydata-daily-records'; const addictionKey = 'mydata-addictions';
@@ -84,6 +91,51 @@
     }
     function showView(id) { document.querySelectorAll('.view').forEach(view => view.classList.remove('active')); document.getElementById(id).classList.add('active'); if (id === 'questionnaire') { renderAddictions(); applyModules(); } if (id === 'settings') renderSettings(); window.scrollTo(0, 0); }
     renderAddictions(); applyModules();
+  </script>
+  <script>
+    (() => {
+      const recordsKey = 'mydata-daily-records';
+      const settingsKey = 'mydata-personalization';
+      const defaults = { work:true, dayReview:true, foodDetails:false };
+      const settings = () => JSON.parse(localStorage.getItem(settingsKey) || JSON.stringify(defaults));
+      const records = () => JSON.parse(localStorage.getItem(recordsKey) || '[]');
+      const numberField = (id, label) => `<div class="field"><label for="${id}">${label}</label><div class="range-line"><input id="${id}" name="${id}" type="range" min="0" max="10" value="5" oninput="this.nextElementSibling.value=this.value"><output>5</output></div></div>`;
+      const form = document.getElementById('daily-form');
+      const saved = document.getElementById('saved');
+      saved.insertAdjacentHTML('beforebegin', `<div id="work-module" class="section optional"><h2>4. Travail et effort</h2><p class="section-intro">Un point rapide sur votre journée professionnelle.</p><div class="fields">${numberField('workQuality','Comment s’est passée ma journée au travail ?')}${numberField('effort','Les efforts que j’ai fournis (0-10)')}<div class="field full"><label for="workNote">Un mot sur le travail (facultatif)</label><textarea id="workNote" name="workNote" placeholder="Ce qui s’est bien passé ou a été difficile..."></textarea></div></div></div><div id="day-review-module" class="section optional"><h2>5. Mon ressenti général</h2><p class="section-intro">La dernière question, pour fermer la journée.</p><div class="fields">${numberField('dayFeeling','Mon ressenti global (0-10)')}${numberField('dayPressure','La pression ressentie (0-10)')}<div class="field full"><label for="dayNote">Ce que je retiens de cette journée</label><textarea id="dayNote" name="dayNote" placeholder="Une phrase suffit..."></textarea></div></div></div>`);
+      const first = form.querySelector('.section');
+      first.insertAdjacentHTML('beforeend', `<div id="food-details" class="settings-group"><h3>Nutrition approfondie</h3><div class="metric"><div class="field"><label for="proteinRatio">Protéines (%)</label><input id="proteinRatio" name="proteinRatio" type="number" min="0" max="100"></div><div class="field"><label for="starchRatio">Féculents (%)</label><input id="starchRatio" name="starchRatio" type="number" min="0" max="100"></div><div class="field"><label for="vegetableRatio">Légumes (%)</label><input id="vegetableRatio" name="vegetableRatio" type="number" min="0" max="100"></div></div></div>`);
+      function applySettings() { const current = settings(); document.getElementById('work-module').style.display = current.work ? '' : 'none'; document.getElementById('day-review-module').style.display = current.dayReview ? '' : 'none'; document.getElementById('food-details').style.display = current.foodDetails ? '' : 'none'; }
+      function score(data) { const values = []; const add = (value, weight) => { if (value !== '' && value !== undefined) values.push([Number(value), weight]); }; add(data.energy,2); add(data.workQuality,1.5); add(data.effort,1); add(data.dayFeeling,2); add(data.dayPressure === '' ? '' : 10 - Number(data.dayPressure),1); add(data.sleepQuality ? ({'Très mauvaise':2,'Mauvaise':4,'Moyenne':6,'Bonne':8,'Très bonne':10}[data.sleepQuality]) : '',3); add(data.foodQuality ? ({'À améliorer':3,'Correcte':6,'Bonne':8,'Très bonne':10}[data.foodQuality]) : '',2); if (!values.length) return null; const weight = values.reduce((sum,item) => sum + item[1],0); return Math.round(values.reduce((sum,item) => sum + item[0] * item[1],0) / weight * 10) / 10; }
+      form.addEventListener('submit', () => setTimeout(() => { const data = Object.fromEntries(new FormData(form)); const today = new Date().toISOString().slice(0,10); const list = records().filter(item => item.date !== today); data.date = today; data.weightedScore = score(data); list.unshift(data); localStorage.setItem(recordsKey, JSON.stringify(list)); if (data.weightedScore !== null) saved.innerHTML = `Journée enregistrée. Votre moyenne du jour : <strong>${data.weightedScore}/10</strong>`; }, 0));
+      window.myDataSettings = { settings, save(next) { localStorage.setItem(settingsKey, JSON.stringify(next)); applySettings(); } };
+      applySettings();
+    })();
+  </script>
+  <script>
+    (() => {
+      const configKey = 'mydata-personalization';
+      const defaults = { work:true, dayReview:true, foodDetails:false };
+      const getConfig = () => JSON.parse(localStorage.getItem(configKey) || JSON.stringify(defaults));
+      const saveConfig = config => localStorage.setItem(configKey, JSON.stringify(config));
+      const oldShowView = window.showView;
+      const renderPersonalization = () => {
+        const panel = document.querySelector('#settings .panel');
+        if (!panel || document.getElementById('personalization-options')) return;
+        panel.insertAdjacentHTML('afterbegin', '<div id="personalization-options" class="settings-group"><h2>Mon questionnaire quotidien</h2><p class="muted">Activez les thèmes qui vous correspondent. Les approfondissements restent optionnels.</p><div class="checks"><label class="check"><input id="work-setting" type="checkbox"> Travail et efforts</label><label class="check"><input id="day-setting" type="checkbox"> Ressenti de la journée</label><label class="check"><input id="food-setting" type="checkbox"> Nutrition approfondie</label></div><button class="primary" type="button" onclick="savePersonalization()">Enregistrer mes thèmes</button></div>');
+        const config = getConfig(); document.getElementById('work-setting').checked = config.work; document.getElementById('day-setting').checked = config.dayReview; document.getElementById('food-setting').checked = config.foodDetails;
+      };
+      window.savePersonalization = () => { saveConfig({ work:document.getElementById('work-setting').checked, dayReview:document.getElementById('day-setting').checked, foodDetails:document.getElementById('food-setting').checked }); applyPersonalization(); };
+      const applyPersonalization = () => { const config = getConfig(); const work = document.getElementById('work-module'); const day = document.getElementById('day-review-module'); const food = document.getElementById('food-details'); if (work) work.style.display = config.work ? '' : 'none'; if (day) day.style.display = config.dayReview ? '' : 'none'; if (food) food.style.display = config.foodDetails ? '' : 'none'; };
+      const renderStats = () => {
+        if (document.getElementById('stats-view')) return;
+        const home = document.getElementById('home'); home.insertAdjacentHTML('afterend', '<section id="stats-view" class="view"><div class="form-head"><div><p class="eyebrow">Mon évolution</p><h1>Ma tendance du jour</h1></div><button class="secondary" type="button" onclick="showView(\'home\')">Accueil</button></div><div class="panel"><p class="muted">La moyenne pondérée utilise seulement les réponses renseignées, avec davantage de poids pour les besoins fondamentaux.</p><div id="stats-content"></div></div></section>');
+      };
+      const updateStats = () => { renderStats(); const list = JSON.parse(localStorage.getItem('mydata-daily-records') || '[]').filter(item => item.weightedScore !== null && item.weightedScore !== undefined); const content = document.getElementById('stats-content'); if (!list.length) { content.innerHTML = '<div class="empty">Remplissez une journée pour commencer votre évolution.</div>'; return; } content.innerHTML = list.slice(0,14).reverse().map(item => `<div class="metric"><strong>${item.date}</strong><div><b>${item.weightedScore}/10</b><div class="bar"><i style="width:${item.weightedScore * 10}%"></i></div></div></div>`).join(''); };
+      window.showView = id => { oldShowView(id); renderPersonalization(); applyPersonalization(); if (id === 'stats') { updateStats(); document.querySelectorAll('.view').forEach(view => view.classList.remove('active')); document.getElementById('stats-view').classList.add('active'); } };
+      document.querySelector('.choices').insertAdjacentHTML('beforeend', '<button class="choice" type="button" onclick="showView(\'stats\')"><strong>Voir mon évolution</strong><span>Observer ma moyenne pondérée au fil des jours.</span></button>');
+      applyPersonalization(); renderPersonalization();
+    })();
   </script>
 </body>
 </html>
