@@ -1,10 +1,10 @@
-import DEFAULT_MODULES from './defaultModules';
 import { computeScores } from './scoring';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 const LS_PREFS = 'elan_prefs';
 const LS_ENTRIES = 'elan_entries';
+const LS_MODULES = 'elan_modules_schema';
 
 function readJSON(key, fallback) {
   try {
@@ -53,6 +53,14 @@ function localSaveEntries(entries) {
   writeJSON(LS_ENTRIES, entries);
 }
 
+function localGetModules() {
+  return readJSON(LS_MODULES, []);
+}
+
+function localSaveModules(modules) {
+  writeJSON(LS_MODULES, modules || []);
+}
+
 function localGetEntry(date) {
   const entries = localGetEntries();
   const found = entries.find((e) => e.date === date);
@@ -70,10 +78,11 @@ function localGetHistory(params = {}) {
 function localSaveEntry(payload) {
   const { date, answers = {}, completionStatus = 'draft' } = payload;
   const prefs = localGetPreferences().modules;
+  const modules = localGetModules();
   const entries = localGetEntries();
   const existing = entries.find((e) => e.date === date);
   const mergedAnswers = { ...(existing?.answers || {}), ...answers };
-  const { globalScore, moduleScores } = computeScores(DEFAULT_MODULES, prefs, mergedAnswers);
+  const { globalScore, moduleScores } = computeScores(modules, prefs, mergedAnswers);
 
   const next = {
     date,
@@ -98,9 +107,18 @@ export const api = {
 
   getConfig: async () => {
     try {
-      return await request('/config');
+      const data = await request('/config');
+      localSaveModules(data.modules || []);
+      return data;
     } catch {
-      return { modules: DEFAULT_MODULES };
+      try {
+        const res = await fetch(`${import.meta.env.BASE_URL}modules.schema.json`);
+        const modules = await res.json();
+        localSaveModules(modules || []);
+        return { modules };
+      } catch {
+        return { modules: localGetModules() };
+      }
     }
   },
 

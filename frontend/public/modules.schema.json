@@ -1,0 +1,509 @@
+[
+  {
+    "id": "sommeil",
+    "name": "Sommeil",
+    "icon": "🌙",
+    "description": "Nuit, recuperation et regularite",
+    "weight": 0.2,
+    "questions": [
+      {
+        "id": "sommeil_total",
+        "type": "slider",
+        "level": "essentiel",
+        "required": true,
+        "weight": 1.6,
+        "label": "Combien de temps avez-vous dormi ?",
+        "config": { "min": 0, "max": 12, "step": 0.25, "unit": "h", "targetMin": 7, "targetMax": 9 }
+      },
+      {
+        "id": "sommeil_qualite",
+        "type": "scale",
+        "level": "essentiel",
+        "required": true,
+        "weight": 1.4,
+        "label": "Comment etait la qualite de votre sommeil ?",
+        "config": { "min": 0, "max": 10 }
+      },
+      {
+        "id": "sommeil_recup",
+        "type": "scale",
+        "level": "essentiel",
+        "weight": 1.2,
+        "label": "A quel point vous sentez-vous recupere(e) ?",
+        "config": { "min": 0, "max": 10 }
+      },
+      {
+        "id": "sommeil_coucher",
+        "type": "time",
+        "level": "detaille",
+        "weight": 0,
+        "label": "Heure de coucher"
+      },
+      {
+        "id": "sommeil_endormissement",
+        "type": "time",
+        "level": "detaille",
+        "weight": 0,
+        "label": "Heure d'endormissement"
+      },
+      {
+        "id": "sommeil_reveil",
+        "type": "time",
+        "level": "detaille",
+        "weight": 0,
+        "label": "Heure de reveil"
+      },
+      {
+        "id": "sommeil_reveils_nocturnes",
+        "type": "number",
+        "level": "detaille",
+        "weight": 0.6,
+        "label": "Combien de reveils nocturnes ?",
+        "config": { "min": 0, "max": 10, "unit": "" }
+      },
+      {
+        "id": "sommeil_eveil_nocturne",
+        "type": "number",
+        "level": "avance",
+        "weight": 0.8,
+        "label": "Minutes eveille(es) dans la nuit",
+        "config": { "min": 0, "max": 180, "unit": "min", "target": 20, "invert": true },
+        "when": { "all": [{ "questionId": "sommeil_reveils_nocturnes", "op": "gt", "value": 0 }] }
+      },
+      {
+        "id": "sommeil_sieste",
+        "type": "boolean",
+        "level": "detaille",
+        "weight": 0.2,
+        "label": "Avez-vous fait une sieste ?"
+      },
+      {
+        "id": "sommeil_sieste_duree",
+        "type": "number",
+        "level": "avance",
+        "weight": 0,
+        "label": "Duree de la sieste",
+        "config": { "min": 0, "max": 120, "unit": "min" },
+        "when": { "all": [{ "questionId": "sommeil_sieste", "op": "eq", "value": true }] }
+      },
+      {
+        "id": "sommeil_ecran_soir",
+        "type": "choice",
+        "level": "avance",
+        "weight": 0.3,
+        "label": "Temps d'ecran dans l'heure avant de dormir",
+        "options": [
+          { "value": "none", "label": "Aucun", "score": 100 },
+          { "value": "short", "label": "Moins de 30 min", "score": 80 },
+          { "value": "medium", "label": "30-60 min", "score": 55 },
+          { "value": "long", "label": "Plus de 60 min", "score": 30 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "alimentation",
+    "name": "Alimentation",
+    "icon": "🍎",
+    "description": "Qualite, hydratation et signaux nutritionnels",
+    "weight": 0.14,
+    "questions": [
+      {
+        "id": "alim_qualite_globale",
+        "type": "scale",
+        "level": "essentiel",
+        "required": true,
+        "weight": 1.2,
+        "label": "Comment jugez-vous votre alimentation aujourd'hui ?",
+        "config": { "min": 0, "max": 10 }
+      },
+      {
+        "id": "alim_hydratation",
+        "type": "number",
+        "level": "essentiel",
+        "weight": 1,
+        "label": "Combien de verres d'eau ?",
+        "config": { "min": 0, "max": 20, "unit": "", "target": 8 }
+      },
+      {
+        "id": "alim_satiete",
+        "type": "choice",
+        "level": "essentiel",
+        "weight": 1,
+        "label": "Avez-vous mange a votre faim ?",
+        "options": [
+          { "value": "not_enough", "label": "Pas assez", "score": 45 },
+          { "value": "just_right", "label": "Juste bien", "score": 100 },
+          { "value": "too_much", "label": "Trop", "score": 60 }
+        ]
+      },
+      {
+        "id": "alim_repas_principaux",
+        "type": "number",
+        "level": "detaille",
+        "weight": 0.6,
+        "label": "Nombre de repas principaux",
+        "config": { "min": 0, "max": 6, "unit": "" }
+      },
+      {
+        "id": "alim_fruits_legumes",
+        "type": "number",
+        "level": "detaille",
+        "weight": 0.8,
+        "label": "Portions fruits et legumes",
+        "config": { "min": 0, "max": 12, "unit": "", "target": 5 }
+      },
+      {
+        "id": "alim_ultra_transformes",
+        "type": "choice",
+        "level": "detaille",
+        "weight": 1,
+        "label": "Consommation d'aliments ultra-transformes",
+        "options": [
+          { "value": "none", "label": "Aucune", "score": 100 },
+          { "value": "low", "label": "Faible", "score": 80 },
+          { "value": "medium", "label": "Moyenne", "score": 55 },
+          { "value": "high", "label": "Elevee", "score": 25 }
+        ]
+      },
+      {
+        "id": "alim_fringale",
+        "type": "boolean",
+        "level": "avance",
+        "weight": 0.3,
+        "label": "Avez-vous eu une fringale forte ?"
+      },
+      {
+        "id": "alim_fringale_intensite",
+        "type": "scale",
+        "level": "avance",
+        "weight": 0,
+        "label": "Intensite de la fringale",
+        "config": { "min": 0, "max": 10, "invert": true },
+        "when": { "all": [{ "questionId": "alim_fringale", "op": "eq", "value": true }] }
+      }
+    ]
+  },
+  {
+    "id": "activite",
+    "name": "Activite physique",
+    "icon": "🏃",
+    "description": "Mouvement, intensite et recuperation",
+    "weight": 0.14,
+    "questions": [
+      {
+        "id": "actif_aujourdhui",
+        "type": "boolean",
+        "level": "essentiel",
+        "required": true,
+        "weight": 1,
+        "label": "Avez-vous fait une activite physique aujourd'hui ?"
+      },
+      {
+        "id": "actif_duree",
+        "type": "number",
+        "level": "essentiel",
+        "weight": 1.1,
+        "label": "Duree totale d'activite",
+        "config": { "min": 0, "max": 300, "unit": "min", "target": 45 },
+        "when": { "all": [{ "questionId": "actif_aujourdhui", "op": "eq", "value": true }] }
+      },
+      {
+        "id": "actif_intensite",
+        "type": "scale",
+        "level": "essentiel",
+        "weight": 0.7,
+        "label": "Intensite ressentie",
+        "config": { "min": 0, "max": 10 },
+        "when": { "all": [{ "questionId": "actif_aujourdhui", "op": "eq", "value": true }] }
+      },
+      {
+        "id": "actif_type",
+        "type": "choice",
+        "level": "detaille",
+        "weight": 0,
+        "label": "Type principal",
+        "options": [
+          { "value": "marche", "label": "Marche", "score": 80 },
+          { "value": "cardio", "label": "Cardio", "score": 90 },
+          { "value": "musculation", "label": "Musculation", "score": 90 },
+          { "value": "mobilite", "label": "Mobilite", "score": 85 },
+          { "value": "autre", "label": "Autre", "score": 80 }
+        ],
+        "when": { "all": [{ "questionId": "actif_aujourdhui", "op": "eq", "value": true }] }
+      },
+      {
+        "id": "actif_sedentarite",
+        "type": "number",
+        "level": "detaille",
+        "weight": 0.8,
+        "label": "Temps assis dans la journee",
+        "config": { "min": 0, "max": 14, "unit": "h", "target": 6, "invert": true }
+      },
+      {
+        "id": "actif_recuperation",
+        "type": "scale",
+        "level": "avance",
+        "weight": 0.8,
+        "label": "Qualite de recuperation physique",
+        "config": { "min": 0, "max": 10 },
+        "when": { "all": [{ "questionId": "actif_aujourdhui", "op": "eq", "value": true }] }
+      },
+      {
+        "id": "actif_douleur",
+        "type": "scale",
+        "level": "avance",
+        "weight": 0.4,
+        "label": "Inconfort ou douleur",
+        "config": { "min": 0, "max": 10, "invert": true }
+      }
+    ]
+  },
+  {
+    "id": "travail",
+    "name": "Travail",
+    "icon": "💼",
+    "description": "Focus, charge et satisfaction",
+    "weight": 0.12,
+    "questions": [
+      {
+        "id": "travail_satisfaction",
+        "type": "scale",
+        "level": "essentiel",
+        "required": true,
+        "weight": 1.2,
+        "label": "Satisfaction de votre journee de travail",
+        "config": { "min": 0, "max": 10 }
+      },
+      {
+        "id": "travail_focus",
+        "type": "number",
+        "level": "essentiel",
+        "weight": 1,
+        "label": "Minutes de concentration profonde",
+        "config": { "min": 0, "max": 480, "unit": "min", "target": 120 }
+      },
+      {
+        "id": "travail_charge",
+        "type": "scale",
+        "level": "essentiel",
+        "weight": 0.9,
+        "label": "Charge mentale ressentie",
+        "config": { "min": 0, "max": 10, "invert": true }
+      },
+      {
+        "id": "travail_tache_cle",
+        "type": "choice",
+        "level": "detaille",
+        "weight": 1,
+        "label": "Avez-vous avance sur votre tache la plus importante ?",
+        "options": [
+          { "value": "none", "label": "Pas du tout", "score": 20 },
+          { "value": "partial", "label": "Partiellement", "score": 65 },
+          { "value": "done", "label": "Oui", "score": 100 }
+        ]
+      },
+      {
+        "id": "travail_interruptions",
+        "type": "number",
+        "level": "detaille",
+        "weight": 0.4,
+        "label": "Interruptions majeures",
+        "config": { "min": 0, "max": 20, "unit": "", "target": 3, "invert": true }
+      },
+      {
+        "id": "travail_blocage",
+        "type": "boolean",
+        "level": "avance",
+        "weight": 0,
+        "label": "Avez-vous rencontre un blocage important ?"
+      },
+      {
+        "id": "travail_blocage_type",
+        "type": "multichoice",
+        "level": "avance",
+        "weight": 0,
+        "label": "Quel type de blocage ?",
+        "options": [
+          { "value": "clarte", "label": "Manque de clarte" },
+          { "value": "dependance", "label": "Dependance externe" },
+          { "value": "fatigue", "label": "Fatigue" },
+          { "value": "priorites", "label": "Priorites floues" },
+          { "value": "autre", "label": "Autre" }
+        ],
+        "when": { "all": [{ "questionId": "travail_blocage", "op": "eq", "value": true }] }
+      }
+    ]
+  },
+  {
+    "id": "mental",
+    "name": "Mental",
+    "icon": "🧠",
+    "description": "Humeur, stress et controle percu",
+    "weight": 0.16,
+    "questions": [
+      {
+        "id": "mental_humeur",
+        "type": "scale",
+        "level": "essentiel",
+        "required": true,
+        "weight": 1.5,
+        "label": "Humeur generale",
+        "config": { "min": 0, "max": 10 }
+      },
+      {
+        "id": "mental_stress",
+        "type": "scale",
+        "level": "essentiel",
+        "weight": 1.2,
+        "label": "Niveau de stress",
+        "config": { "min": 0, "max": 10, "invert": true }
+      },
+      {
+        "id": "mental_energie",
+        "type": "scale",
+        "level": "essentiel",
+        "weight": 1,
+        "label": "Energie mentale",
+        "config": { "min": 0, "max": 10 }
+      },
+      {
+        "id": "mental_controle",
+        "type": "scale",
+        "level": "detaille",
+        "weight": 0.8,
+        "label": "Sentiment de controle sur votre journee",
+        "config": { "min": 0, "max": 10 }
+      },
+      {
+        "id": "mental_anxiete",
+        "type": "scale",
+        "level": "detaille",
+        "weight": 0.8,
+        "label": "Anxiete ressentie",
+        "config": { "min": 0, "max": 10, "invert": true }
+      },
+      {
+        "id": "mental_relations",
+        "type": "scale",
+        "level": "avance",
+        "weight": 0.4,
+        "label": "Qualite des interactions sociales",
+        "config": { "min": 0, "max": 10 }
+      },
+      {
+        "id": "mental_declencheur_stress",
+        "type": "choice",
+        "level": "avance",
+        "weight": 0,
+        "label": "Principal declencheur de stress",
+        "options": [
+          { "value": "travail", "label": "Travail" },
+          { "value": "relations", "label": "Relations" },
+          { "value": "sante", "label": "Sante" },
+          { "value": "argent", "label": "Argent" },
+          { "value": "autre", "label": "Autre" }
+        ],
+        "when": { "all": [{ "questionId": "mental_stress", "op": "gte", "value": 7 }] }
+      }
+    ]
+  },
+  {
+    "id": "habitudes",
+    "name": "Habitudes",
+    "icon": "🎯",
+    "description": "Comportements a suivre et resistance",
+    "weight": 0.1,
+    "questions": [
+      {
+        "id": "habitude_envie",
+        "type": "choice",
+        "level": "essentiel",
+        "weight": 1,
+        "label": "Face a vos habitudes a surveiller, votre etat du jour ?",
+        "options": [
+          { "value": "none", "label": "Aucune envie", "score": 100 },
+          { "value": "resisted", "label": "Envie presente, resistance reussie", "score": 90 },
+          { "value": "acted", "label": "Comportement realise", "score": 35 }
+        ]
+      },
+      {
+        "id": "habitude_intensite_envie",
+        "type": "scale",
+        "level": "detaille",
+        "weight": 0.7,
+        "label": "Intensite maximale de l'envie",
+        "config": { "min": 0, "max": 10, "invert": true },
+        "when": { "all": [{ "questionId": "habitude_envie", "op": "neq", "value": "none" }] }
+      },
+      {
+        "id": "habitude_declencheur",
+        "type": "choice",
+        "level": "avance",
+        "weight": 0,
+        "label": "Declencheur principal",
+        "options": [
+          { "value": "stress", "label": "Stress" },
+          { "value": "fatigue", "label": "Fatigue" },
+          { "value": "ennui", "label": "Ennui" },
+          { "value": "social", "label": "Contexte social" },
+          { "value": "routine", "label": "Routine" },
+          { "value": "autre", "label": "Autre" }
+        ],
+        "when": { "all": [{ "questionId": "habitude_envie", "op": "neq", "value": "none" }] }
+      }
+    ]
+  },
+  {
+    "id": "accomplissement",
+    "name": "Accomplissement",
+    "icon": "✨",
+    "description": "Progression, sens et bilan",
+    "weight": 0.14,
+    "questions": [
+      {
+        "id": "bilan_note",
+        "type": "scale",
+        "level": "essentiel",
+        "required": true,
+        "weight": 1.2,
+        "label": "Quelle note donnez-vous a votre journee ?",
+        "config": { "min": 0, "max": 10 }
+      },
+      {
+        "id": "bilan_fierte",
+        "type": "scale",
+        "level": "essentiel",
+        "weight": 1,
+        "label": "A quel point etes-vous fier(e) de ce que vous avez fait ?",
+        "config": { "min": 0, "max": 10 }
+      },
+      {
+        "id": "bilan_progression",
+        "type": "choice",
+        "level": "detaille",
+        "weight": 1,
+        "label": "Avez-vous avance vers un objectif important ?",
+        "options": [
+          { "value": "none", "label": "Pas aujourd'hui", "score": 25 },
+          { "value": "small", "label": "Un peu", "score": 65 },
+          { "value": "clear", "label": "Oui clairement", "score": 100 }
+        ]
+      },
+      {
+        "id": "bilan_meilleur_moment",
+        "type": "text",
+        "level": "detaille",
+        "weight": 0,
+        "label": "Meilleur moment de la journee"
+      },
+      {
+        "id": "bilan_amelioration",
+        "type": "text",
+        "level": "avance",
+        "weight": 0,
+        "label": "Une chose a ameliorer demain"
+      }
+    ]
+  }
+]

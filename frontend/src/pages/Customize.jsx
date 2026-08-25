@@ -3,6 +3,24 @@ import Layout from '../components/Layout.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api } from '../lib/api';
 
+const LEVELS = ['essentiel', 'detaille', 'avance'];
+const LEVEL_LABELS = {
+  simple: 'Essentiel',
+  essentiel: 'Essentiel',
+  detaille: 'Detaille',
+  avance: 'Avance'
+};
+
+function normalizeLevel(level) {
+  if (!level || level === 'simple') return 'essentiel';
+  return level;
+}
+
+function levelAllowed(questionLevel, selectedLevel) {
+  const order = { essentiel: 0, detaille: 1, avance: 2 };
+  return order[normalizeLevel(questionLevel || 'essentiel')] <= order[normalizeLevel(selectedLevel)];
+}
+
 export default function Customize() {
   const { token } = useAuth();
   const [modules, setModules] = useState([]);
@@ -65,7 +83,9 @@ export default function Customize() {
           {modules.map((m) => {
             const modPref = preferences[m.id] || {};
             const enabled = modPref.enabled !== false;
-            const level = modPref.level || 'simple';
+            const level = normalizeLevel(modPref.level || 'essentiel');
+            const visibleQuestions = m.questions.filter((q) => levelAllowed(q.level, level));
+            const enabledCount = visibleQuestions.filter((q) => modPref.questions?.[q.id]?.enabled !== false).length;
 
             return (
               <div key={m.id} className="card p-5 space-y-4">
@@ -74,7 +94,7 @@ export default function Customize() {
                     <span className="text-2xl">{m.icon}</span>
                     <div>
                       <p className="font-bold text-slate-800">{m.name}</p>
-                      <p className="text-xs text-slate-400">{m.description}</p>
+                      <p className="text-xs text-slate-400">{LEVEL_LABELS[level]} · {enabledCount} indicateurs actifs</p>
                     </div>
                   </div>
                   <button
@@ -87,9 +107,9 @@ export default function Customize() {
 
                 {enabled && (
                   <>
-                    {m.questions.some((q) => q.level === 'detaille') && (
+                    {m.questions.length > 0 && (
                       <div className="flex gap-2">
-                        {['simple', 'detaille'].map((lvl) => (
+                        {LEVELS.map((lvl) => (
                           <button
                             key={lvl}
                             onClick={() => updateModule(m.id, { level: lvl })}
@@ -97,14 +117,14 @@ export default function Customize() {
                               level === lvl ? 'bg-brand-100 text-brand-700' : 'text-slate-400 hover:bg-slate-100'
                             }`}
                           >
-                            {lvl === 'simple' ? 'Simple' : 'Détaillé'}
+                            {LEVEL_LABELS[lvl]}
                           </button>
                         ))}
                       </div>
                     )}
                     <div className="grid sm:grid-cols-2 gap-2">
                       {m.questions
-                        .filter((q) => q.level !== 'detaille' || level === 'detaille')
+                        .filter((q) => levelAllowed(q.level, level))
                         .map((q) => {
                           const qEnabled = modPref.questions?.[q.id]?.enabled !== false;
                           return (

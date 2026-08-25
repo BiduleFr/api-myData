@@ -25,8 +25,10 @@ function scoreQuestion(question, value) {
       return clamp(100 - ((v - targetMax) / (max - targetMax)) * 100);
     }
     case 'number': {
-      const { target = 60 } = question.config || {};
-      return clamp((Number(value) / target) * 100);
+      const { target = 60, invert = false } = question.config || {};
+      let s = clamp((Number(value) / target) * 100);
+      if (invert) s = 100 - s;
+      return clamp(s);
     }
     case 'boolean': {
       const positive = question.config?.positiveValue !== false;
