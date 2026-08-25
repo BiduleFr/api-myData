@@ -3,139 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MyData - Suivi quotidien</title>
+  <title>Bonjour</title>
   <style>
-    :root { --ink:#1f2937; --muted:#667085; --line:#e5e7eb; --blue:#2563eb; --green:#0f766e; --sky:#eff6ff; --sand:#fff7ed; }
-    * { box-sizing:border-box; }
-    body { margin:0; color:var(--ink); background:#f5f7fb; font-family:Arial,sans-serif; }
-    button,input,textarea,select { font:inherit; } button { cursor:pointer; }
-    .topbar { background:#172554; color:white; padding:18px 24px; display:flex; justify-content:space-between; align-items:center; }
-    .brand { font-weight:800; letter-spacing:.08em; } .topbar button { background:transparent; color:white; border:1px solid #93c5fd; border-radius:8px; padding:8px 12px; }
-    main { max-width:1080px; margin:0 auto; padding:34px 20px 60px; } .view { display:none; } .view.active { display:block; }
-    h1 { font-size:clamp(2rem,5vw,3.4rem); line-height:1.05; margin:0 0 12px; color:#172554; } h2 { margin:0 0 8px; color:#172554; } h3 { margin:0 0 6px; }
-    .eyebrow { color:var(--blue); font-weight:800; text-transform:uppercase; font-size:.76rem; letter-spacing:.12em; } .muted { color:var(--muted); }
-    .choices { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin:26px 0 34px; }
-    .choice,.panel,.layer { background:white; border:1px solid var(--line); border-radius:12px; padding:22px; box-shadow:0 8px 25px #1725540d; }
-    .choice { text-align:left; min-height:150px; transition:transform .15s; } .choice:hover { transform:translateY(-2px); } .choice strong { display:block; font-size:1.15rem; margin-bottom:8px; color:#172554; } .choice span { display:block; color:var(--muted); }
-    .layers { display:grid; gap:12px; } .layer { display:flex; align-items:center; gap:18px; } .level { width:42px; height:42px; flex:none; display:grid; place-items:center; background:#dbeafe; color:#1d4ed8; border-radius:50%; font-weight:800; }
-    .form-head { display:flex; justify-content:space-between; gap:20px; align-items:end; margin-bottom:20px; } .date { color:var(--muted); font-weight:600; }
-    .section { margin:22px 0; padding:22px; border-radius:12px; border-left:5px solid var(--blue); background:var(--sky); } .section:nth-of-type(3n) { background:var(--sand); border-color:#ea580c; }
-    .section-intro { margin:0 0 16px; color:var(--muted); } .fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; } .field { display:flex; flex-direction:column; gap:7px; } .field.full { grid-column:1/-1; }
-    label { font-weight:700; } input,textarea,select { width:100%; border:1px solid #cbd5e1; border-radius:8px; padding:10px 12px; background:white; color:var(--ink); } textarea { min-height:84px; resize:vertical; }
-    .range-line { display:grid; grid-template-columns:1fr 56px; align-items:center; gap:10px; } input[type=range] { accent-color:var(--blue); padding:0; } output { font-weight:800; text-align:center; }
-    .checks { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:8px; } .check { display:flex; flex-direction:row; align-items:center; gap:8px; padding:10px; border:1px solid #cbd5e1; border-radius:8px; background:white; font-weight:600; } .check input { width:auto; }
-    .actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:22px; } .primary,.secondary { border-radius:8px; padding:12px 17px; font-weight:800; } .primary { background:var(--blue); color:white; border:0; } .secondary { background:white; color:#1d4ed8; border:1px solid #93c5fd; }
-    .notice { padding:12px 14px; border-radius:8px; background:#ecfdf5; color:#166534; margin:16px 0; display:none; } .notice.show { display:block; }
-    .history { display:grid; gap:14px; } .record { background:white; border:1px solid var(--line); border-radius:10px; padding:18px; } .record-head { display:flex; justify-content:space-between; margin-bottom:10px; } .record-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; color:var(--muted); } .record-grid b { display:block; color:var(--ink); margin-top:2px; }
-    .empty { padding:30px; text-align:center; background:white; border:1px dashed #cbd5e1; border-radius:10px; color:var(--muted); }
-    .module-list { display:grid; gap:10px; margin:18px 0; } .module { display:flex; align-items:center; gap:12px; padding:14px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; } .module input { width:auto; accent-color:var(--blue); } .module span { display:grid; gap:3px; } .module small { color:var(--muted); font-weight:400; } .settings-subtitle { margin-top:28px; }
-    @keyframes pop { 0% { transform:scale(.96); opacity:.5; } 70% { transform:scale(1.02); } 100% { transform:scale(1); opacity:1; } } .notice.show { animation:pop .35s ease-out; }
-    @media (max-width:700px) { main { padding:24px 14px 45px; } .choices,.fields { grid-template-columns:1fr; } .field.full { grid-column:auto; } .form-head { display:block; } .layer { align-items:flex-start; } }
+    html, body { height: 100%; }
+    body { margin: 0; display: grid; place-items: center; background: #fff; font-family: Arial, sans-serif; }
+    h1 { margin: 0; color: #111; font-size: 48px; }
   </style>
 </head>
 <body>
-  <header class="topbar"><div class="brand">MYDATA</div><button type="button" onclick="showView('settings')">Configurer</button></header>
-  <main>
-    <section id="home" class="view active">
-      <p class="eyebrow">Mon tableau de bord</p><h1>Prendre soin de soi, un jour à la fois.</h1><p class="muted">Un suivi simple de vos besoins essentiels, de votre énergie et de vos accomplissements.</p>
-      <div class="choices"><button class="choice" type="button" onclick="showView('questionnaire')"><strong>Remplir les données du jour</strong><span>Quelques minutes pour faire le point sur votre journée.</span></button><button class="choice" type="button" onclick="showView('history');renderHistory()"><strong>Voir mes données</strong><span>Retrouver vos réponses et observer votre évolution.</span></button></div>
-      <h2>Le parcours MyData</h2><div class="layers"><div class="layer"><div class="level">1</div><div><h3>Besoins fondamentaux</h3><p class="muted">Sommeil, alimentation, hydratation et mouvement.</p></div></div><div class="layer"><div class="level">2</div><div><h3>Équilibre et santé</h3><p class="muted">Constantes vitales, addictions et ressentis physiques.</p></div></div><div class="layer"><div class="level">3</div><div><h3>Accomplissement</h3><p class="muted">Relations, humeur, objectifs et fierté personnelle.</p></div></div></div>
-    </section>
-    <section id="questionnaire" class="view"><div class="form-head"><div><p class="eyebrow">Questionnaire quotidien</p><h1>Ma journée</h1></div><div class="date" id="today"></div></div><form id="daily-form">
-      <div class="section"><h2>1. Besoins fondamentaux</h2><p class="section-intro">Les bases qui soutiennent votre énergie.</p><div class="fields"><div class="field"><label for="sleepHours">Sommeil - quantité (heures)</label><input id="sleepHours" name="sleepHours" type="number" min="0" max="24" step="0.5" placeholder="Ex. 7.5"></div><div class="field"><label for="sleepQuality">Sommeil - qualité</label><select id="sleepQuality" name="sleepQuality"><option value="">Choisir</option><option>Très mauvaise</option><option>Mauvaise</option><option>Moyenne</option><option>Bonne</option><option>Très bonne</option></select></div><div class="field"><label for="water">Hydratation (verres)</label><input id="water" name="water" type="number" min="0" max="30" placeholder="Ex. 6"></div><div class="field"><label for="foodQuality">Nourriture - qualité globale</label><select id="foodQuality" name="foodQuality"><option value="">Choisir</option><option>À améliorer</option><option>Correcte</option><option>Bonne</option><option>Très bonne</option></select></div><div class="field full"><label for="foodNote">Nourriture - note libre</label><textarea id="foodNote" name="foodNote" placeholder="Repas, faim, digestion..."></textarea></div><div class="field"><label for="sportMinutes">Sport ou mouvement (minutes)</label><input id="sportMinutes" name="sportMinutes" type="number" min="0" max="1440" placeholder="Ex. 30"></div><div class="field"><label for="energy">Énergie du jour (0-10)</label><div class="range-line"><input id="energy" name="energy" type="range" min="0" max="10" value="5" oninput="this.nextElementSibling.value=this.value"><output>5</output></div></div></div></div>
-      <div class="section"><h2>2. Équilibre et santé</h2><p class="section-intro">Observer sans jugement ce qui se passe dans votre corps.</p><div class="fields"><div class="field"><label for="weight">Poids (kg, facultatif)</label><input id="weight" name="weight" type="number" min="0" step="0.1"></div><div class="field"><label for="heartRate">Fréquence cardiaque au repos</label><input id="heartRate" name="heartRate" type="number" min="0" placeholder="bpm"></div><div class="field"><label for="bloodPressure">Tension (facultatif)</label><input id="bloodPressure" name="bloodPressure" placeholder="Ex. 120/80"></div><div class="field"><label for="health">État de santé général</label><select id="health" name="health"><option value="">Choisir</option><option>Très difficile</option><option>Difficile</option><option>Correct</option><option>Bon</option><option>Très bon</option></select></div><div class="field full"><label for="symptoms">Soucis de santé ou symptômes</label><textarea id="symptoms" name="symptoms" placeholder="Douleur, fatigue, rendez-vous à prévoir..."></textarea></div><div class="field full"><label>Addictions évitées aujourd'hui</label><div id="addiction-list" class="checks"></div></div></div></div>
-      <div class="section"><h2>3. Liens et accomplissement</h2><p class="section-intro">Les besoins plus personnels, à construire progressivement.</p><div class="fields"><div class="field"><label for="mood">Humeur</label><select id="mood" name="mood"><option value="">Choisir</option><option>Très basse</option><option>Basse</option><option>Neutre</option><option>Bonne</option><option>Très bonne</option></select></div><div class="field"><label for="social">Temps de qualité avec les autres (minutes)</label><input id="social" name="social" type="number" min="0"></div><div class="field full"><label for="achievement">Ma petite victoire du jour</label><textarea id="achievement" name="achievement" placeholder="Une chose dont je peux être fier..."></textarea></div><div class="field full"><label for="tomorrow">Mon intention pour demain</label><textarea id="tomorrow" name="tomorrow" placeholder="Une action simple et réaliste..."></textarea></div></div></div>
-      <div id="saved" class="notice">Vos données ont été enregistrées pour aujourd'hui.</div><div class="actions"><button class="primary" type="submit">Enregistrer ma journée</button><button class="secondary" type="button" onclick="showView('home')">Retour à l'accueil</button></div>
-    </form></section>
-    <section id="history" class="view"><div class="form-head"><div><p class="eyebrow">Mes données</p><h1>Mon historique</h1></div><button class="secondary" type="button" onclick="showView('home')">Accueil</button></div><div id="history-list" class="history"></div></section>
-    <section id="settings" class="view"><div class="form-head"><div><p class="eyebrow">Personnalisation</p><h1>Mes addictions</h1></div><button class="secondary" type="button" onclick="showView('home')">Accueil</button></div><div class="panel"><p class="muted">Modifiez cette liste selon votre situation. Séparez chaque addiction par une virgule.</p><label for="addictions">Liste personnelle</label><textarea id="addictions" rows="4" placeholder="sucre, cigarette, alcool, porno, TikTok, drogues"></textarea><div class="actions"><button class="primary" type="button" onclick="saveAddictions()">Enregistrer la liste</button></div><div id="settings-saved" class="notice">Liste mise à jour.</div></div></section>
-  </main>
-  <style>
-    .optional { background:#f0fdf4; border-color:#16a34a; }
-    .metric { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px; }
-    .settings-group { margin-top:22px; padding-top:18px; border-top:1px solid var(--line); }
-    .bar { height:12px; border-radius:20px; background:#e5e7eb; overflow:hidden; } .bar i { display:block; height:100%; background:#10b981; border-radius:inherit; }
-    @media (max-width:700px) { .metric { grid-template-columns:1fr; } }
-  </style>
-  <script>
-    const defaultAddictions = ['Sucre', 'Cigarette', 'Alcool', 'Porno', 'TikTok', 'Drogues'];
-    const storageKey = 'mydata-daily-records'; const addictionKey = 'mydata-addictions';
-    const getAddictions = () => JSON.parse(localStorage.getItem(addictionKey) || JSON.stringify(defaultAddictions)); const getRecords = () => JSON.parse(localStorage.getItem(storageKey) || '[]');
-    document.getElementById('today').textContent = new Date().toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-    function showView(id) { document.querySelectorAll('.view').forEach(view => view.classList.remove('active')); document.getElementById(id).classList.add('active'); if (id === 'questionnaire') renderAddictions(); if (id === 'settings') document.getElementById('addictions').value = getAddictions().join(', '); window.scrollTo(0, 0); }
-    function renderAddictions() { document.getElementById('addiction-list').innerHTML = getAddictions().map((name, i) => `<label class="check"><input type="checkbox" name="addiction-${i}" value="${name}"> Sans ${name.toLowerCase()}</label>`).join(''); }
-    function saveAddictions() { const names = document.getElementById('addictions').value.split(',').map(name => name.trim()).filter(Boolean); localStorage.setItem(addictionKey, JSON.stringify(names.length ? names : defaultAddictions)); document.getElementById('settings-saved').classList.add('show'); renderAddictions(); }
-    document.getElementById('daily-form').addEventListener('submit', event => { event.preventDefault(); const data = Object.fromEntries(new FormData(event.target)); data.date = new Date().toISOString().slice(0,10); data.addictions = getAddictions().filter((_, i) => data[`addiction-${i}`]).join(', '); getAddictions().forEach((_, i) => delete data[`addiction-${i}`]); const records = getRecords().filter(record => record.date !== data.date); records.unshift(data); localStorage.setItem(storageKey, JSON.stringify(records)); document.getElementById('saved').classList.add('show'); });
-    function display(value) { return value || 'Non renseigné'; }
-    function renderHistory() { const records = getRecords(); const list = document.getElementById('history-list'); if (!records.length) { list.innerHTML = '<div class="empty">Aucune journée enregistrée. Commencez votre premier questionnaire.</div>'; return; } list.innerHTML = records.map(record => `<article class="record"><div class="record-head"><strong>${record.date}</strong><span>${display(record.mood)}</span></div><div class="record-grid"><div>Sommeil<b>${display(record.sleepHours)} h - ${display(record.sleepQuality)}</b></div><div>Nourriture<b>${display(record.foodQuality)}</b></div><div>Sport<b>${display(record.sportMinutes)} min</b></div><div>Énergie<b>${display(record.energy)}/10</b></div><div>Addictions évitées<b>${display(record.addictions)}</b></div><div>Victoire<b>${display(record.achievement)}</b></div></div></article>`).join(''); }
-    const moduleSettings = [
-      { id:'foundations', label:'Sommeil, nutrition & mouvement', hint:'Les besoins essentiels et votre énergie.' },
-      { id:'health', label:'Corps, santé & addictions', hint:'Vos constantes, ressentis et habitudes.' },
-      { id:'growth', label:'Humeur, liens & accomplissement', hint:'Votre équilibre personnel et vos petites victoires.' }
-    ];
-    const moduleKey = 'mydata-modules';
-    const getModules = () => JSON.parse(localStorage.getItem(moduleKey) || JSON.stringify(moduleSettings.map(module => module.id)));
-    function applyModules() { document.querySelectorAll('#questionnaire .section').forEach((section, index) => { section.style.display = getModules().includes(moduleSettings[index].id) ? '' : 'none'; }); }
-    function renderSettings() {
-      const panel = document.querySelector('#settings .panel');
-      if (!document.getElementById('module-list')) { const title = document.createElement('h2'); title.textContent = 'Mes thèmes du quotidien'; const hint = document.createElement('p'); hint.className = 'muted'; hint.textContent = 'Activez seulement les sujets qui vous font du bien. Ce choix reste enregistré pour les prochains jours.'; const list = document.createElement('div'); list.id = 'module-list'; list.className = 'module-list'; panel.prepend(list); panel.prepend(hint); panel.prepend(title); }
-      document.getElementById('module-list').innerHTML = moduleSettings.map(module => `<label class="module"><input type="checkbox" value="${module.id}" ${getModules().includes(module.id) ? 'checked' : ''}><span><strong>${module.label}</strong><small>${module.hint}</small></span></label>`).join('');
-      document.getElementById('addictions').value = getAddictions().join(', ');
-    }
-    function saveAddictions() { saveSettings(); }
-    function saveSettings() {
-      const names = document.getElementById('addictions').value.split(',').map(name => name.trim()).filter(Boolean);
-      const selected = [...document.querySelectorAll('#module-list input:checked')].map(input => input.value);
-      localStorage.setItem(addictionKey, JSON.stringify(names.length ? names : defaultAddictions)); localStorage.setItem(moduleKey, JSON.stringify(selected.length ? selected : ['foundations']));
-      document.getElementById('settings-saved').classList.add('show'); applyModules();
-    }
-    function showView(id) { document.querySelectorAll('.view').forEach(view => view.classList.remove('active')); document.getElementById(id).classList.add('active'); if (id === 'questionnaire') { renderAddictions(); applyModules(); } if (id === 'settings') renderSettings(); window.scrollTo(0, 0); }
-    renderAddictions(); applyModules();
-  </script>
-  <script>
-    (() => {
-      const recordsKey = 'mydata-daily-records';
-      const settingsKey = 'mydata-personalization';
-      const defaults = { work:true, dayReview:true, foodDetails:false };
-      const settings = () => JSON.parse(localStorage.getItem(settingsKey) || JSON.stringify(defaults));
-      const records = () => JSON.parse(localStorage.getItem(recordsKey) || '[]');
-      const numberField = (id, label) => `<div class="field"><label for="${id}">${label}</label><div class="range-line"><input id="${id}" name="${id}" type="range" min="0" max="10" value="5" oninput="this.nextElementSibling.value=this.value"><output>5</output></div></div>`;
-      const form = document.getElementById('daily-form');
-      const saved = document.getElementById('saved');
-      saved.insertAdjacentHTML('beforebegin', `<div id="work-module" class="section optional"><h2>4. Travail et effort</h2><p class="section-intro">Un point rapide sur votre journée professionnelle.</p><div class="fields">${numberField('workQuality','Comment s’est passée ma journée au travail ?')}${numberField('effort','Les efforts que j’ai fournis (0-10)')}<div class="field full"><label for="workNote">Un mot sur le travail (facultatif)</label><textarea id="workNote" name="workNote" placeholder="Ce qui s’est bien passé ou a été difficile..."></textarea></div></div></div><div id="day-review-module" class="section optional"><h2>5. Mon ressenti général</h2><p class="section-intro">La dernière question, pour fermer la journée.</p><div class="fields">${numberField('dayFeeling','Mon ressenti global (0-10)')}${numberField('dayPressure','La pression ressentie (0-10)')}<div class="field full"><label for="dayNote">Ce que je retiens de cette journée</label><textarea id="dayNote" name="dayNote" placeholder="Une phrase suffit..."></textarea></div></div></div>`);
-      const first = form.querySelector('.section');
-      first.insertAdjacentHTML('beforeend', `<div id="food-details" class="settings-group"><h3>Nutrition approfondie</h3><div class="metric"><div class="field"><label for="proteinRatio">Protéines (%)</label><input id="proteinRatio" name="proteinRatio" type="number" min="0" max="100"></div><div class="field"><label for="starchRatio">Féculents (%)</label><input id="starchRatio" name="starchRatio" type="number" min="0" max="100"></div><div class="field"><label for="vegetableRatio">Légumes (%)</label><input id="vegetableRatio" name="vegetableRatio" type="number" min="0" max="100"></div></div></div>`);
-      function applySettings() { const current = settings(); document.getElementById('work-module').style.display = current.work ? '' : 'none'; document.getElementById('day-review-module').style.display = current.dayReview ? '' : 'none'; document.getElementById('food-details').style.display = current.foodDetails ? '' : 'none'; }
-      function score(data) { const values = []; const add = (value, weight) => { if (value !== '' && value !== undefined) values.push([Number(value), weight]); }; add(data.energy,2); add(data.workQuality,1.5); add(data.effort,1); add(data.dayFeeling,2); add(data.dayPressure === '' ? '' : 10 - Number(data.dayPressure),1); add(data.sleepQuality ? ({'Très mauvaise':2,'Mauvaise':4,'Moyenne':6,'Bonne':8,'Très bonne':10}[data.sleepQuality]) : '',3); add(data.foodQuality ? ({'À améliorer':3,'Correcte':6,'Bonne':8,'Très bonne':10}[data.foodQuality]) : '',2); if (!values.length) return null; const weight = values.reduce((sum,item) => sum + item[1],0); return Math.round(values.reduce((sum,item) => sum + item[0] * item[1],0) / weight * 10) / 10; }
-      form.addEventListener('submit', () => setTimeout(() => { const data = Object.fromEntries(new FormData(form)); const today = new Date().toISOString().slice(0,10); const list = records().filter(item => item.date !== today); data.date = today; data.weightedScore = score(data); list.unshift(data); localStorage.setItem(recordsKey, JSON.stringify(list)); if (data.weightedScore !== null) saved.innerHTML = `Journée enregistrée. Votre moyenne du jour : <strong>${data.weightedScore}/10</strong>`; }, 0));
-      window.myDataSettings = { settings, save(next) { localStorage.setItem(settingsKey, JSON.stringify(next)); applySettings(); } };
-      applySettings();
-    })();
-  </script>
-  <script>
-    (() => {
-      const configKey = 'mydata-personalization';
-      const defaults = { work:true, dayReview:true, foodDetails:false };
-      const getConfig = () => JSON.parse(localStorage.getItem(configKey) || JSON.stringify(defaults));
-      const saveConfig = config => localStorage.setItem(configKey, JSON.stringify(config));
-      const oldShowView = window.showView;
-      const renderPersonalization = () => {
-        const panel = document.querySelector('#settings .panel');
-        if (!panel || document.getElementById('personalization-options')) return;
-        panel.insertAdjacentHTML('afterbegin', '<div id="personalization-options" class="settings-group"><h2>Mon questionnaire quotidien</h2><p class="muted">Activez les thèmes qui vous correspondent. Les approfondissements restent optionnels.</p><div class="checks"><label class="check"><input id="work-setting" type="checkbox"> Travail et efforts</label><label class="check"><input id="day-setting" type="checkbox"> Ressenti de la journée</label><label class="check"><input id="food-setting" type="checkbox"> Nutrition approfondie</label></div><button class="primary" type="button" onclick="savePersonalization()">Enregistrer mes thèmes</button></div>');
-        const config = getConfig(); document.getElementById('work-setting').checked = config.work; document.getElementById('day-setting').checked = config.dayReview; document.getElementById('food-setting').checked = config.foodDetails;
-      };
-      window.savePersonalization = () => { saveConfig({ work:document.getElementById('work-setting').checked, dayReview:document.getElementById('day-setting').checked, foodDetails:document.getElementById('food-setting').checked }); applyPersonalization(); };
-      const applyPersonalization = () => { const config = getConfig(); const work = document.getElementById('work-module'); const day = document.getElementById('day-review-module'); const food = document.getElementById('food-details'); if (work) work.style.display = config.work ? '' : 'none'; if (day) day.style.display = config.dayReview ? '' : 'none'; if (food) food.style.display = config.foodDetails ? '' : 'none'; };
-      const renderStats = () => {
-        if (document.getElementById('stats-view')) return;
-        const home = document.getElementById('home'); home.insertAdjacentHTML('afterend', '<section id="stats-view" class="view"><div class="form-head"><div><p class="eyebrow">Mon évolution</p><h1>Ma tendance du jour</h1></div><button class="secondary" type="button" onclick="showView(\'home\')">Accueil</button></div><div class="panel"><p class="muted">La moyenne pondérée utilise seulement les réponses renseignées, avec davantage de poids pour les besoins fondamentaux.</p><div id="stats-content"></div></div></section>');
-      };
-      const updateStats = () => { renderStats(); const list = JSON.parse(localStorage.getItem('mydata-daily-records') || '[]').filter(item => item.weightedScore !== null && item.weightedScore !== undefined); const content = document.getElementById('stats-content'); if (!list.length) { content.innerHTML = '<div class="empty">Remplissez une journée pour commencer votre évolution.</div>'; return; } content.innerHTML = list.slice(0,14).reverse().map(item => `<div class="metric"><strong>${item.date}</strong><div><b>${item.weightedScore}/10</b><div class="bar"><i style="width:${item.weightedScore * 10}%"></i></div></div></div>`).join(''); };
-      window.showView = id => { oldShowView(id); renderPersonalization(); applyPersonalization(); if (id === 'stats') { updateStats(); document.querySelectorAll('.view').forEach(view => view.classList.remove('active')); document.getElementById('stats-view').classList.add('active'); } };
-      document.querySelector('.choices').insertAdjacentHTML('beforeend', '<button class="choice" type="button" onclick="showView(\'stats\')"><strong>Voir mon évolution</strong><span>Observer ma moyenne pondérée au fil des jours.</span></button>');
-      applyPersonalization(); renderPersonalization();
-    })();
-  </script>
+  <h1>Bonjour</h1>
 </body>
 </html>
