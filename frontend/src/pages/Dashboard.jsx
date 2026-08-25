@@ -22,7 +22,6 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) return;
     const date = todayISO();
     Promise.all([
       api.getConfig(),

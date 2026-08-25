@@ -20,7 +20,6 @@ export default function Stats() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) return;
     setLoading(true);
     const days = RANGES.find((r) => r.key === range).days;
     const from = new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);

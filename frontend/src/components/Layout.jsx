@@ -8,7 +8,7 @@ const LINKS = [
 ];
 
 export default function Layout({ children }) {
-  const { user, logout } = useAuth();
+  const { user, token, logout } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -33,12 +33,16 @@ export default function Layout({ children }) {
           </nav>
           <div className="flex items-center gap-2">
             <span className="hidden sm:inline text-sm text-slate-400">{user?.username}</span>
-            <button
-              onClick={() => { logout(); navigate('/connexion'); }}
-              className="btn-ghost text-sm"
-            >
-              Déconnexion
-            </button>
+            {token ? (
+              <button
+                onClick={() => { logout(); navigate('/'); }}
+                className="btn-ghost text-sm"
+              >
+                Déconnexion
+              </button>
+            ) : (
+              <span className="text-xs text-slate-400">Mode local</span>
+            )}
           </div>
         </div>
       </header>

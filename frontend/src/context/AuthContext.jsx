@@ -10,6 +10,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     if (!token) {
+      setUser({ username: 'Invité' });
       setLoading(false);
       return;
     }

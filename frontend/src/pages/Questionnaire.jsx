@@ -20,7 +20,6 @@ export default function Questionnaire() {
   const saveTimer = useRef(null);
 
   useEffect(() => {
-    if (!token) return;
     const date = todayISO();
     Promise.all([api.getConfig(), api.getPreferences(token), api.getEntry(date, token)])
       .then(([cfg, prefs, entry]) => {

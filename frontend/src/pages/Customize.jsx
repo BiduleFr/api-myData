@@ -11,7 +11,6 @@ export default function Customize() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    if (!token) return;
     Promise.all([api.getConfig(), api.getPreferences(token)])
       .then(([cfg, prefs]) => {
         setModules(cfg.modules);
