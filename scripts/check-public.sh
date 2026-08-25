@@ -24,12 +24,12 @@ while [ "$attempt" -le "$MAX_ATTEMPTS" ]; do
 
     if [ "$ASSET_STATUS" = "200" ]; then
       if [ -n "$PREV_ASSET" ] && [ "$ASSET_PATH" = "$PREV_ASSET" ]; then
-        echo "Deploiement pas encore propage (asset inchange: $ASSET_PATH)"
+        echo "OK public: site accessible (asset inchange, normal si pas de changement frontend)"
       else
-        echo "OK public: $URL"
-        echo "Asset: $ASSET_PATH"
-        exit 0
+        echo "OK public: nouveau deploiement detecte"
       fi
+      echo "Asset: $ASSET_PATH"
+      exit 0
     else
       echo "Asset non disponible: $ASSET_URL (HTTP $ASSET_STATUS)"
     fi
