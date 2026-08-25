@@ -10,11 +10,9 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
             rejectUnauthorized: false, // Important pour Neon
         },
     },
+    logging: false
 });
 
-sequelize.sync({ force: true }).then(() => {
-    console.log("Base de données synchronisée !");
-});
-
+// La synchronisation est déclenchée une seule fois au démarrage du serveur (voir index.js).
 module.exports = sequelize;
 

@@ -3,15 +3,16 @@ const router = express.Router();
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const auth = require('../middleware/auth');
 
-
-// Récupérer tous les utilisateurs
-router.get('/', async (req, res) => {
+// Récupérer le profil de l'utilisateur connecté
+router.get('/me', auth, async (req, res) => {
     try {
-        const users = await User.findAll();
-        res.json(users);
+        const user = await User.findByPk(req.userId, { attributes: ['id', 'username', 'email'] });
+        if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé.' });
+        res.json(user);
     } catch (error) {
-        res.status(500).json({ error: 'Impossible de récupérer les utilisateurs.' });
+        res.status(500).json({ error: 'Impossible de récupérer l\'utilisateur.' });
     }
 });
 
@@ -29,7 +30,10 @@ router.post('/', async (req, res) => {
         // Créer un nouvel utilisateur
         const newUser = await User.create({ username, email, password: hashedPassword });
 
-        res.status(201).json({ message: 'Utilisateur créé avec succès !', user: newUser });
+        res.status(201).json({
+            message: 'Utilisateur créé avec succès !',
+            user: { id: newUser.id, username: newUser.username, email: newUser.email }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Erreur lors de la création de l\'utilisateur.' });
@@ -51,34 +55,41 @@ router.post('/login', async (req, res) => {
         if (!isPasswordValid) return res.status(401).json({ error: 'Mot de passe incorrect.' });
 
         // Générer un token JWT
-        const token = jwt.sign({ id: user.id, email: user.email }, 'VOTRE_CLE_SECRETE', { expiresIn: '24h' });
+        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-        res.json({ message: 'Connexion réussie !', token, user });
+        res.json({
+            message: 'Connexion réussie !',
+            token,
+            user: { id: user.id, username: user.username, email: user.email }
+        });
     } catch (error) {
         res.status(500).json({ error: 'Impossible de se connecter.' });
     }
 });
 
-// Mettre à jour un utilisateur
-router.put('/:id', async (req, res) => {
+// Mettre à jour son propre profil
+router.put('/me', auth, async (req, res) => {
     try {
-        const { id } = req.params;
         const { username, email, password } = req.body;
-        const user = await User.findByPk(id);
+        const user = await User.findByPk(req.userId);
         if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé.' });
 
-        await user.update({ username, email, password });
-        res.json({ message: 'Utilisateur mis à jour avec succès !', user });
+        const updates = { username, email };
+        if (password) updates.password = await bcrypt.hash(password, 10);
+        await user.update(updates);
+        res.json({
+            message: 'Utilisateur mis à jour avec succès !',
+            user: { id: user.id, username: user.username, email: user.email }
+        });
     } catch (error) {
         res.status(500).json({ error: 'Impossible de mettre à jour l\'utilisateur.' });
     }
 });
 
-// Supprimer un utilisateur
-router.delete('/:id', async (req, res) => {
+// Supprimer son propre compte
+router.delete('/me', auth, async (req, res) => {
     try {
-        const { id } = req.params;
-        const user = await User.findByPk(id);
+        const user = await User.findByPk(req.userId);
         if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé.' });
 
         await user.destroy();
