@@ -6,6 +6,8 @@ import MultiChoiceQuestion from './MultiChoiceQuestion.jsx';
 import NumberQuestion from './NumberQuestion.jsx';
 import TimeQuestion from './TimeQuestion.jsx';
 import TextQuestion from './TextQuestion.jsx';
+import QuickStepperQuestion from './QuickStepperQuestion.jsx';
+import BodyMapQuestion from './BodyMapQuestion.jsx';
 
 const REGISTRY = {
   slider: SliderQuestion,
@@ -15,7 +17,9 @@ const REGISTRY = {
   multichoice: MultiChoiceQuestion,
   number: NumberQuestion,
   time: TimeQuestion,
-  text: TextQuestion
+  text: TextQuestion,
+  quickstep: QuickStepperQuestion,
+  bodymap: BodyMapQuestion
 };
 
 export default function QuestionRenderer({ question, value, onChange }) {

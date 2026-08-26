@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import ProgressBar from '../components/ProgressBar.jsx';
 import QuestionRenderer from '../components/questions/QuestionRenderer.jsx';
@@ -7,9 +7,34 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { api, todayISO } from '../lib/api';
 import { buildQuestionFlow } from '../lib/questionFlow';
 
+const EDITABLE_WINDOW_DAYS = 14;
+const CONTEXT_KEY = '_contexte_journee';
+
+const CONTEXT_OPTIONS = [
+  { value: 'normale', label: 'Journée normale', icon: '🙂' },
+  { value: 'repos', label: 'Journée de repos', icon: '🛋️' },
+  { value: 'voyage', label: 'Voyage', icon: '✈️' },
+  { value: 'malade', label: 'Malade', icon: '🤒' },
+  { value: 'evenement_pro', label: 'Événement professionnel', icon: '💼' },
+  { value: 'manque_sommeil', label: 'Manque de sommeil exceptionnel', icon: '😴' },
+  { value: 'autre', label: 'Autre', icon: '✨' }
+];
+
+function daysBetween(dateA, dateB) {
+  const a = new Date(`${dateA}T00:00:00`);
+  const b = new Date(`${dateB}T00:00:00`);
+  return Math.round((a - b) / 86400000);
+}
+
 export default function Questionnaire() {
   const { token } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const date = searchParams.get('date') || todayISO();
+  const today = todayISO();
+  const diffDays = daysBetween(today, date);
+  const withinWindow = diffDays >= 0 && diffDays <= EDITABLE_WINDOW_DAYS;
+
   const [modules, setModules] = useState([]);
   const [preferences, setPreferences] = useState({});
   const [answers, setAnswers] = useState({});
@@ -17,18 +42,23 @@ export default function Questionnaire() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [result, setResult] = useState(null);
+  const [phase, setPhase] = useState('loading');
+  const [forceEdit, setForceEdit] = useState(false);
   const saveTimer = useRef(null);
 
   useEffect(() => {
-    const date = todayISO();
+    setLoading(true);
     Promise.all([api.getConfig(), api.getPreferences(token), api.getEntry(date, token)])
       .then(([cfg, prefs, entry]) => {
         setModules(cfg.modules);
         setPreferences(prefs.modules || {});
         setAnswers(entry.answers || {});
+        const alreadyStarted = entry.completionStatus && entry.completionStatus !== 'not_started';
+        if (!withinWindow) setPhase('readonly');
+        else setPhase(alreadyStarted ? 'flow' : 'context');
       })
       .finally(() => setLoading(false));
-  }, [token]);
+  }, [token, date, withinWindow]);
 
   const flow = useMemo(() => buildQuestionFlow(modules, preferences, answers), [modules, preferences, answers]);
   const current = flow[Math.min(index, flow.length - 1)];
@@ -37,15 +67,22 @@ export default function Questionnaire() {
     setSaving(true);
     clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
-      api.saveEntry({ date: todayISO(), answers: nextAnswers, completionStatus: 'draft' }, token)
+      api.saveEntry({ date, answers: nextAnswers, completionStatus: 'draft' }, token)
         .finally(() => setSaving(false));
     }, 500);
-  }, [token]);
+  }, [token, date]);
 
   function handleAnswer(value) {
     const next = { ...answers, [current.id]: value };
     setAnswers(next);
     scheduleAutosave(next);
+  }
+
+  function chooseContext(value) {
+    const next = { ...answers, [CONTEXT_KEY]: value };
+    setAnswers(next);
+    scheduleAutosave(next);
+    setPhase('flow');
   }
 
   function goNext() {
@@ -57,12 +94,13 @@ export default function Questionnaire() {
 
   async function finish() {
     setSaving(true);
-    const entry = await api.saveEntry({ date: todayISO(), answers, completionStatus: 'complete' }, token);
+    const entry = await api.saveEntry({ date, answers, completionStatus: 'complete' }, token);
     setSaving(false);
     setResult(entry);
+    setPhase('result');
   }
 
-  if (loading) {
+  if (loading || phase === 'loading') {
     return (
       <Layout>
         <div className="animate-pulse text-slate-400 text-center py-20">Préparation de votre bilan…</div>
@@ -70,7 +108,57 @@ export default function Questionnaire() {
     );
   }
 
-  if (result) {
+  if (phase === 'readonly') {
+    return (
+      <Layout>
+        <div className="max-w-lg mx-auto space-y-6 text-center py-10">
+          <span className="text-4xl">🔒</span>
+          <h1 className="text-xl font-bold text-slate-800">Journée du {date}</h1>
+          <p className="text-sm text-slate-400">
+            Cette journée date de plus de {EDITABLE_WINDOW_DAYS} jours. Elle est en lecture seule pour préserver la fiabilité de vos statistiques.
+          </p>
+          <div className="card p-5 text-left space-y-2">
+            {modules.filter((m) => answers && Object.keys(answers).some((k) => m.questions.some((q) => q.id === k))).map((m) => (
+              <div key={m.id} className="text-sm text-slate-500">{m.icon} {m.name}</div>
+            ))}
+            {Object.keys(answers).length === 0 && <p className="text-sm text-slate-400">Aucune réponse enregistrée.</p>}
+          </div>
+          <div className="flex justify-center gap-3">
+            <button onClick={() => navigate('/statistiques')} className="btn-secondary">Voir les statistiques</button>
+            <button onClick={() => { setForceEdit(true); setPhase('flow'); }} className="btn-ghost text-sm">Modifier quand même</button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (phase === 'context') {
+    return (
+      <Layout>
+        <div className="max-w-lg mx-auto space-y-8 text-center">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Une chose à signaler pour aujourd'hui ?</h1>
+            <p className="text-sm text-slate-400 mt-2">Cela aide à mieux interpréter vos données plus tard. Facultatif.</p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {CONTEXT_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => chooseContext(opt.value)}
+                className="flex flex-col items-center gap-2 rounded-2xl px-4 py-4 border border-slate-200 bg-white hover:border-brand-300 hover:bg-brand-50 transition-all"
+              >
+                <span className="text-2xl">{opt.icon}</span>
+                <span className="text-xs font-semibold">{opt.label}</span>
+              </button>
+            ))}
+          </div>
+          <button onClick={() => setPhase('flow')} className="btn-ghost text-sm">Passer</button>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (phase === 'result') {
     return (
       <Layout>
         <div className="animate-pop max-w-md mx-auto text-center py-10 space-y-6">
@@ -108,6 +196,11 @@ export default function Questionnaire() {
   return (
     <Layout>
       <div className="max-w-lg mx-auto space-y-8">
+        {forceEdit && (
+          <div className="text-center text-xs text-amber-600 bg-amber-50 rounded-xl py-2 px-3">
+            Modification d'une journée ancienne ({date})
+          </div>
+        )}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs text-slate-400">
             <span>{current.moduleIcon} {current.moduleName}</span>

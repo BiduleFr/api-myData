@@ -14,6 +14,28 @@ function greeting() {
   return 'Bonsoir';
 }
 
+function lastNDates(n) {
+  const dates = [];
+  for (let i = 0; i < n; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    dates.push(d.toISOString().slice(0, 10));
+  }
+  return dates;
+}
+
+const STATUS_LABEL = {
+  complete: 'Terminée',
+  draft: 'En brouillon',
+  not_started: 'Non commencée'
+};
+
+const STATUS_DOT = {
+  complete: 'bg-emerald-500',
+  draft: 'bg-amber-400',
+  not_started: 'bg-slate-200'
+};
+
 export default function Dashboard() {
   const { user, token } = useAuth();
   const [config, setConfig] = useState(null);
@@ -108,8 +130,37 @@ export default function Dashboard() {
 
         <div className="card p-6">
           <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold text-slate-500">Historique récent</h2>
+          </div>
+          <div className="space-y-2">
+            {lastNDates(7).map((d) => {
+              const e = history.find((h) => h.date === d);
+              const status = e?.completionStatus || 'not_started';
+              const isToday = d === todayISO();
+              return (
+                <Link
+                  key={d}
+                  to={`/questionnaire?date=${d}`}
+                  className="flex items-center justify-between text-sm rounded-xl px-3 py-2 hover:bg-slate-50 transition-colors"
+                >
+                  <span className="flex items-center gap-2 text-slate-600">
+                    <span className={`w-2.5 h-2.5 rounded-full ${STATUS_DOT[status]}`} />
+                    {isToday ? "Aujourd'hui" : d}
+                  </span>
+                  <span className="flex items-center gap-3 text-slate-400">
+                    {e?.globalScore != null && <span className="font-semibold text-slate-700">{e.globalScore}</span>}
+                    <span>{STATUS_LABEL[status]}</span>
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="card p-6">
+          <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-semibold text-slate-500">Objectifs actifs</h2>
-            <Link to="/objectifs" className="text-sm text-brand-600 font-semibold">Gerer →</Link>
+            <Link to="/suivi" className="text-sm text-brand-600 font-semibold">Gerer →</Link>
           </div>
           {goals.length === 0 ? (
             <p className="text-sm text-slate-400">Ajoutez votre premier objectif pour suivre vos progres.</p>

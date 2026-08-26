@@ -1,10 +1,10 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const LINKS = [
   { to: '/', label: 'Accueil', icon: '🏠' },
   { to: '/statistiques', label: 'Statistiques', icon: '📈' },
-  { to: '/objectifs', label: 'Objectifs', icon: '🎯' },
+  { to: '/suivi', label: 'Suivi', icon: '🎯' },
   { to: '/personnaliser', label: 'Personnaliser', icon: '⚙️' }
 ];
 
@@ -16,7 +16,9 @@ export default function Layout({ children }) {
     <div className="min-h-screen flex flex-col">
       <header className="sticky top-0 z-10 backdrop-blur bg-white/70 border-b border-black/5">
         <div className="max-w-3xl mx-auto flex items-center justify-between px-5 py-3">
-          <span className="font-extrabold text-brand-700 text-lg tracking-tight">✨ Elan</span>
+          <Link to="/" className="font-extrabold text-brand-700 text-lg tracking-tight hover:opacity-80 transition-opacity">
+            ✨ Elan
+          </Link>
           <nav className="hidden sm:flex items-center gap-1">
             {LINKS.map((l) => (
               <NavLink

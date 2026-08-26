@@ -33,58 +33,34 @@
         "config": { "min": 0, "max": 10 }
       },
       {
-        "id": "sommeil_coucher",
-        "type": "time",
-        "level": "detaille",
-        "weight": 0,
-        "label": "Heure de coucher"
-      },
-      {
         "id": "sommeil_endormissement",
-        "type": "time",
+        "type": "choice",
         "level": "detaille",
-        "weight": 0,
-        "label": "Heure d'endormissement"
-      },
-      {
-        "id": "sommeil_reveil",
-        "type": "time",
-        "level": "detaille",
-        "weight": 0,
-        "label": "Heure de reveil"
+        "weight": 0.8,
+        "label": "L'endormissement a ete...",
+        "options": [
+          { "value": "immediat", "label": "Immediat", "score": 100 },
+          { "value": "rapide", "label": "Rapide", "score": 85 },
+          { "value": "moyen", "label": "Moyen", "score": 60 },
+          { "value": "long", "label": "Long", "score": 35 },
+          { "value": "tres_long", "label": "Tres long", "score": 15 }
+        ]
       },
       {
         "id": "sommeil_reveils_nocturnes",
-        "type": "number",
+        "type": "quickstep",
         "level": "detaille",
         "weight": 0.6,
         "label": "Combien de reveils nocturnes ?",
-        "config": { "min": 0, "max": 10, "unit": "" }
-      },
-      {
-        "id": "sommeil_eveil_nocturne",
-        "type": "number",
-        "level": "avance",
-        "weight": 0.8,
-        "label": "Minutes eveille(es) dans la nuit",
-        "config": { "min": 0, "max": 180, "unit": "min", "target": 20, "invert": true },
-        "when": { "all": [{ "questionId": "sommeil_reveils_nocturnes", "op": "gt", "value": 0 }] }
-      },
-      {
-        "id": "sommeil_sieste",
-        "type": "boolean",
-        "level": "detaille",
-        "weight": 0.2,
-        "label": "Avez-vous fait une sieste ?"
+        "config": { "max": 5, "invert": true, "plusLabel": "5+" }
       },
       {
         "id": "sommeil_sieste_duree",
-        "type": "number",
-        "level": "avance",
+        "type": "slider",
+        "level": "detaille",
         "weight": 0,
         "label": "Duree de la sieste",
-        "config": { "min": 0, "max": 120, "unit": "min" },
-        "when": { "all": [{ "questionId": "sommeil_sieste", "op": "eq", "value": true }] }
+        "config": { "min": 0, "max": 90, "step": 5, "unit": "min" }
       },
       {
         "id": "sommeil_ecran_soir",
@@ -201,11 +177,11 @@
       },
       {
         "id": "actif_duree",
-        "type": "number",
+        "type": "slider",
         "level": "essentiel",
         "weight": 1.1,
         "label": "Duree totale d'activite",
-        "config": { "min": 0, "max": 300, "unit": "min", "target": 45 },
+        "config": { "min": 0, "max": 180, "step": 5, "unit": "min", "target": 45 },
         "when": { "all": [{ "questionId": "actif_aujourdhui", "op": "eq", "value": true }] }
       },
       {
@@ -234,11 +210,11 @@
       },
       {
         "id": "actif_sedentarite",
-        "type": "number",
+        "type": "slider",
         "level": "detaille",
         "weight": 0.8,
         "label": "Temps assis dans la journee",
-        "config": { "min": 0, "max": 14, "unit": "h", "target": 6, "invert": true }
+        "config": { "min": 0, "max": 14, "step": 0.5, "unit": "h", "target": 6, "invert": true }
       },
       {
         "id": "actif_recuperation",
@@ -248,14 +224,64 @@
         "label": "Qualite de recuperation physique",
         "config": { "min": 0, "max": 10 },
         "when": { "all": [{ "questionId": "actif_aujourdhui", "op": "eq", "value": true }] }
+      }
+    ]
+  },
+  {
+    "id": "douleurs",
+    "name": "Douleurs corporelles",
+    "icon": "🩹",
+    "description": "Suivi optionnel, non medical, des tensions et douleurs",
+    "weight": 0,
+    "questions": [
+      {
+        "id": "douleur_presente",
+        "type": "boolean",
+        "level": "essentiel",
+        "weight": 0,
+        "label": "Ressentez-vous une douleur ou une tension aujourd'hui ?"
       },
       {
-        "id": "actif_douleur",
+        "id": "douleur_zones",
+        "type": "bodymap",
+        "level": "essentiel",
+        "weight": 0,
+        "label": "Ou se situe la douleur ?",
+        "options": [
+          { "value": "tete", "label": "Tete" },
+          { "value": "nuque_epaules", "label": "Nuque / epaules" },
+          { "value": "dos_haut", "label": "Haut du dos" },
+          { "value": "dos_bas", "label": "Bas du dos" },
+          { "value": "poitrine", "label": "Poitrine" },
+          { "value": "bras", "label": "Bras / mains" },
+          { "value": "ventre", "label": "Ventre" },
+          { "value": "hanches", "label": "Hanches" },
+          { "value": "jambes", "label": "Jambes" },
+          { "value": "pieds", "label": "Pieds" }
+        ],
+        "when": { "all": [{ "questionId": "douleur_presente", "op": "eq", "value": true }] }
+      },
+      {
+        "id": "douleur_intensite",
         "type": "scale",
-        "level": "avance",
-        "weight": 0.4,
-        "label": "Inconfort ou douleur",
-        "config": { "min": 0, "max": 10, "invert": true }
+        "level": "essentiel",
+        "weight": 0,
+        "label": "Intensite de la douleur",
+        "config": { "min": 0, "max": 10, "invert": true },
+        "when": { "all": [{ "questionId": "douleur_presente", "op": "eq", "value": true }] }
+      },
+      {
+        "id": "douleur_evolution",
+        "type": "choice",
+        "level": "detaille",
+        "weight": 0,
+        "label": "Evolution par rapport a d'habitude",
+        "options": [
+          { "value": "ameliore", "label": "En amelioration" },
+          { "value": "stable", "label": "Stable" },
+          { "value": "aggrave", "label": "En aggravation" }
+        ],
+        "when": { "all": [{ "questionId": "douleur_presente", "op": "eq", "value": true }] }
       }
     ]
   },
@@ -305,11 +331,11 @@
       },
       {
         "id": "travail_interruptions",
-        "type": "number",
+        "type": "quickstep",
         "level": "detaille",
         "weight": 0.4,
         "label": "Interruptions majeures",
-        "config": { "min": 0, "max": 20, "unit": "", "target": 3, "invert": true }
+        "config": { "max": 5, "invert": true, "plusLabel": "5+" }
       },
       {
         "id": "travail_blocage",
@@ -405,52 +431,6 @@
           { "value": "autre", "label": "Autre" }
         ],
         "when": { "all": [{ "questionId": "mental_stress", "op": "gte", "value": 7 }] }
-      }
-    ]
-  },
-  {
-    "id": "habitudes",
-    "name": "Habitudes",
-    "icon": "🎯",
-    "description": "Comportements a suivre et resistance",
-    "weight": 0.1,
-    "questions": [
-      {
-        "id": "habitude_envie",
-        "type": "choice",
-        "level": "essentiel",
-        "weight": 1,
-        "label": "Face a vos habitudes a surveiller, votre etat du jour ?",
-        "options": [
-          { "value": "none", "label": "Aucune envie", "score": 100 },
-          { "value": "resisted", "label": "Envie presente, resistance reussie", "score": 90 },
-          { "value": "acted", "label": "Comportement realise", "score": 35 }
-        ]
-      },
-      {
-        "id": "habitude_intensite_envie",
-        "type": "scale",
-        "level": "detaille",
-        "weight": 0.7,
-        "label": "Intensite maximale de l'envie",
-        "config": { "min": 0, "max": 10, "invert": true },
-        "when": { "all": [{ "questionId": "habitude_envie", "op": "neq", "value": "none" }] }
-      },
-      {
-        "id": "habitude_declencheur",
-        "type": "choice",
-        "level": "avance",
-        "weight": 0,
-        "label": "Declencheur principal",
-        "options": [
-          { "value": "stress", "label": "Stress" },
-          { "value": "fatigue", "label": "Fatigue" },
-          { "value": "ennui", "label": "Ennui" },
-          { "value": "social", "label": "Contexte social" },
-          { "value": "routine", "label": "Routine" },
-          { "value": "autre", "label": "Autre" }
-        ],
-        "when": { "all": [{ "questionId": "habitude_envie", "op": "neq", "value": "none" }] }
       }
     ]
   },

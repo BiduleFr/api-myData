@@ -37,6 +37,12 @@ function scoreQuestion(question, value) {
       const opt = (question.options || []).find((o) => o.value === value);
       return opt && typeof opt.score === 'number' ? opt.score : null;
     }
+    case 'quickstep': {
+      const { max = 5, invert = false } = question.config || {};
+      let s = clamp((Number(value) / max) * 100);
+      if (invert) s = 100 - s;
+      return clamp(s);
+    }
     case 'multichoice': {
       if (!Array.isArray(value) || value.length === 0) return null;
       const opts = question.options || [];
@@ -46,6 +52,8 @@ function scoreQuestion(question, value) {
       if (!scores.length) return null;
       return clamp(scores.reduce((a, b) => a + b, 0) / scores.length);
     }
+    case 'bodymap':
+      return null;
     default:
       return null;
   }

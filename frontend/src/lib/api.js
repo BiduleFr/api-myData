@@ -6,6 +6,10 @@ const LS_PREFS = 'elan_prefs';
 const LS_ENTRIES = 'elan_entries';
 const LS_MODULES = 'elan_modules_schema';
 const LS_GOALS = 'elan_goals';
+const LS_HABITS = 'elan_habits';
+const LS_HABIT_LOGS = 'elan_habit_logs';
+const LS_BEHAVIORS = 'elan_behaviors';
+const LS_BEHAVIOR_LOGS = 'elan_behavior_logs';
 
 function readJSON(key, fallback) {
   try {
@@ -184,7 +188,17 @@ export const api = {
 
   saveGoals: async (goals) => {
     return localSaveGoals(goals);
-  }
+  },
+
+  getHabits: async () => readJSON(LS_HABITS, []),
+  saveHabits: async (habits) => { writeJSON(LS_HABITS, habits || []); return habits || []; },
+  getHabitLogs: async () => readJSON(LS_HABIT_LOGS, {}),
+  saveHabitLogs: async (logs) => { writeJSON(LS_HABIT_LOGS, logs || {}); return logs || {}; },
+
+  getBehaviors: async () => readJSON(LS_BEHAVIORS, []),
+  saveBehaviors: async (behaviors) => { writeJSON(LS_BEHAVIORS, behaviors || []); return behaviors || []; },
+  getBehaviorLogs: async () => readJSON(LS_BEHAVIOR_LOGS, {}),
+  saveBehaviorLogs: async (logs) => { writeJSON(LS_BEHAVIOR_LOGS, logs || {}); return logs || {}; }
 };
 
 export function todayISO() {
