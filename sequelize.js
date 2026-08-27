@@ -11,9 +11,24 @@ if (!databaseUrl) {
     throw new Error('DATABASE_URL ou DATABASE_URL_POOLER est requis.');
 }
 
-// Utilisez la variable d'environnement DATABASE_URL pour la connexion
-const sequelize = new Sequelize(databaseUrl, {
+let parsedDatabaseUrl;
+try {
+    parsedDatabaseUrl = new URL(databaseUrl);
+} catch {
+    throw new Error('La variable DB doit être une URL PostgreSQL valide.');
+}
+
+if (!['postgres:', 'postgresql:'].includes(parsedDatabaseUrl.protocol)) {
+    throw new Error('DATABASE_URL_POOLER doit être la chaîne PostgreSQL Supabase, pas une URL https:// de Render.');
+}
+
+const sequelize = new Sequelize({
     dialect: 'postgres',
+    host: parsedDatabaseUrl.hostname,
+    port: Number(parsedDatabaseUrl.port || 5432),
+    database: parsedDatabaseUrl.pathname.replace(/^\//, '') || 'postgres',
+    username: decodeURIComponent(parsedDatabaseUrl.username),
+    password: decodeURIComponent(parsedDatabaseUrl.password),
     dialectOptions: {
         ssl: {
             require: true,

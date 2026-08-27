@@ -13,5 +13,6 @@ services:
         sync: false
       - key: DATABASE_URL_POOLER
         sync: false
+        # Valeur attendue: postgresql://postgres.<ref>:<mot-de-passe>@<pooler>:6543/postgres?sslmode=require
       - key: PORT
         value: 10000
