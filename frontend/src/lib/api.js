@@ -122,6 +122,22 @@ export const api = {
   login: async (payload) => request('/users/login', { method: 'POST', body: payload }),
   me: async (token) => request('/users/me', { token }),
 
+  syncLocalData: async (token) => {
+    const entries = localGetEntries();
+    const preferences = localGetPreferences().modules;
+    if (Object.keys(preferences).length) {
+      await request('/preferences', { method: 'PUT', body: { modules: preferences }, token });
+    }
+    for (const entry of entries) {
+      await request('/entries', {
+        method: 'POST',
+        body: entry,
+        token
+      });
+    }
+    return { entries: entries.length };
+  },
+
   getConfig: async () => {
     try {
       const data = await request('/config');

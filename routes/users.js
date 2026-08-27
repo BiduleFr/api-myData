@@ -19,6 +19,9 @@ router.get('/me', auth, async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const { username, email, password } = req.body;
+        if (!username || !email || !password || password.length < 8) {
+            return res.status(400).json({ error: 'Nom, email et mot de passe de 8 caracteres minimum requis.' });
+        }
 
         // Vérifier si l'utilisateur existe déjà
         const existingUser = await User.findOne({ where: { email } });
@@ -35,7 +38,7 @@ router.post('/', async (req, res) => {
             user: { id: newUser.id, username: newUser.username, email: newUser.email }
         });
     } catch (error) {
-        console.error(error);
+        console.error('Erreur creation utilisateur:', error.name);
         res.status(500).json({ error: 'Erreur lors de la création de l\'utilisateur.' });
     }
 });

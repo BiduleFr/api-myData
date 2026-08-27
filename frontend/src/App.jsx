@@ -11,8 +11,8 @@ import Privacy from './pages/Privacy.jsx';
 export default function App() {
   return (
     <Routes>
-      <Route path="/connexion" element={<Navigate to="/" replace />} />
-      <Route path="/inscription" element={<Navigate to="/" replace />} />
+      <Route path="/connexion" element={<Login />} />
+      <Route path="/inscription" element={<Register />} />
       <Route path="/" element={<Dashboard />} />
       <Route path="/questionnaire" element={<Questionnaire />} />
       <Route path="/statistiques" element={<Stats />} />

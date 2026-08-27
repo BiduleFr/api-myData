@@ -28,6 +28,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem('elan_token', data.token);
     setToken(data.token);
     setUser(data.user);
+    await api.syncLocalData(data.token);
   }, []);
 
   const register = useCallback(async (username, email, password) => {

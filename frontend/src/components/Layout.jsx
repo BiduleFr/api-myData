@@ -45,7 +45,7 @@ export default function Layout({ children }) {
                 Déconnexion
               </button>
             ) : (
-              <span className="text-xs text-slate-400">Mode local</span>
+              <Link to="/connexion" className="btn-ghost text-sm">Se connecter</Link>
             )}
           </div>
         </div>
