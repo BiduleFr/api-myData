@@ -38,6 +38,8 @@ export default function Questionnaire() {
   const [modules, setModules] = useState([]);
   const [preferences, setPreferences] = useState({});
   const [answers, setAnswers] = useState({});
+  const [answerStates, setAnswerStates] = useState({});
+  const [journalEntry, setJournalEntry] = useState('');
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -53,6 +55,8 @@ export default function Questionnaire() {
         setModules(cfg.modules);
         setPreferences(prefs.modules || {});
         setAnswers(entry.answers || {});
+        setAnswerStates(entry.answerStates || {});
+        setJournalEntry(entry.journalEntry || '');
         const alreadyStarted = entry.completionStatus && entry.completionStatus !== 'not_started';
         if (!withinWindow) setPhase('readonly');
         else setPhase(alreadyStarted ? 'flow' : 'context');
@@ -63,26 +67,35 @@ export default function Questionnaire() {
   const flow = useMemo(() => buildQuestionFlow(modules, preferences, answers), [modules, preferences, answers]);
   const current = flow[Math.min(index, flow.length - 1)];
 
-  const scheduleAutosave = useCallback((nextAnswers) => {
+  const scheduleAutosave = useCallback((nextAnswers, nextJournal = journalEntry, nextStates = answerStates) => {
     setSaving(true);
     clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
-      api.saveEntry({ date, answers: nextAnswers, completionStatus: 'draft' }, token)
+      api.saveEntry({ date, answers: nextAnswers, answerStates: nextStates, journalEntry: nextJournal, completionStatus: 'draft' }, token)
         .finally(() => setSaving(false));
     }, 500);
-  }, [token, date]);
+  }, [token, date, journalEntry, answerStates]);
 
   function handleAnswer(value) {
     const next = { ...answers, [current.id]: value };
+    const nextStates = { ...answerStates, [current.id]: value === null ? 'declined' : 'answered' };
     setAnswers(next);
-    scheduleAutosave(next);
+    setAnswerStates(nextStates);
+    scheduleAutosave(next, journalEntry, nextStates);
   }
 
   function chooseContext(value) {
     const next = { ...answers, [CONTEXT_KEY]: value };
+    const nextStates = { ...answerStates, [CONTEXT_KEY]: 'answered' };
     setAnswers(next);
-    scheduleAutosave(next);
+    setAnswerStates(nextStates);
+    scheduleAutosave(next, journalEntry, nextStates);
     setPhase('flow');
+  }
+
+  function handleJournal(value) {
+    setJournalEntry(value);
+    scheduleAutosave(answers, value, answerStates);
   }
 
   function goNext() {
@@ -94,7 +107,7 @@ export default function Questionnaire() {
 
   async function finish() {
     setSaving(true);
-    const entry = await api.saveEntry({ date, answers, completionStatus: 'complete' }, token);
+    const entry = await api.saveEntry({ date, answers, answerStates, journalEntry, completionStatus: 'complete' }, token);
     setSaving(false);
     setResult(entry);
     setPhase('result');
@@ -179,6 +192,32 @@ export default function Questionnaire() {
     );
   }
 
+  if (phase === 'journal') {
+    return (
+      <Layout>
+        <div className="max-w-lg mx-auto space-y-8 text-center">
+          <div>
+            <p className="text-sm text-brand-600 font-semibold">Dernière étape · facultative</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800 mt-2">Qu'est-ce que vous voulez retenir de cette journée ?</h1>
+            <p className="text-sm text-slate-400 mt-2">Quelques mots suffisent. Cette note ne modifie pas votre score.</p>
+          </div>
+          <textarea
+            value={journalEntry}
+            onChange={(e) => handleJournal(e.target.value)}
+            placeholder="Un moment, une pensée, une réussite…"
+            rows={6}
+            className="w-full rounded-2xl border border-slate-200 px-5 py-4 text-base text-left focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none"
+          />
+          <div className="flex items-center justify-between">
+            <button onClick={() => setPhase('flow')} className="btn-ghost">← Retour</button>
+            <button onClick={finish} className="btn-primary">Enregistrer ma journée ✓</button>
+          </div>
+          <button onClick={finish} className="btn-ghost text-sm">Passer le journal</button>
+        </div>
+      </Layout>
+    );
+  }
+
   if (!current) {
     return (
       <Layout>
@@ -218,7 +257,7 @@ export default function Questionnaire() {
           <button onClick={goBack} disabled={index === 0} className="btn-ghost">← Retour</button>
           <span className="text-xs text-slate-300">{saving ? 'Enregistrement…' : 'Enregistré'}</span>
           {isLast ? (
-            <button onClick={finish} className="btn-primary">Terminer ✓</button>
+            <button onClick={() => setPhase('journal')} className="btn-primary">Continuer →</button>
           ) : (
             <button onClick={goNext} disabled={!canGoNext} className="btn-primary">Suivant →</button>
           )}

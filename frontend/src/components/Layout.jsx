@@ -5,7 +5,8 @@ const LINKS = [
   { to: '/', label: 'Accueil', icon: '🏠' },
   { to: '/statistiques', label: 'Statistiques', icon: '📈' },
   { to: '/suivi', label: 'Suivi', icon: '🎯' },
-  { to: '/personnaliser', label: 'Personnaliser', icon: '⚙️' }
+  { to: '/personnaliser', label: 'Personnaliser', icon: '⚙️' },
+  { to: '/confidentialite', label: 'Données', icon: '🔒' }
 ];
 
 export default function Layout({ children }) {

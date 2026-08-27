@@ -78,7 +78,7 @@ function localSaveGoals(goals) {
 function localGetEntry(date) {
   const entries = localGetEntries();
   const found = entries.find((e) => e.date === date);
-  return found || { date, answers: {}, moduleScores: {}, globalScore: null, completionStatus: 'not_started' };
+  return found || { date, answers: {}, answerStates: {}, journalEntry: '', moduleScores: {}, globalScore: null, completionStatus: 'not_started' };
 }
 
 function localGetHistory(params = {}) {
@@ -90,17 +90,20 @@ function localGetHistory(params = {}) {
 }
 
 function localSaveEntry(payload) {
-  const { date, answers = {}, completionStatus = 'draft' } = payload;
+  const { date, answers = {}, journalEntry, answerStates = {}, completionStatus = 'draft' } = payload;
   const prefs = localGetPreferences().modules;
   const modules = localGetModules();
   const entries = localGetEntries();
   const existing = entries.find((e) => e.date === date);
   const mergedAnswers = { ...(existing?.answers || {}), ...answers };
+  const mergedAnswerStates = { ...(existing?.answerStates || {}), ...answerStates };
   const { globalScore, moduleScores } = computeScores(modules, prefs, mergedAnswers);
 
   const next = {
     date,
     answers: mergedAnswers,
+    answerStates: mergedAnswerStates,
+    journalEntry: journalEntry !== undefined ? journalEntry : (existing?.journalEntry || ''),
     moduleScores,
     globalScore,
     completionStatus

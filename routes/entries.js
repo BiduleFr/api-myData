@@ -37,7 +37,15 @@ router.get('/:date', auth, async (req, res) => {
   try {
     const { date } = req.params;
     const entry = await DailyEntry.findOne({ where: { userId: req.userId, date } });
-    res.json(entry || { date, answers: {}, moduleScores: {}, globalScore: null, completionStatus: 'not_started' });
+    res.json(entry || {
+      date,
+      answers: {},
+      answerStates: {},
+      journalEntry: '',
+      moduleScores: {},
+      globalScore: null,
+      completionStatus: 'not_started'
+    });
   } catch (error) {
     res.status(500).json({ error: 'Impossible de récupérer la journée.', details: error.message });
   }
@@ -46,7 +54,7 @@ router.get('/:date', auth, async (req, res) => {
 // Créer / mettre à jour l'entrée du jour (brouillon auto-sauvegardé ou complète)
 router.post('/', auth, async (req, res) => {
   try {
-    const { date = todayISO(), answers = {}, completionStatus = 'draft' } = req.body;
+    const { date = todayISO(), answers = {}, journalEntry, answerStates = {}, completionStatus = 'draft' } = req.body;
     if (typeof answers !== 'object') {
       return res.status(400).json({ error: 'answers doit être un objet.' });
     }
@@ -54,14 +62,23 @@ router.post('/', auth, async (req, res) => {
     const prefs = await UserPreferences.findOne({ where: { userId: req.userId } });
     let entry = await DailyEntry.findOne({ where: { userId: req.userId, date } });
     const mergedAnswers = { ...(entry?.answers || {}), ...answers };
+    const mergedAnswerStates = { ...(entry?.answerStates || {}), ...answerStates };
     const { globalScore, moduleScores } = computeScores(MODULES, prefs?.modules || {}, mergedAnswers);
 
     if (!entry) {
       entry = await DailyEntry.create({
-        userId: req.userId, date, answers: mergedAnswers, moduleScores, globalScore, completionStatus
+        userId: req.userId, date, answers: mergedAnswers, answerStates: mergedAnswerStates,
+        journalEntry: journalEntry ?? null, moduleScores, globalScore, completionStatus
       });
     } else {
-      await entry.update({ answers: mergedAnswers, moduleScores, globalScore, completionStatus });
+      await entry.update({
+        answers: mergedAnswers,
+        answerStates: mergedAnswerStates,
+        ...(journalEntry !== undefined ? { journalEntry } : {}),
+        moduleScores,
+        globalScore,
+        completionStatus
+      });
     }
     res.json(entry);
   } catch (error) {

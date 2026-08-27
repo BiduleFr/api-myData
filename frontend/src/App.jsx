@@ -6,6 +6,7 @@ import Questionnaire from './pages/Questionnaire.jsx';
 import Stats from './pages/Stats.jsx';
 import Customize from './pages/Customize.jsx';
 import Suivi from './pages/Suivi.jsx';
+import Privacy from './pages/Privacy.jsx';
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
       <Route path="/suivi" element={<Suivi />} />
       <Route path="/objectifs" element={<Navigate to="/suivi" replace />} />
       <Route path="/personnaliser" element={<Customize />} />
+      <Route path="/confidentialite" element={<Privacy />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
