@@ -27,8 +27,13 @@ app.get('/', (req, res) => {
     res.json({ service: 'api-myData', status: 'ok', health: '/health', api: '/api' });
 });
 
-app.get('/health', (req, res) => {
-    res.json({ status: 'ok', service: 'api-myData' });
+app.get('/health', async (req, res) => {
+    try {
+        await sequelize.authenticate();
+        res.json({ status: 'ok', service: 'api-myData', database: 'connected' });
+    } catch (error) {
+        res.status(503).json({ status: 'degraded', service: 'api-myData', database: 'unreachable', reason: error.name });
+    }
 });
 
 const userRoutes = require('./routes/users');
