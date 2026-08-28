@@ -11,6 +11,8 @@ if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
     throw new Error('JWT_SECRET doit contenir au moins 32 caracteres.');
 }
 
+app.set('trust proxy', 1);
+
 // CORS doit être placé en premier
 app.use(cors({
     origin: '*',

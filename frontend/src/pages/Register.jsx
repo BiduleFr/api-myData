@@ -33,19 +33,19 @@ export default function Register() {
           <h1 className="text-2xl font-extrabold text-slate-800 mt-2">Créer votre suivi</h1>
           <p className="text-sm text-slate-400 mt-1">Quelques secondes suffisent.</p>
         </div>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} autoComplete="on" className="flex flex-col gap-4">
           <input
-            type="text" required placeholder="Prénom ou pseudo" value={username}
+            type="text" required autoComplete="username" placeholder="Prénom ou pseudo" value={username}
             onChange={(e) => setUsername(e.target.value)}
             className="rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
           />
           <input
-            type="email" required placeholder="Adresse e-mail" value={email}
+            type="email" required autoComplete="email" placeholder="Adresse e-mail" value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
           />
           <input
-            type="password" required minLength={6} placeholder="Mot de passe" value={password}
+            type="password" required minLength={8} autoComplete="new-password" placeholder="Mot de passe" value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
           />

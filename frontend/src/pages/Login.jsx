@@ -32,14 +32,14 @@ export default function Login() {
           <h1 className="text-2xl font-extrabold text-slate-800 mt-2">Bon retour</h1>
           <p className="text-sm text-slate-400 mt-1">Connectez-vous pour continuer votre suivi.</p>
         </div>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} autoComplete="on" className="flex flex-col gap-4">
           <input
-            type="email" required placeholder="Adresse e-mail" value={email}
+            type="email" required autoComplete="email" placeholder="Adresse e-mail" value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
           />
           <input
-            type="password" required placeholder="Mot de passe" value={password}
+            type="password" required autoComplete="current-password" placeholder="Mot de passe" value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
           />
