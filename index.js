@@ -23,6 +23,10 @@ app.use(express.json());
 // Limite le nombre de requêtes par IP pour éviter les abus.
 app.use('/api', rateLimit({ windowMs: 15 * 60 * 1000, max: 300 }));
 
+app.get('/', (req, res) => {
+    res.json({ service: 'api-myData', status: 'ok', health: '/health', api: '/api' });
+});
+
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', service: 'api-myData' });
 });
