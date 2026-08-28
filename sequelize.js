@@ -11,6 +11,10 @@ if (!databaseUrl) {
     throw new Error('DATABASE_URL ou DATABASE_URL_POOLER est requis.');
 }
 
+if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL_POOLER) {
+    throw new Error('DATABASE_URL_POOLER est obligatoire en production. Copiez la chaîne Connection Pooling de Supabase dans Render.');
+}
+
 let parsedDatabaseUrl;
 try {
     parsedDatabaseUrl = new URL(databaseUrl);
@@ -20,6 +24,10 @@ try {
 
 if (!['postgres:', 'postgresql:'].includes(parsedDatabaseUrl.protocol)) {
     throw new Error('DATABASE_URL_POOLER doit être la chaîne PostgreSQL Supabase, pas une URL https:// de Render.');
+}
+
+if (process.env.NODE_ENV === 'production' && parsedDatabaseUrl.hostname.startsWith('db.') && parsedDatabaseUrl.port === '5432') {
+    throw new Error('Endpoint Supabase direct détecté en production. Utilisez le host pooler Supabase et le port 6543 dans DATABASE_URL_POOLER.');
 }
 
 const sequelize = new Sequelize({
