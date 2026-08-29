@@ -45,7 +45,10 @@ export default function Layout({ children }) {
                 Déconnexion
               </button>
             ) : (
-              <Link to="/connexion" className="btn-ghost text-sm">Se connecter</Link>
+              <>
+                <Link to="/bienvenue" className="hidden sm:inline btn-ghost text-sm">À propos</Link>
+                <Link to="/connexion" className="btn-ghost text-sm">Se connecter</Link>
+              </>
             )}
           </div>
         </div>
