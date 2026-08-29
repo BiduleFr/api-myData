@@ -37,13 +37,15 @@ function evaluateCondition(rule, answers) {
   return compare(rule.op || 'eq', value, rule.value);
 }
 
-export function buildQuestionFlow(modules, preferences, answers) {
+export function buildQuestionFlow(modules, preferences, answers, options = {}) {
   const steps = [];
+  const { levelOverride, onlyModuleId } = options;
 
   for (const mod of modules) {
+    if (onlyModuleId && mod.id !== onlyModuleId) continue;
     const modPref = preferences?.[mod.id];
     if (modPref?.enabled === false) continue;
-    const level = normalizeLevel(modPref?.level || 'essentiel');
+    const level = normalizeLevel(levelOverride || modPref?.level || 'essentiel');
 
     for (const q of mod.questions) {
       const qLevel = normalizeLevel(q.level || 'essentiel');

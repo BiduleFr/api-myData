@@ -20,6 +20,29 @@ const CONTEXT_OPTIONS = [
   { value: 'autre', label: 'Autre', icon: '✨' }
 ];
 
+const MODE_LEVEL = {
+  rapide: 'essentiel',
+  standard: null,
+  approfondi: 'avance'
+};
+
+const MODES = [
+  { value: 'rapide', label: 'Rapide', hint: '~1-2 min', icon: '⚡' },
+  { value: 'standard', label: 'Standard', hint: 'votre config habituelle', icon: '🙂' },
+  { value: 'approfondi', label: 'Approfondi', hint: 'tout activer', icon: '🔍' }
+];
+
+function moduleStatus(mod, preferences, answers) {
+  const questions = buildQuestionFlow([mod], preferences, answers);
+  if (questions.length === 0) return { total: 0, answered: 0, status: 'disabled' };
+  const answered = questions.filter((q) => answers[q.id] !== undefined && answers[q.id] !== null).length;
+  const status = answered === 0 ? 'not_started' : answered === questions.length ? 'done' : 'partial';
+  return { total: questions.length, answered, status };
+}
+
+const STATUS_DOT = { not_started: 'bg-slate-200', partial: 'bg-amber-400', done: 'bg-emerald-500', disabled: 'bg-slate-100' };
+const STATUS_LABEL = { not_started: 'Non commencé', partial: 'En cours', done: 'Terminé', disabled: 'Désactivé' };
+
 function daysBetween(dateA, dateB) {
   const a = new Date(`${dateA}T00:00:00`);
   const b = new Date(`${dateB}T00:00:00`);
@@ -46,6 +69,7 @@ export default function Questionnaire() {
   const [result, setResult] = useState(null);
   const [phase, setPhase] = useState('loading');
   const [forceEdit, setForceEdit] = useState(false);
+  const [mode, setMode] = useState('standard');
   const saveTimer = useRef(null);
 
   useEffect(() => {
@@ -59,12 +83,15 @@ export default function Questionnaire() {
         setJournalEntry(entry.journalEntry || '');
         const alreadyStarted = entry.completionStatus && entry.completionStatus !== 'not_started';
         if (!withinWindow) setPhase('readonly');
-        else setPhase(alreadyStarted ? 'flow' : 'context');
+        else setPhase(alreadyStarted ? 'flow' : 'overview');
       })
       .finally(() => setLoading(false));
   }, [token, date, withinWindow]);
 
-  const flow = useMemo(() => buildQuestionFlow(modules, preferences, answers), [modules, preferences, answers]);
+  const flow = useMemo(
+    () => buildQuestionFlow(modules, preferences, answers, { levelOverride: MODE_LEVEL[mode] }),
+    [modules, preferences, answers, mode]
+  );
   const current = flow[Math.min(index, flow.length - 1)];
 
   const scheduleAutosave = useCallback((nextAnswers, nextJournal = journalEntry, nextStates = answerStates) => {
@@ -90,6 +117,16 @@ export default function Questionnaire() {
     setAnswers(next);
     setAnswerStates(nextStates);
     scheduleAutosave(next, journalEntry, nextStates);
+  }
+
+  function jumpToModule(moduleId) {
+    const target = flow.findIndex((step) => step.moduleId === moduleId);
+    setIndex(target >= 0 ? target : 0);
+    setPhase('flow');
+  }
+
+  function startFromBeginning() {
+    setIndex(0);
     setPhase('flow');
   }
 
@@ -103,6 +140,7 @@ export default function Questionnaire() {
   }
   function goBack() {
     if (index > 0) setIndex(index - 1);
+    else setPhase('overview');
   }
 
   async function finish() {
@@ -145,27 +183,77 @@ export default function Questionnaire() {
     );
   }
 
-  if (phase === 'context') {
+  if (phase === 'overview') {
+    const currentContext = answers[CONTEXT_KEY];
     return (
       <Layout>
-        <div className="max-w-lg mx-auto space-y-8 text-center">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Une chose à signaler pour aujourd'hui ?</h1>
-            <p className="text-sm text-slate-400 mt-2">Cela aide à mieux interpréter vos données plus tard. Facultatif.</p>
+        <div className="max-w-lg mx-auto space-y-8">
+          <div className="text-center">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Comment voulez-vous faire aujourd'hui ?</h1>
+            <p className="text-sm text-slate-400 mt-2">Choisissez un niveau, puis commencez ou allez directement à un thème.</p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {CONTEXT_OPTIONS.map((opt) => (
+
+          <div className="grid grid-cols-3 gap-2">
+            {MODES.map((m) => (
               <button
-                key={opt.value}
-                onClick={() => chooseContext(opt.value)}
-                className="flex flex-col items-center gap-2 rounded-2xl px-4 py-4 border border-slate-200 bg-white hover:border-brand-300 hover:bg-brand-50 transition-all"
+                key={m.value}
+                onClick={() => setMode(m.value)}
+                className={`flex flex-col items-center gap-1 rounded-2xl px-2 py-3 border transition-all ${
+                  mode === m.value ? 'bg-brand-600 text-white border-brand-600' : 'bg-white border-slate-200 hover:border-brand-300'
+                }`}
               >
-                <span className="text-2xl">{opt.icon}</span>
-                <span className="text-xs font-semibold">{opt.label}</span>
+                <span className="text-xl">{m.icon}</span>
+                <span className="text-xs font-bold">{m.label}</span>
+                <span className={`text-[10px] ${mode === m.value ? 'text-white/80' : 'text-slate-400'}`}>{m.hint}</span>
               </button>
             ))}
           </div>
-          <button onClick={() => setPhase('flow')} className="btn-ghost text-sm">Passer</button>
+
+          <div className="space-y-2">
+            {modules.map((mod) => {
+              const modPref = preferences[mod.id];
+              if (modPref?.enabled === false) return null;
+              const { total, answered, status } = moduleStatus(mod, preferences, answers);
+              if (total === 0) return null;
+              return (
+                <button
+                  key={mod.id}
+                  onClick={() => jumpToModule(mod.id)}
+                  className="w-full flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 hover:border-brand-300 hover:bg-brand-50 transition-all"
+                >
+                  <span className="flex items-center gap-3">
+                    <span className="text-xl">{mod.icon}</span>
+                    <span className="text-sm font-semibold text-slate-700">{mod.name}</span>
+                  </span>
+                  <span className="flex items-center gap-2 text-xs text-slate-400">
+                    <span>{answered}/{total}</span>
+                    <span className={`w-2.5 h-2.5 rounded-full ${STATUS_DOT[status]}`} title={STATUS_LABEL[status]} />
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs text-slate-400 text-center">Une chose à signaler pour aujourd'hui ? (facultatif)</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {CONTEXT_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => chooseContext(opt.value)}
+                  className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-xs border transition-all ${
+                    currentContext === opt.value ? 'bg-brand-600 text-white border-brand-600' : 'bg-white border-slate-200 hover:border-brand-300'
+                  }`}
+                >
+                  <span>{opt.icon}</span> {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button onClick={startFromBeginning} className="btn-primary w-full justify-center">
+            Commencer
+          </button>
         </div>
       </Layout>
     );
@@ -209,7 +297,7 @@ export default function Questionnaire() {
             className="w-full rounded-2xl border border-slate-200 px-5 py-4 text-base text-left focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none"
           />
           <div className="flex items-center justify-between">
-            <button onClick={() => setPhase('flow')} className="btn-ghost">← Retour</button>
+            <button onClick={() => setPhase('overview')} className="btn-ghost">← Retour</button>
             <button onClick={finish} className="btn-primary">Enregistrer ma journée ✓</button>
           </div>
           <button onClick={finish} className="btn-ghost text-sm">Passer le journal</button>
@@ -242,7 +330,7 @@ export default function Questionnaire() {
         )}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs text-slate-400">
-            <span>{current.moduleIcon} {current.moduleName}</span>
+            <button onClick={() => setPhase('overview')} className="hover:text-brand-600">{current.moduleIcon} {current.moduleName} · Vue d'ensemble</button>
             <span>{index + 1} / {flow.length}</span>
           </div>
           <ProgressBar current={index + 1} total={flow.length} />
@@ -254,7 +342,7 @@ export default function Questionnaire() {
         </div>
 
         <div className="flex items-center justify-between pt-4">
-          <button onClick={goBack} disabled={index === 0} className="btn-ghost">← Retour</button>
+          <button onClick={goBack} className="btn-ghost">← Retour</button>
           <span className="text-xs text-slate-300">{saving ? 'Enregistrement…' : 'Enregistré'}</span>
           {isLast ? (
             <button onClick={() => setPhase('journal')} className="btn-primary">Continuer →</button>

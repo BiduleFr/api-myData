@@ -34,21 +34,21 @@ export default function Register() {
           <p className="text-sm text-slate-400 mt-1">Un pseudo et un mot de passe suffisent.</p>
         </div>
         <form onSubmit={handleSubmit} autoComplete="on" className="flex flex-col gap-4">
-          <input
-            type="text" required autoComplete="username" placeholder="Choisissez un pseudo" value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
-          />
           <div>
             <input
-              type="password" required minLength={8} autoComplete="new-password" placeholder="Mot de passe (8 caractères min.)" value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              type="text" required autoComplete="username" placeholder="Choisissez un pseudo" value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
             <p className="text-xs text-slate-400 mt-2">
               Évitez d'utiliser votre vrai prénom, nom ou une information qui vous identifie : cela protège votre vie privée.
             </p>
           </div>
+          <input
+            type="password" required minLength={8} autoComplete="new-password" placeholder="Mot de passe (8 caractères min.)" value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
+          />
 
           <div>
             <input
