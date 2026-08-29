@@ -52,14 +52,20 @@ export default function Register() {
           </div>
 
           {showEmail ? (
-            <input
-              type="email" autoComplete="email" placeholder="Adresse e-mail (facultatif)" value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
-            />
+            <div>
+              <input
+                type="email" autoComplete="email" placeholder="Adresse e-mail (facultatif)" value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
+              />
+              <p className="text-sm text-slate-400 mt-2">
+                Utile uniquement pour récupérer l'accès à votre compte en cas d'oubli du mot de passe,
+                ou comme solution de secours pour vous connecter. Toujours facultatif.
+              </p>
+            </div>
           ) : (
-            <button type="button" onClick={() => setShowEmail(true)} className="text-xs text-brand-600 font-semibold text-left">
-              + Ajouter un email (facultatif, pour récupérer l'accès si oubli du mot de passe)
+            <button type="button" onClick={() => setShowEmail(true)} className="text-sm text-brand-600 font-semibold text-left">
+              + Ajouter un email (facultatif, pour récupérer l'accès en cas d'oubli du mot de passe)
             </button>
           )}
 

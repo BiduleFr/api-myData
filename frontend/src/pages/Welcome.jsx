@@ -7,27 +7,29 @@ export default function Welcome({ onContinue }) {
         <div>
           <span className="text-5xl">✨</span>
           <h1 className="text-3xl font-extrabold text-slate-800 mt-4">Elan</h1>
-          <p className="text-slate-500 mt-3 text-lg">
-            Quelques minutes par jour pour comprendre comment vous allez, vraiment.
+          <p className="text-slate-600 mt-3 text-xl font-medium">
+            Quelques minutes par jour pour mieux vous connaître.
           </p>
         </div>
 
-        <div className="card p-6 text-left space-y-3">
-          <p className="text-sm text-slate-600">
-            <strong>Comment ça marche :</strong> chaque jour, vous répondez à quelques questions rapides
-            (sommeil, énergie, humeur…). L'app calcule un score et vous montre votre évolution au fil du temps.
+        <div className="card p-6 text-left space-y-4">
+          <p className="text-base text-slate-700">
+            <strong>Comment ça marche :</strong> chaque jour, en environ 2 minutes, vous répondez à quelques
+            questions rapides (sommeil, énergie, humeur…). L'app calcule un score et vous montre votre évolution
+            au fil du temps.
           </p>
-          <p className="text-sm text-slate-600">
-            <strong>Votre vie privée :</strong> pas besoin d'email pour commencer, juste un pseudo et un mot de passe.
-            Évitez d'utiliser votre vrai nom ou des informations identifiables.
+          <p className="text-base text-slate-700">
+            <strong>Votre vie privée :</strong> ce site enregistre des données personnelles et potentiellement
+            sensibles (humeur, sommeil, santé, habitudes…). Il est donc préférable de ne pouvoir être identifié
+            d'aucune manière : évitez votre vrai nom, votre photo ou toute information qui vous reconnaîtrait.
           </p>
         </div>
 
         <div className="flex flex-col gap-3">
-          <Link to="/inscription" onClick={onContinue} className="btn-primary justify-center">
-            Créer un compte (pseudo + mot de passe)
+          <Link to="/inscription" onClick={onContinue} className="btn-primary justify-center text-base">
+            Créer un compte (pseudo + mot de passe suffisent)
           </Link>
-          <Link to="/connexion" onClick={onContinue} className="btn-secondary justify-center">
+          <Link to="/connexion" onClick={onContinue} className="btn-secondary justify-center text-base">
             Se connecter
           </Link>
           <button onClick={onContinue} className="btn-ghost text-sm justify-center">
@@ -35,8 +37,8 @@ export default function Welcome({ onContinue }) {
           </button>
         </div>
 
-        <p className="text-xs text-slate-400">
-          Environ 2 minutes par jour. Vous pouvez créer un compte plus tard pour retrouver vos données sur un autre appareil.
+        <p className="text-sm text-slate-400">
+          Vous pouvez créer un compte plus tard pour retrouver vos données sur un autre appareil.
         </p>
       </div>
     </div>
