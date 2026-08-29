@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -15,7 +15,7 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      await login(email, password);
+      await login(identifier, password);
       navigate('/');
     } catch (err) {
       setError(err.message);
@@ -34,8 +34,8 @@ export default function Login() {
         </div>
         <form onSubmit={handleSubmit} autoComplete="on" className="flex flex-col gap-4">
           <input
-            type="email" required autoComplete="email" placeholder="Adresse e-mail" value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text" required autoComplete="username" placeholder="Pseudo ou e-mail" value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
             className="rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
           />
           <input

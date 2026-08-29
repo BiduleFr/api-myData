@@ -23,17 +23,18 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, [token]);
 
-  const login = useCallback(async (email, password) => {
-    const data = await api.login({ email, password });
+  const login = useCallback(async (identifier, password) => {
+    const data = await api.login({ identifier, password });
     localStorage.setItem('elan_token', data.token);
+    localStorage.setItem('elan_visited', 'true');
     setToken(data.token);
     setUser(data.user);
     await api.syncLocalData(data.token);
   }, []);
 
-  const register = useCallback(async (username, email, password) => {
-    await api.register({ username, email, password });
-    await login(email, password);
+  const register = useCallback(async (username, password, email) => {
+    await api.register({ username, password, email: email || undefined });
+    await login(username, password);
   }, [login]);
 
   const logout = useCallback(() => {

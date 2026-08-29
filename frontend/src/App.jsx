@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
-import Dashboard from './pages/Dashboard.jsx';
+import Home from './pages/Home.jsx';
 import Questionnaire from './pages/Questionnaire.jsx';
 import Stats from './pages/Stats.jsx';
 import Customize from './pages/Customize.jsx';
@@ -13,7 +13,7 @@ export default function App() {
     <Routes>
       <Route path="/connexion" element={<Login />} />
       <Route path="/inscription" element={<Register />} />
-      <Route path="/" element={<Dashboard />} />
+      <Route path="/" element={<Home />} />
       <Route path="/questionnaire" element={<Questionnaire />} />
       <Route path="/statistiques" element={<Stats />} />
       <Route path="/suivi" element={<Suivi />} />

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { Op } = require('sequelize');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -19,38 +20,47 @@ router.get('/me', auth, async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const { username, email, password } = req.body;
-        if (!username || !email || !password || password.length < 8) {
-            return res.status(400).json({ error: 'Nom, email et mot de passe de 8 caracteres minimum requis.' });
+        if (!username || !password || password.length < 8) {
+            return res.status(400).json({ error: 'Pseudo et mot de passe de 8 caracteres minimum requis.' });
         }
 
-        // Vérifier si l'utilisateur existe déjà
-        const existingUser = await User.findOne({ where: { email } });
-        if (existingUser) return res.status(400).json({ error: 'Cet email est déjà utilisé.' });
+        // Verifier si le pseudo existe deja
+        const existingUsername = await User.findOne({ where: { username } });
+        if (existingUsername) return res.status(400).json({ error: 'Ce pseudo est deja utilise.' });
+
+        // Verifier l'email uniquement s'il est fourni (facultatif)
+        if (email) {
+            const existingEmail = await User.findOne({ where: { email } });
+            if (existingEmail) return res.status(400).json({ error: 'Cet email est deja utilise.' });
+        }
 
         // Hasher le mot de passe
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Créer un nouvel utilisateur
-        const newUser = await User.create({ username, email, password: hashedPassword });
+        // Creer un nouvel utilisateur
+        const newUser = await User.create({ username, email: email || null, password: hashedPassword });
 
         res.status(201).json({
-            message: 'Utilisateur créé avec succès !',
+            message: 'Utilisateur cree avec succes !',
             user: { id: newUser.id, username: newUser.username, email: newUser.email }
         });
     } catch (error) {
         console.error('Erreur creation utilisateur:', error.name);
-        res.status(500).json({ error: 'Erreur lors de la création de l\'utilisateur.' });
+        res.status(500).json({ error: 'Erreur lors de la creation de l\'utilisateur.' });
     }
 });
 
 
-// Créer un utilisateur
+// Connexion par pseudo ou email
 router.post('/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { identifier, email, password } = req.body;
+        const searchValue = identifier || email;
+        if (!searchValue || !password) {
+            return res.status(400).json({ error: 'Identifiant et mot de passe requis.' });
+        }
 
-        // Vérifier si l'utilisateur existe
-        const user = await User.findOne({ where: { email } });
+        const user = await User.findOne({ where: { [Op.or]: [{ username: searchValue }, { email: searchValue }] } });
         if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé.' });
 
         // Vérifier le mot de passe
