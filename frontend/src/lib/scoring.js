@@ -1,5 +1,7 @@
+// Calcule les scores (par module + global) à partir des réponses réellement fournies.
+// Précision conservée à 1 décimale (ex: 82.5).
 function clamp(value) {
-  return Math.max(0, Math.min(100, Math.round(value)));
+  return Math.max(0, Math.min(100, Math.round(value * 10) / 10));
 }
 
 function scoreQuestion(question, value) {
@@ -85,7 +87,7 @@ export function computeScores(modules, preferences, answers) {
     }
 
     if (modWeightTotal > 0) {
-      const modScore = Math.round(modWeightedSum / modWeightTotal);
+      const modScore = Math.round((modWeightedSum / modWeightTotal) * 10) / 10;
       moduleScores[mod.id] = modScore;
       const mw = mod.weight ?? 1;
       weightedSum += modScore * mw;
@@ -93,6 +95,6 @@ export function computeScores(modules, preferences, answers) {
     }
   }
 
-  const globalScore = totalWeight > 0 ? Math.round(weightedSum / totalWeight) : null;
+  const globalScore = totalWeight > 0 ? Math.round((weightedSum / totalWeight) * 10) / 10 : null;
   return { globalScore, moduleScores };
 }

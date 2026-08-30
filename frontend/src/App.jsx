@@ -8,6 +8,8 @@ import Stats from './pages/Stats.jsx';
 import Customize from './pages/Customize.jsx';
 import Suivi from './pages/Suivi.jsx';
 import Privacy from './pages/Privacy.jsx';
+import About from './pages/About.jsx';
+import Terms from './pages/Terms.jsx';
 
 function WelcomeStandalone() {
   const navigate = useNavigate();
@@ -20,6 +22,10 @@ export default function App() {
       <Route path="/connexion" element={<Login />} />
       <Route path="/inscription" element={<Register />} />
       <Route path="/bienvenue" element={<WelcomeStandalone />} />
+      <Route path="/a-propos" element={<About />} />
+      <Route path="/conditions" element={<Terms />} />
+      <Route path="/cgu" element={<Navigate to="/conditions" replace />} />
+      <Route path="/terms" element={<Navigate to="/conditions" replace />} />
       <Route path="/" element={<Home />} />
       <Route path="/questionnaire" element={<Questionnaire />} />
       <Route path="/statistiques" element={<Stats />} />

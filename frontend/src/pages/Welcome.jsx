@@ -37,9 +37,13 @@ export default function Welcome({ onContinue }) {
           </button>
         </div>
 
-        <p className="text-sm text-slate-400">
-          Vous pouvez créer un compte plus tard pour retrouver vos données sur un autre appareil.
-        </p>
+        <div className="flex flex-wrap justify-center gap-4 text-xs text-slate-400 pt-2">
+          <Link to="/a-propos" onClick={onContinue} className="hover:text-brand-600 font-medium">À propos & Équipe</Link>
+          <span>•</span>
+          <Link to="/conditions" onClick={onContinue} className="hover:text-brand-600 font-medium">Conditions d'utilisation</Link>
+          <span>•</span>
+          <Link to="/confidentialite" onClick={onContinue} className="hover:text-brand-600 font-medium">Vie privée</Link>
+        </div>
       </div>
     </div>
   );

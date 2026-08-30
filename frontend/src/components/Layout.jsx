@@ -46,7 +46,7 @@ export default function Layout({ children }) {
               </button>
             ) : (
               <>
-                <Link to="/bienvenue" className="hidden sm:inline btn-ghost text-sm">À propos</Link>
+                <Link to="/a-propos" className="hidden sm:inline btn-ghost text-sm">À propos</Link>
                 <Link to="/connexion" className="btn-ghost text-sm">Se connecter</Link>
               </>
             )}
@@ -55,6 +55,21 @@ export default function Layout({ children }) {
       </header>
 
       <main className="flex-1 max-w-3xl mx-auto w-full px-5 py-8">{children}</main>
+
+      <footer className="border-t border-black/5 bg-white/40 py-6 text-center text-xs text-slate-400">
+        <div className="max-w-3xl mx-auto px-5 flex flex-wrap justify-center items-center gap-x-4 gap-y-2">
+          <Link to="/" className="hover:text-brand-600 transition-colors">Accueil</Link>
+          <span>•</span>
+          <Link to="/a-propos" className="hover:text-brand-600 transition-colors">À propos & Équipe</Link>
+          <span>•</span>
+          <Link to="/conditions" className="hover:text-brand-600 transition-colors">Conditions d'utilisation</Link>
+          <span>•</span>
+          <Link to="/confidentialite" className="hover:text-brand-600 transition-colors">Vie privée & Données</Link>
+          <span>•</span>
+          <Link to="/a-propos#contact" className="hover:text-brand-600 transition-colors">Contact</Link>
+        </div>
+        <p className="mt-2 text-[11px] text-slate-400">Élan · Auto-observation quotidienne & bienveillante · Données protégées</p>
+      </footer>
 
       <nav className="sm:hidden sticky bottom-0 z-10 bg-white/90 backdrop-blur border-t border-black/5 flex justify-around py-2">
         {LINKS.map((l) => (

@@ -39,8 +39,11 @@ export default function Stats() {
   const average = (() => {
     const vals = data.map((d) => d.value).filter((v) => v !== null && v !== undefined);
     if (!vals.length) return null;
-    return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+    return Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10;
   })();
+
+  const formattedAverage =
+    average !== null ? average.toLocaleString('fr-FR', { maximumFractionDigits: 1 }) : '–';
 
   return (
     <Layout>
@@ -82,7 +85,7 @@ export default function Stats() {
         <div className="card p-6">
           <div className="flex items-baseline justify-between mb-4">
             <span className="text-sm text-slate-400">Moyenne sur la période</span>
-            <span className="text-2xl font-extrabold text-brand-700">{average ?? '–'}</span>
+            <span className="text-2xl font-extrabold text-brand-700">{formattedAverage}</span>
           </div>
           {loading ? (
             <div className="text-center text-slate-400 py-10">Chargement…</div>

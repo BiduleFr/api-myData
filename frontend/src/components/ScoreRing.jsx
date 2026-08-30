@@ -6,6 +6,11 @@ export default function ScoreRing({ score, size = 160, label = 'Score du jour' }
 
   const color = safeScore >= 75 ? '#6a3fe3' : safeScore >= 50 ? '#7c5cf0' : '#ff9f5b';
 
+  const formattedScore =
+    score !== null && score !== undefined
+      ? Number(score).toLocaleString('fr-FR', { maximumFractionDigits: 1 })
+      : '–';
+
   return (
     <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
@@ -27,7 +32,7 @@ export default function ScoreRing({ score, size = 160, label = 'Score du jour' }
       </svg>
       <div className="absolute flex flex-col items-center">
         <span className="text-3xl font-extrabold text-slate-800 tabular-nums">
-          {score !== null && score !== undefined ? score : '–'}
+          {formattedScore}
         </span>
         <span className="text-xs text-slate-400 mt-1">{label}</span>
       </div>

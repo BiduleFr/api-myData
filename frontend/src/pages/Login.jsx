@@ -13,21 +13,26 @@ export default function Login() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
+    const cleanId = identifier.trim();
+    if (!cleanId) {
+      setError('Veuillez renseigner votre pseudo ou e-mail.');
+      return;
+    }
     setLoading(true);
     try {
-      await login(identifier, password);
+      await login(cleanId, password);
       navigate('/');
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Identifiant ou mot de passe incorrect.');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-5">
-      <div className="card w-full max-w-sm p-8 animate-fade-up">
-        <div className="text-center mb-8">
+    <div className="min-h-screen flex items-center justify-center px-5 py-8">
+      <div className="card w-full max-w-sm p-6 sm:p-8 animate-fade-up space-y-6">
+        <div className="text-center">
           <span className="text-3xl">✨</span>
           <h1 className="text-2xl font-extrabold text-slate-800 mt-2">Bon retour</h1>
           <p className="text-sm text-slate-400 mt-1">Connectez-vous pour continuer votre suivi.</p>
@@ -43,15 +48,22 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             className="rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
           />
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
           <button type="submit" disabled={loading} className="btn-primary mt-2">
             {loading ? 'Connexion…' : 'Se connecter'}
           </button>
         </form>
-        <p className="text-center text-sm text-slate-400 mt-6">
-          Pas encore de compte ?{' '}
-          <Link to="/inscription" className="text-brand-600 font-semibold">Créer un compte</Link>
-        </p>
+        <div className="text-center space-y-3 text-xs text-slate-400">
+          <p className="text-sm">
+            Pas encore de compte ?{' '}
+            <Link to="/inscription" className="text-brand-600 font-semibold">Créer un compte</Link>
+          </p>
+          <p>
+            <Link to="/conditions" className="hover:text-brand-600">Conditions d'utilisation</Link>
+            {' • '}
+            <Link to="/confidentialite" className="hover:text-brand-600">Vie privée</Link>
+          </p>
+        </div>
       </div>
     </div>
   );
