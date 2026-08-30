@@ -36,6 +36,9 @@ export default function Layout({ children }) {
             ))}
           </nav>
           <div className="flex items-center gap-2">
+            <Link to="/bienvenue" className="hidden sm:inline btn-ghost text-xs text-slate-500 hover:text-brand-600">
+              Page d'arrivée
+            </Link>
             <span className="hidden sm:inline text-sm text-slate-400">{user?.username}</span>
             {token ? (
               <button
@@ -59,6 +62,8 @@ export default function Layout({ children }) {
       <footer className="border-t border-black/5 bg-white/40 py-6 text-center text-xs text-slate-400">
         <div className="max-w-3xl mx-auto px-5 flex flex-wrap justify-center items-center gap-x-4 gap-y-2">
           <Link to="/" className="hover:text-brand-600 transition-colors">Accueil</Link>
+          <span>•</span>
+          <Link to="/bienvenue" className="hover:text-brand-600 transition-colors">Page d'arrivée</Link>
           <span>•</span>
           <Link to="/a-propos" className="hover:text-brand-600 transition-colors">À propos & Équipe</Link>
           <span>•</span>

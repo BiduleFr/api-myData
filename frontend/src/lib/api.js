@@ -123,19 +123,23 @@ export const api = {
   me: async (token) => request('/users/me', { token }),
 
   syncLocalData: async (token) => {
-    const entries = localGetEntries();
-    const preferences = localGetPreferences().modules;
-    if (Object.keys(preferences).length) {
-      await request('/preferences', { method: 'PUT', body: { modules: preferences }, token });
+    try {
+      const entries = localGetEntries();
+      const preferences = localGetPreferences().modules;
+      if (Object.keys(preferences).length) {
+        await request('/preferences', { method: 'PUT', body: { modules: preferences }, token }).catch(() => {});
+      }
+      for (const entry of entries) {
+        await request('/entries', {
+          method: 'POST',
+          body: entry,
+          token
+        }).catch(() => {});
+      }
+      return { entries: entries.length };
+    } catch {
+      return { entries: 0 };
     }
-    for (const entry of entries) {
-      await request('/entries', {
-        method: 'POST',
-        body: entry,
-        token
-      });
-    }
-    return { entries: entries.length };
   },
 
   getConfig: async () => {

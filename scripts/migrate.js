@@ -18,8 +18,13 @@ async function migrate() {
     ON "DailyEntries" ("userId", "date");
   `);
 
-  await sequelize.query(`ALTER TABLE "Users" ALTER COLUMN "email" DROP NOT NULL;`);
-  await sequelize.query(`CREATE UNIQUE INDEX IF NOT EXISTS "users_username_unique" ON "Users" ("username");`);
+  await sequelize.query(`
+    ALTER TABLE "DailyEntries"
+    ALTER COLUMN "globalScore" TYPE DOUBLE PRECISION USING "globalScore"::double precision;
+  `).catch(() => {});
+
+  await sequelize.query(`ALTER TABLE "Users" ALTER COLUMN "email" DROP NOT NULL;`).catch(() => {});
+  await sequelize.query(`CREATE UNIQUE INDEX IF NOT EXISTS "users_username_unique" ON "Users" ("username");`).catch(() => {});
 
   console.log('Migration DB terminee.');
 }

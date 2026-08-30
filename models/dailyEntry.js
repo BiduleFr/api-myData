@@ -8,7 +8,7 @@ const DailyEntry = sequelize.define('DailyEntry', {
   journalEntry: { type: DataTypes.TEXT, allowNull: true },
   answerStates: { type: DataTypes.JSONB, allowNull: false, defaultValue: {} },
   moduleScores: { type: DataTypes.JSONB, allowNull: false, defaultValue: {} },
-  globalScore: { type: DataTypes.INTEGER, allowNull: true },
+  globalScore: { type: DataTypes.FLOAT, allowNull: true },
   completionStatus: {
     type: DataTypes.ENUM('draft', 'complete'),
     allowNull: false,

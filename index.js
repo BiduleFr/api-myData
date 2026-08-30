@@ -63,8 +63,12 @@ require('./models/dailyEntry');
             ADD COLUMN IF NOT EXISTS "journalEntry" TEXT,
             ADD COLUMN IF NOT EXISTS "answerStates" JSONB NOT NULL DEFAULT '{}'::jsonb;
         `);
-        await sequelize.query(`ALTER TABLE "Users" ALTER COLUMN "email" DROP NOT NULL;`);
-        await sequelize.query(`CREATE UNIQUE INDEX IF NOT EXISTS "users_username_unique" ON "Users" ("username");`);
+        await sequelize.query(`
+            ALTER TABLE "DailyEntries"
+            ALTER COLUMN "globalScore" TYPE DOUBLE PRECISION USING "globalScore"::double precision;
+        `).catch(() => {});
+        await sequelize.query(`ALTER TABLE "Users" ALTER COLUMN "email" DROP NOT NULL;`).catch(() => {});
+        await sequelize.query(`CREATE UNIQUE INDEX IF NOT EXISTS "users_username_unique" ON "Users" ("username");`).catch(() => {});
         console.log('Base de données synchronisée.');
     } catch (error) {
         console.error('Erreur lors de la connexion à la base de données :', error);

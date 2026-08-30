@@ -29,7 +29,11 @@ export function AuthProvider({ children }) {
     localStorage.setItem('elan_visited', 'true');
     setToken(data.token);
     setUser(data.user);
-    await api.syncLocalData(data.token);
+    try {
+      await api.syncLocalData(data.token);
+    } catch (e) {
+      console.warn('Sync local data note:', e);
+    }
   }, []);
 
   const register = useCallback(async (username, password, email) => {
