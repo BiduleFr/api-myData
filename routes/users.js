@@ -55,20 +55,36 @@ router.post('/', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { identifier, email, password } = req.body;
-        const searchValue = identifier || email;
+        const searchValue = (identifier || email || '').trim();
         if (!searchValue || !password) {
             return res.status(400).json({ error: 'Identifiant et mot de passe requis.' });
         }
 
-        const user = await User.findOne({ where: { [Op.or]: [{ username: searchValue }, { email: searchValue }] } });
-        if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé.' });
+        const user = await User.findOne({
+            where: {
+                [Op.or]: [
+                    { username: searchValue },
+                    { email: searchValue }
+                ]
+            }
+        });
+
+        if (!user) {
+            return res.status(401).json({ error: 'Identifiant ou mot de passe incorrect.' });
+        }
 
         // Vérifier le mot de passe
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) return res.status(401).json({ error: 'Mot de passe incorrect.' });
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: 'Identifiant ou mot de passe incorrect.' });
+        }
 
-        // Générer un token JWT
-        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        // Générer un token JWT (attention: email peut être null)
+        const token = jwt.sign(
+            { id: user.id, username: user.username, email: user.email || null },
+            process.env.JWT_SECRET,
+            { expiresIn: '7d' }
+        );
 
         res.json({
             message: 'Connexion réussie !',
@@ -76,7 +92,8 @@ router.post('/login', async (req, res) => {
             user: { id: user.id, username: user.username, email: user.email }
         });
     } catch (error) {
-        res.status(500).json({ error: 'Impossible de se connecter.' });
+        console.error('Erreur login:', error.name, error.message);
+        res.status(500).json({ error: 'Impossible de se connecter. Veuillez réessayer.' });
     }
 });
 
