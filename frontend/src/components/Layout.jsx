@@ -10,8 +10,13 @@ const LINKS = [
 ];
 
 export default function Layout({ children }) {
-  const { user, token, logout } = useAuth();
+  const { user, token, isGuest, logout } = useAuth();
   const navigate = useNavigate();
+
+  function handleLogout() {
+    logout();
+    navigate('/');
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -39,18 +44,29 @@ export default function Layout({ children }) {
             <Link to="/bienvenue" className="hidden sm:inline btn-ghost text-xs text-slate-500 hover:text-brand-600">
               Page d'arrivée
             </Link>
-            <span className="hidden sm:inline text-sm text-slate-400">{user?.username}</span>
+            {user?.username && (
+              <span className="hidden sm:inline text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">
+                {user.username}
+              </span>
+            )}
             {token ? (
               <button
-                onClick={() => { logout(); navigate('/'); }}
-                className="btn-ghost text-sm"
+                onClick={handleLogout}
+                className="btn-ghost text-sm font-medium hover:text-red-600"
               >
                 Déconnexion
               </button>
+            ) : isGuest ? (
+              <>
+                <Link to="/connexion" className="btn-primary text-xs py-1.5 px-3">Connexion</Link>
+                <button onClick={handleLogout} className="btn-ghost text-xs text-slate-400 hover:text-slate-600">
+                  Quitter
+                </button>
+              </>
             ) : (
               <>
                 <Link to="/a-propos" className="hidden sm:inline btn-ghost text-sm">À propos</Link>
-                <Link to="/connexion" className="btn-ghost text-sm">Se connecter</Link>
+                <Link to="/connexion" className="btn-ghost text-sm font-semibold text-brand-600">Se connecter</Link>
               </>
             )}
           </div>

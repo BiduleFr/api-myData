@@ -8,6 +8,7 @@ import TimeQuestion from './TimeQuestion.jsx';
 import TextQuestion from './TextQuestion.jsx';
 import QuickStepperQuestion from './QuickStepperQuestion.jsx';
 import BodyMapQuestion from './BodyMapQuestion.jsx';
+import TimelineQuestion from './TimelineQuestion.jsx';
 
 const REGISTRY = {
   slider: SliderQuestion,
@@ -19,7 +20,8 @@ const REGISTRY = {
   time: TimeQuestion,
   text: TextQuestion,
   quickstep: QuickStepperQuestion,
-  bodymap: BodyMapQuestion
+  bodymap: BodyMapQuestion,
+  timeline: TimelineQuestion
 };
 
 export default function QuestionRenderer({ question, value, onChange }) {

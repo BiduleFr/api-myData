@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '../../context/AuthContext.jsx';
 import { api, todayISO } from '../../lib/api';
 
 const STATES = [
@@ -22,42 +23,43 @@ function computeStreakWithoutActing(logs) {
 }
 
 export default function BehaviorsPanel() {
+  const { token } = useAuth();
   const [behaviors, setBehaviors] = useState([]);
   const [logs, setLogs] = useState({});
   const [title, setTitle] = useState('');
   const today = todayISO();
 
   useEffect(() => {
-    Promise.all([api.getBehaviors(), api.getBehaviorLogs()]).then(([b, l]) => {
+    Promise.all([api.getBehaviors(token), api.getBehaviorLogs(token)]).then(([b, l]) => {
       setBehaviors(b || []);
       setLogs(l || {});
     });
-  }, []);
+  }, [token]);
 
   function addBehavior(e) {
     e.preventDefault();
     if (!title) return;
     const next = [...behaviors, { id: crypto.randomUUID(), title, active: true }];
     setBehaviors(next);
-    api.saveBehaviors(next);
+    api.saveBehaviors(next, token);
     setTitle('');
   }
 
   function removeBehavior(id) {
     const next = behaviors.filter((b) => b.id !== id);
     setBehaviors(next);
-    api.saveBehaviors(next);
+    api.saveBehaviors(next, token);
     const nextLogs = { ...logs };
     delete nextLogs[id];
     setLogs(nextLogs);
-    api.saveBehaviorLogs(nextLogs);
+    api.saveBehaviorLogs(nextLogs, token);
   }
 
   function setToday(behaviorId, state) {
     const behaviorLogs = { ...(logs[behaviorId] || {}), [today]: state };
     const next = { ...logs, [behaviorId]: behaviorLogs };
     setLogs(next);
-    api.saveBehaviorLogs(next);
+    api.saveBehaviorLogs(next, token);
   }
 
   return (

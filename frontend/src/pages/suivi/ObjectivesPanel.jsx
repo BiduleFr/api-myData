@@ -68,7 +68,7 @@ export default function ObjectivesPanel() {
   });
 
   useEffect(() => {
-    Promise.all([api.getConfig(), api.getGoals(token), api.getHistory({}, token), api.getHabits(), api.getHabitLogs()])
+    Promise.all([api.getConfig(), api.getGoals(token), api.getHistory({}, token), api.getHabits(token), api.getHabitLogs(token)])
       .then(([cfg, gs, hist, hb, hl]) => {
         setModules(cfg.modules || []);
         setGoals(gs || []);

@@ -1,15 +1,23 @@
-import { useState } from 'react';
 import Welcome from './Welcome.jsx';
 import Dashboard from './Dashboard.jsx';
-
-const VISITED_KEY = 'elan_visited';
+import { useAuth } from '../context/AuthContext.jsx';
 
 export default function Home() {
-  const [visited, setVisited] = useState(() => localStorage.getItem(VISITED_KEY) === 'true');
+  const { user, token, isGuest, loading, startGuestSession } = useAuth();
 
-  if (!visited) {
-    return <Welcome onContinue={() => { localStorage.setItem(VISITED_KEY, 'true'); setVisited(true); }} />;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-slate-400">Chargement…</div>
+      </div>
+    );
   }
 
-  return <Dashboard />;
+  // Si connecté avec un compte ou en session invité active, afficher le tableau de bord
+  if ((token && user) || isGuest) {
+    return <Dashboard />;
+  }
+
+  // Sinon, afficher la page d'accueil de bienvenue
+  return <Welcome onContinue={startGuestSession} />;
 }

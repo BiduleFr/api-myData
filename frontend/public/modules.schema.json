@@ -22,12 +22,12 @@
         "required": true,
         "weight": 1.4,
         "label": "Comment etait la qualite de votre sommeil ?",
-        "config": { "min": 0, "max": 10 }
+        "config": { "min": 1, "max": 5 }
       },
       {
         "id": "sommeil_recup",
         "type": "scale",
-        "level": "essentiel",
+        "level": "detaille",
         "weight": 1.2,
         "label": "A quel point vous sentez-vous recupere(e) ?",
         "config": { "min": 0, "max": 10 }
@@ -85,33 +85,51 @@
     "weight": 0.14,
     "questions": [
       {
-        "id": "alim_qualite_globale",
-        "type": "scale",
+        "id": "alim_nombre_repas",
+        "type": "quickstep",
         "level": "essentiel",
         "required": true,
-        "weight": 1.2,
-        "label": "Comment jugez-vous votre alimentation aujourd'hui ?",
-        "config": { "min": 0, "max": 10 }
+        "weight": 1.3,
+        "label": "Combien de repas avez-vous pris aujourd'hui ?",
+        "config": { "max": 5, "plusLabel": "5+" }
       },
       {
-        "id": "alim_hydratation",
-        "type": "number",
+        "id": "alim_hydratation_subjective",
+        "type": "scale",
         "level": "essentiel",
-        "weight": 1,
-        "label": "Combien de verres d'eau ?",
-        "config": { "min": 0, "max": 20, "unit": "", "target": 8 }
+        "weight": 1.2,
+        "label": "Avez-vous suffisamment bu aujourd'hui ?",
+        "config": { "min": 1, "max": 5, "labels": ["J'ai souvent eu soif", "Peu bu", "Moyen", "Bien bu", "Bien hydrate"] }
       },
       {
         "id": "alim_satiete",
         "type": "choice",
         "level": "essentiel",
-        "weight": 1,
-        "label": "Avez-vous mange a votre faim ?",
+        "weight": 1.1,
+        "label": "Quantite de nourriture consommee",
         "options": [
-          { "value": "not_enough", "label": "Pas assez", "score": 45 },
-          { "value": "just_right", "label": "Juste bien", "score": 100 },
-          { "value": "too_much", "label": "Trop", "score": 60 }
+          { "value": "not_enough", "label": "Pas tout a fait assez", "score": 50 },
+          { "value": "somewhat_less", "label": "Un peu trop peu", "score": 75 },
+          { "value": "just_right", "label": "Bien mange", "score": 100 },
+          { "value": "somewhat_more", "label": "Un peu trop", "score": 70 },
+          { "value": "too_much", "label": "Beaucoup trop", "score": 40 }
         ]
+      },
+      {
+        "id": "alim_qualite_globale",
+        "type": "scale",
+        "level": "essentiel",
+        "weight": 1,
+        "label": "Qualite globale de votre alimentation",
+        "config": { "min": 0, "max": 10 }
+      },
+      {
+        "id": "alim_hydratation",
+        "type": "number",
+        "level": "detaille",
+        "weight": 0.6,
+        "label": "Combien de verres d'eau ?",
+        "config": { "min": 0, "max": 20, "unit": "", "target": 8 }
       },
       {
         "id": "alim_repas_principaux",
@@ -282,6 +300,18 @@
           { "value": "aggrave", "label": "En aggravation" }
         ],
         "when": { "all": [{ "questionId": "douleur_presente", "op": "eq", "value": true }] }
+      },
+      {
+        "id": "addiction_resistance",
+        "type": "choice",
+        "level": "essentiel",
+        "weight": 0.5,
+        "label": "Avez-vous resiste a une addiction ou une habitude difficile ?",
+        "options": [
+          { "value": "na", "label": "Non applicable", "score": 50 },
+          { "value": "yes", "label": "Oui", "score": 100 },
+          { "value": "no", "label": "Non", "score": 20 }
+        ]
       }
     ]
   },
@@ -289,32 +319,38 @@
     "id": "travail",
     "name": "Travail",
     "icon": "💼",
-    "description": "Focus, charge et satisfaction",
+    "description": "Activite, productivite et charge",
     "weight": 0.12,
     "questions": [
       {
-        "id": "travail_satisfaction",
-        "type": "scale",
+        "id": "travail_duree",
+        "type": "slider",
         "level": "essentiel",
         "required": true,
         "weight": 1.2,
-        "label": "Satisfaction de votre journee de travail",
-        "config": { "min": 0, "max": 10 }
+        "label": "Combien de temps avez-vous travaille ?",
+        "config": { "min": 0, "max": 12, "step": 0.25, "unit": "h", "target": 8 }
       },
       {
-        "id": "travail_focus",
-        "type": "number",
+        "id": "travail_quantite_accomplie",
+        "type": "choice",
         "level": "essentiel",
-        "weight": 1,
-        "label": "Minutes de concentration profonde",
-        "config": { "min": 0, "max": 480, "unit": "min", "target": 120 }
+        "weight": 1.1,
+        "label": "Quelle quantite de travail avez-vous accomplie ?",
+        "options": [
+          { "value": "quasi_rien", "label": "Quasi rien", "score": 15 },
+          { "value": "peu", "label": "Peu", "score": 35 },
+          { "value": "moyen", "label": "Moyen", "score": 65 },
+          { "value": "beaucoup", "label": "Beaucoup", "score": 85 },
+          { "value": "tout_termine", "label": "Tout est termine", "score": 100 }
+        ]
       },
       {
         "id": "travail_charge",
         "type": "scale",
         "level": "essentiel",
         "weight": 0.9,
-        "label": "Charge mentale ressentie",
+        "label": "Charge mentale et pression ressentie",
         "config": { "min": 0, "max": 10, "invert": true }
       },
       {
@@ -365,33 +401,33 @@
     "id": "mental",
     "name": "Mental",
     "icon": "🧠",
-    "description": "Humeur, stress et controle percu",
+    "description": "Humeur, stress et confiance",
     "weight": 0.16,
     "questions": [
       {
-        "id": "mental_humeur",
-        "type": "scale",
+        "id": "mental_humeur_evolution",
+        "type": "timeline",
         "level": "essentiel",
         "required": true,
         "weight": 1.5,
-        "label": "Humeur generale",
-        "config": { "min": 0, "max": 10 }
+        "label": "Comment votre humeur a-t-elle evolue au cours de la journee ?",
+        "config": { "points": 6, "levels": 5 }
       },
       {
-        "id": "mental_stress",
-        "type": "scale",
+        "id": "mental_stress_evolution",
+        "type": "timeline",
         "level": "essentiel",
         "weight": 1.2,
-        "label": "Niveau de stress",
-        "config": { "min": 0, "max": 10, "invert": true }
+        "label": "Comment votre stress a-t-il evolue au cours de la journee ?",
+        "config": { "points": 6, "levels": 5, "invert": true }
       },
       {
-        "id": "mental_energie",
+        "id": "mental_confiance",
         "type": "scale",
         "level": "essentiel",
         "weight": 1,
-        "label": "Energie mentale",
-        "config": { "min": 0, "max": 10 }
+        "label": "Confiance en soi",
+        "config": { "min": 1, "max": 10 }
       },
       {
         "id": "mental_controle",
@@ -430,7 +466,7 @@
           { "value": "argent", "label": "Argent" },
           { "value": "autre", "label": "Autre" }
         ],
-        "when": { "all": [{ "questionId": "mental_stress", "op": "gte", "value": 7 }] }
+        "when": { "all": [{ "questionId": "mental_stress_evolution", "op": "exists", "value": true }] }
       }
     ]
   },
@@ -438,7 +474,7 @@
     "id": "accomplissement",
     "name": "Accomplissement",
     "icon": "✨",
-    "description": "Progression, sens et bilan",
+    "description": "Progression, memoire et bilan",
     "weight": 0.14,
     "questions": [
       {
@@ -447,13 +483,21 @@
         "level": "essentiel",
         "required": true,
         "weight": 1.2,
-        "label": "Quelle note donnez-vous a votre journee ?",
+        "label": "Note de votre journee",
         "config": { "min": 0, "max": 10 }
+      },
+      {
+        "id": "bilan_journal",
+        "type": "text",
+        "level": "essentiel",
+        "weight": 0.8,
+        "label": "Racontez brievement votre journee",
+        "help": "Un moment important, un evenement, avec qui vous etiez, quelque chose dont vous voulez vous souvenir, un point positif, un point negatif, une anecdote... (quelques phrases seulement, ce n'est pas un journal detaille)"
       },
       {
         "id": "bilan_fierte",
         "type": "scale",
-        "level": "essentiel",
+        "level": "detaille",
         "weight": 1,
         "label": "A quel point etes-vous fier(e) de ce que vous avez fait ?",
         "config": { "min": 0, "max": 10 }

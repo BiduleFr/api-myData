@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '../../context/AuthContext.jsx';
 import { api, todayISO } from '../../lib/api';
 
 function computeStreak(logs) {
@@ -17,6 +18,7 @@ function computeStreak(logs) {
 }
 
 export default function HabitsPanel() {
+  const { token } = useAuth();
   const [habits, setHabits] = useState([]);
   const [logs, setLogs] = useState({});
   const [title, setTitle] = useState('');
@@ -24,29 +26,29 @@ export default function HabitsPanel() {
   const today = todayISO();
 
   useEffect(() => {
-    Promise.all([api.getHabits(), api.getHabitLogs()]).then(([h, l]) => {
+    Promise.all([api.getHabits(token), api.getHabitLogs(token)]).then(([h, l]) => {
       setHabits(h || []);
       setLogs(l || {});
     });
-  }, []);
+  }, [token]);
 
   function addHabit(e) {
     e.preventDefault();
     if (!title) return;
     const next = [...habits, { id: crypto.randomUUID(), title, targetPerWeek: Number(targetPerWeek), active: true }];
     setHabits(next);
-    api.saveHabits(next);
+    api.saveHabits(next, token);
     setTitle('');
   }
 
   function removeHabit(id) {
     const next = habits.filter((h) => h.id !== id);
     setHabits(next);
-    api.saveHabits(next);
+    api.saveHabits(next, token);
     const nextLogs = { ...logs };
     delete nextLogs[id];
     setLogs(nextLogs);
-    api.saveHabitLogs(nextLogs);
+    api.saveHabitLogs(nextLogs, token);
   }
 
   function toggleToday(habitId) {
@@ -55,7 +57,7 @@ export default function HabitsPanel() {
     else habitLogs[today] = true;
     const next = { ...logs, [habitId]: habitLogs };
     setLogs(next);
-    api.saveHabitLogs(next);
+    api.saveHabitLogs(next, token);
   }
 
   return (

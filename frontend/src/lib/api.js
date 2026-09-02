@@ -2,14 +2,14 @@ import { computeScores } from './scoring';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
-const LS_PREFS = 'elan_prefs';
-const LS_ENTRIES = 'elan_entries';
-const LS_MODULES = 'elan_modules_schema';
-const LS_GOALS = 'elan_goals';
-const LS_HABITS = 'elan_habits';
-const LS_HABIT_LOGS = 'elan_habit_logs';
-const LS_BEHAVIORS = 'elan_behaviors';
-const LS_BEHAVIOR_LOGS = 'elan_behavior_logs';
+function getScope(token) {
+  if (!token) return 'guest';
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    if (payload && payload.id) return `user_${payload.id}`;
+  } catch {}
+  return 'guest';
+}
 
 function readJSON(key, fallback) {
   try {
@@ -41,59 +41,59 @@ async function request(path, { method = 'GET', body, token } = {}) {
   return data;
 }
 
-function localGetPreferences() {
-  return { modules: readJSON(LS_PREFS, {}) };
+function localGetPreferences(scope = 'guest') {
+  return { modules: readJSON(`elan_${scope}_prefs`, {}) };
 }
 
-function localSavePreferences(modules) {
-  writeJSON(LS_PREFS, modules || {});
+function localSavePreferences(modules, scope = 'guest') {
+  writeJSON(`elan_${scope}_prefs`, modules || {});
   return { modules: modules || {} };
 }
 
-function localGetEntries() {
-  return readJSON(LS_ENTRIES, []);
+function localGetEntries(scope = 'guest') {
+  return readJSON(`elan_${scope}_entries`, []);
 }
 
-function localSaveEntries(entries) {
-  writeJSON(LS_ENTRIES, entries);
+function localSaveEntries(entries, scope = 'guest') {
+  writeJSON(`elan_${scope}_entries`, entries);
 }
 
 function localGetModules() {
-  return readJSON(LS_MODULES, []);
+  return readJSON('elan_modules_schema', []);
 }
 
 function localSaveModules(modules) {
-  writeJSON(LS_MODULES, modules || []);
+  writeJSON('elan_modules_schema', modules || []);
 }
 
-function localGetGoals() {
-  return readJSON(LS_GOALS, []);
+function localGetGoals(scope = 'guest') {
+  return readJSON(`elan_${scope}_goals`, []);
 }
 
-function localSaveGoals(goals) {
-  writeJSON(LS_GOALS, goals || []);
+function localSaveGoals(goals, scope = 'guest') {
+  writeJSON(`elan_${scope}_goals`, goals || []);
   return goals || [];
 }
 
-function localGetEntry(date) {
-  const entries = localGetEntries();
+function localGetEntry(date, scope = 'guest') {
+  const entries = localGetEntries(scope);
   const found = entries.find((e) => e.date === date);
   return found || { date, answers: {}, answerStates: {}, journalEntry: '', moduleScores: {}, globalScore: null, completionStatus: 'not_started' };
 }
 
-function localGetHistory(params = {}) {
-  const entries = localGetEntries().sort((a, b) => a.date.localeCompare(b.date));
+function localGetHistory(params = {}, scope = 'guest') {
+  const entries = localGetEntries(scope).sort((a, b) => a.date.localeCompare(b.date));
   const { from, to, limit } = params;
   const filtered = entries.filter((e) => (!from || e.date >= from) && (!to || e.date <= to));
   if (limit) return filtered.slice(-Number(limit));
   return filtered;
 }
 
-function localSaveEntry(payload) {
+function localSaveEntry(payload, scope = 'guest') {
   const { date, answers = {}, journalEntry, answerStates = {}, completionStatus = 'draft' } = payload;
-  const prefs = localGetPreferences().modules;
+  const prefs = localGetPreferences(scope).modules;
   const modules = localGetModules();
-  const entries = localGetEntries();
+  const entries = localGetEntries(scope);
   const existing = entries.find((e) => e.date === date);
   const mergedAnswers = { ...(existing?.answers || {}), ...answers };
   const mergedAnswerStates = { ...(existing?.answerStates || {}), ...answerStates };
@@ -113,7 +113,7 @@ function localSaveEntry(payload) {
     ? entries.map((e) => (e.date === date ? next : e))
     : [...entries, next];
 
-  localSaveEntries(nextEntries);
+  localSaveEntries(nextEntries, scope);
   return next;
 }
 
@@ -121,26 +121,6 @@ export const api = {
   register: async (payload) => request('/users', { method: 'POST', body: payload }),
   login: async (payload) => request('/users/login', { method: 'POST', body: payload }),
   me: async (token) => request('/users/me', { token }),
-
-  syncLocalData: async (token) => {
-    try {
-      const entries = localGetEntries();
-      const preferences = localGetPreferences().modules;
-      if (Object.keys(preferences).length) {
-        await request('/preferences', { method: 'PUT', body: { modules: preferences }, token }).catch(() => {});
-      }
-      for (const entry of entries) {
-        await request('/entries', {
-          method: 'POST',
-          body: entry,
-          token
-        }).catch(() => {});
-      }
-      return { entries: entries.length };
-    } catch {
-      return { entries: 0 };
-    }
-  },
 
   getConfig: async () => {
     try {
@@ -160,68 +140,109 @@ export const api = {
   },
 
   getPreferences: async (token) => {
-    if (!token) return localGetPreferences();
+    const scope = getScope(token);
+    if (!token) return localGetPreferences(scope);
     try {
       return await request('/preferences', { token });
     } catch {
-      return localGetPreferences();
+      return localGetPreferences(scope);
     }
   },
 
   savePreferences: async (modules, token) => {
-    if (!token) return localSavePreferences(modules);
+    const scope = getScope(token);
+    if (!token) return localSavePreferences(modules, scope);
     try {
       return await request('/preferences', { method: 'PUT', body: { modules }, token });
     } catch {
-      return localSavePreferences(modules);
+      return localSavePreferences(modules, scope);
     }
   },
 
   getEntry: async (date, token) => {
-    if (!token) return localGetEntry(date);
+    const scope = getScope(token);
+    if (!token) return localGetEntry(date, scope);
     try {
       return await request(`/entries/${date}`, { token });
     } catch {
-      return localGetEntry(date);
+      return localGetEntry(date, scope);
     }
   },
 
   getHistory: async (params, token) => {
-    if (!token) return localGetHistory(params);
+    const scope = getScope(token);
+    if (!token) return localGetHistory(params, scope);
     try {
       const qs = new URLSearchParams(params || {}).toString();
       return await request(`/entries${qs ? `?${qs}` : ''}`, { token });
     } catch {
-      return localGetHistory(params);
+      return localGetHistory(params, scope);
     }
   },
 
   saveEntry: async (payload, token) => {
-    if (!token) return localSaveEntry(payload);
+    const scope = getScope(token);
+    if (!token) return localSaveEntry(payload, scope);
     try {
       return await request('/entries', { method: 'POST', body: payload, token });
     } catch {
-      return localSaveEntry(payload);
+      return localSaveEntry(payload, scope);
     }
   },
 
-  getGoals: async () => {
-    return localGetGoals();
+  getGoals: async (token) => {
+    const scope = getScope(token);
+    return localGetGoals(scope);
   },
 
-  saveGoals: async (goals) => {
-    return localSaveGoals(goals);
+  saveGoals: async (goals, token) => {
+    const scope = getScope(token);
+    return localSaveGoals(goals, scope);
   },
 
-  getHabits: async () => readJSON(LS_HABITS, []),
-  saveHabits: async (habits) => { writeJSON(LS_HABITS, habits || []); return habits || []; },
-  getHabitLogs: async () => readJSON(LS_HABIT_LOGS, {}),
-  saveHabitLogs: async (logs) => { writeJSON(LS_HABIT_LOGS, logs || {}); return logs || {}; },
+  getHabits: async (token) => {
+    const scope = getScope(token);
+    return readJSON(`elan_${scope}_habits`, []);
+  },
 
-  getBehaviors: async () => readJSON(LS_BEHAVIORS, []),
-  saveBehaviors: async (behaviors) => { writeJSON(LS_BEHAVIORS, behaviors || []); return behaviors || []; },
-  getBehaviorLogs: async () => readJSON(LS_BEHAVIOR_LOGS, {}),
-  saveBehaviorLogs: async (logs) => { writeJSON(LS_BEHAVIOR_LOGS, logs || {}); return logs || {}; }
+  saveHabits: async (habits, token) => {
+    const scope = getScope(token);
+    writeJSON(`elan_${scope}_habits`, habits || []);
+    return habits || [];
+  },
+
+  getHabitLogs: async (token) => {
+    const scope = getScope(token);
+    return readJSON(`elan_${scope}_habit_logs`, {});
+  },
+
+  saveHabitLogs: async (logs, token) => {
+    const scope = getScope(token);
+    writeJSON(`elan_${scope}_habit_logs`, logs || {});
+    return logs || {};
+  },
+
+  getBehaviors: async (token) => {
+    const scope = getScope(token);
+    return readJSON(`elan_${scope}_behaviors`, []);
+  },
+
+  saveBehaviors: async (behaviors, token) => {
+    const scope = getScope(token);
+    writeJSON(`elan_${scope}_behaviors`, behaviors || []);
+    return behaviors || [];
+  },
+
+  getBehaviorLogs: async (token) => {
+    const scope = getScope(token);
+    return readJSON(`elan_${scope}_behavior_logs`, {});
+  },
+
+  saveBehaviorLogs: async (logs, token) => {
+    const scope = getScope(token);
+    writeJSON(`elan_${scope}_behavior_logs`, logs || {});
+    return logs || {};
+  }
 };
 
 export function todayISO() {

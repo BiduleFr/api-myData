@@ -26,10 +26,10 @@ export default function Welcome({ onContinue }) {
         </div>
 
         <div className="flex flex-col gap-3">
-          <Link to="/inscription" onClick={onContinue} className="btn-primary justify-center text-base">
+          <Link to="/inscription" className="btn-primary justify-center text-base">
             Créer un compte (pseudo + mot de passe suffisent)
           </Link>
-          <Link to="/connexion" onClick={onContinue} className="btn-secondary justify-center text-base">
+          <Link to="/connexion" className="btn-secondary justify-center text-base">
             Se connecter
           </Link>
           <button onClick={onContinue} className="btn-ghost text-sm justify-center">
@@ -38,11 +38,11 @@ export default function Welcome({ onContinue }) {
         </div>
 
         <div className="flex flex-wrap justify-center gap-4 text-xs text-slate-400 pt-2">
-          <Link to="/a-propos" onClick={onContinue} className="hover:text-brand-600 font-medium">À propos & Équipe</Link>
+          <Link to="/a-propos" className="hover:text-brand-600 font-medium">À propos & Équipe</Link>
           <span>•</span>
-          <Link to="/conditions" onClick={onContinue} className="hover:text-brand-600 font-medium">Conditions d'utilisation</Link>
+          <Link to="/conditions" className="hover:text-brand-600 font-medium">Conditions d'utilisation</Link>
           <span>•</span>
-          <Link to="/confidentialite" onClick={onContinue} className="hover:text-brand-600 font-medium">Vie privée</Link>
+          <Link to="/confidentialite" className="hover:text-brand-600 font-medium">Vie privée</Link>
         </div>
       </div>
     </div>

@@ -6,34 +6,43 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('elan_token'));
   const [user, setUser] = useState(null);
+  const [isGuest, setIsGuest] = useState(() => sessionStorage.getItem('elan_guest') === 'true');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!token) {
-      setUser({ username: 'Invité' });
+      if (isGuest) {
+        setUser({ username: 'Invité' });
+      } else {
+        setUser(null);
+      }
       setLoading(false);
       return;
     }
+
     api.me(token)
-      .then(setUser)
+      .then((userData) => {
+        setUser(userData);
+        setIsGuest(false);
+        sessionStorage.removeItem('elan_guest');
+      })
       .catch(() => {
         setToken(null);
+        setUser(null);
+        setIsGuest(false);
         localStorage.removeItem('elan_token');
+        sessionStorage.removeItem('elan_guest');
       })
       .finally(() => setLoading(false));
-  }, [token]);
+  }, [token, isGuest]);
 
   const login = useCallback(async (identifier, password) => {
     const data = await api.login({ identifier, password });
     localStorage.setItem('elan_token', data.token);
-    localStorage.setItem('elan_visited', 'true');
+    sessionStorage.removeItem('elan_guest');
     setToken(data.token);
     setUser(data.user);
-    try {
-      await api.syncLocalData(data.token);
-    } catch (e) {
-      console.warn('Sync local data note:', e);
-    }
+    setIsGuest(false);
   }, []);
 
   const register = useCallback(async (username, password, email) => {
@@ -41,14 +50,22 @@ export function AuthProvider({ children }) {
     await login(username, password);
   }, [login]);
 
+  const startGuestSession = useCallback(() => {
+    sessionStorage.setItem('elan_guest', 'true');
+    setIsGuest(true);
+    setUser({ username: 'Invité' });
+  }, []);
+
   const logout = useCallback(() => {
     localStorage.removeItem('elan_token');
+    sessionStorage.removeItem('elan_guest');
     setToken(null);
     setUser(null);
+    setIsGuest(false);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ token, user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ token, user, isGuest, loading, login, register, startGuestSession, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -54,7 +54,21 @@ function scoreQuestion(question, value) {
       if (!scores.length) return null;
       return clamp(scores.reduce((a, b) => a + b, 0) / scores.length);
     }
+    case 'timeline': {
+      // Calcule la moyenne des 6 points de la timeline
+      if (!value || typeof value !== 'object') return null;
+      const values = Object.values(value).filter((v) => typeof v === 'number');
+      if (values.length === 0) return null;
+      // Timeline: 1-5 scale, mapper à 0-100
+      const avg = values.reduce((a, b) => a + b, 0) / values.length;
+      const { invert = false } = question.config || {};
+      let s = ((avg - 1) / 4) * 100; // 1-5 -> 0-100
+      if (invert) s = 100 - s;
+      return clamp(s);
+    }
     case 'bodymap':
+      return null;
+    case 'text':
       return null;
     default:
       return null;

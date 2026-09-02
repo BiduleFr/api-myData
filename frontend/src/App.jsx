@@ -13,7 +13,15 @@ import Terms from './pages/Terms.jsx';
 
 function WelcomeStandalone() {
   const navigate = useNavigate();
-  return <Welcome onContinue={() => { localStorage.setItem('elan_visited', 'true'); navigate('/'); }} />;
+  const { startGuestSession } = useAuth();
+  return (
+    <Welcome
+      onContinue={() => {
+        startGuestSession();
+        navigate('/');
+      }}
+    />
+  );
 }
 
 export default function App() {
