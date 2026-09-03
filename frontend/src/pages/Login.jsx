@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import AppearanceControls from '../components/AppearanceControls.jsx';
 
 export default function Login() {
   const { login } = useAuth();
@@ -31,6 +32,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-5 py-8">
+      <AppearanceControls />
       <div className="card w-full max-w-sm p-6 sm:p-8 animate-fade-up space-y-6">
         <div className="text-center">
           <span className="text-3xl">✨</span>

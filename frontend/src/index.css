@@ -12,6 +12,34 @@ body {
   @apply bg-gradient-to-b from-brand-50 via-white to-white text-slate-800 antialiased;
 }
 
+.dark body {
+  @apply bg-slate-950 text-slate-100;
+}
+
+.dark .bg-white, .dark .bg-white\/90, .dark .bg-white\/70, .dark .bg-white\/40 {
+  @apply bg-slate-900;
+}
+
+.dark .bg-slate-50, .dark .bg-brand-50, .dark .bg-brand-50\/60, .dark .bg-brand-50\/70 {
+  @apply bg-slate-800;
+}
+
+.dark .text-slate-800, .dark .text-slate-700, .dark .text-slate-600 {
+  @apply text-slate-100;
+}
+
+.dark .text-slate-500, .dark .text-slate-400 {
+  @apply text-slate-300;
+}
+
+.dark .border-slate-200, .dark .border-black\/5, .dark .border-brand-100 {
+  @apply border-slate-700;
+}
+
+.dark input, .dark textarea, .dark select {
+  @apply border-slate-700 bg-slate-900 text-slate-100;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -33,4 +61,18 @@ body {
 
 .btn-ghost {
   @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-slate-500 font-medium transition-all hover:bg-slate-100 active:scale-95;
+}
+
+.elan-rating {
+  @apply h-2 cursor-pointer appearance-none rounded-full;
+}
+
+.elan-rating::-webkit-slider-thumb {
+  @apply h-5 w-5 cursor-grab appearance-none rounded-full border-2 border-white bg-brand-700 shadow;
+}
+
+.timeline-slider {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  accent-color: #4f46e5;
 }

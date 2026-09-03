@@ -8,9 +8,14 @@ function scoreQuestion(question, value) {
   if (value === undefined || value === null || value === '') return null;
 
   switch (question.type) {
-    case 'scale': {
+    case 'scale':
+    case 'rating': {
       const { min = 1, max = 5, invert = false } = question.config || {};
-      let s = ((Number(value) - min) / (max - min)) * 100;
+      const values = value && typeof value === 'object'
+        ? Object.values(value).filter((item) => typeof item === 'number')
+        : [Number(value)];
+      if (!values.length) return null;
+      let s = ((values.reduce((sum, item) => sum + item, 0) / values.length - min) / (max - min)) * 100;
       if (invert) s = 100 - s;
       return clamp(s);
     }
@@ -53,6 +58,13 @@ function scoreQuestion(question, value) {
         .filter((s) => typeof s === 'number');
       if (!scores.length) return null;
       return clamp(scores.reduce((a, b) => a + b, 0) / scores.length);
+    }
+    case 'dualrating': {
+      if (!value || typeof value !== 'object') return null;
+      const values = Object.values(value).filter((item) => typeof item === 'number');
+      if (!values.length) return null;
+      const { min = 1, max = 10 } = question.config || {};
+      return clamp(((values.reduce((sum, item) => sum + item, 0) / values.length - min) / (max - min)) * 100);
     }
     case 'timeline': {
       // Calcule la moyenne des 6 points de la timeline

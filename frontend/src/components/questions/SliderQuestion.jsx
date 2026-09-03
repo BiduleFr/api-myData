@@ -1,5 +1,11 @@
 // Formate les heures et minutes de manière lisible
 function formatDuration(value, unit) {
+  if (unit === 'min') {
+    const hours = Math.floor(value / 60);
+    const minutes = value % 60;
+    if (hours === 0) return `${minutes} min`;
+    return minutes === 0 ? `${hours} h` : `${hours} h ${minutes}`;
+  }
   if (unit !== 'h' && unit !== 'heure' && unit !== 'heures') {
     return `${value}${unit}`;
   }
@@ -16,7 +22,7 @@ function formatDuration(value, unit) {
 
 export default function SliderQuestion({ question, value, onChange }) {
   const { min = 0, max = 12, step = 0.5, unit = '' } = question.config || {};
-  const current = value ?? (min + max) / 2;
+  const current = value ?? question.config?.defaultValue ?? (min + max) / 2;
   const displayValue = formatDuration(current, unit);
 
   return (

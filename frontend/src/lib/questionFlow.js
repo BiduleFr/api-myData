@@ -37,6 +37,16 @@ function evaluateCondition(rule, answers) {
   return compare(rule.op || 'eq', value, rule.value);
 }
 
+function applyModeOverride(question, mode) {
+  const override = question.modeOverrides?.[mode];
+  if (!override) return question;
+  return {
+    ...question,
+    ...override,
+    config: { ...question.config, ...override.config }
+  };
+}
+
 export function buildQuestionFlow(modules, preferences, answers, options = {}) {
   const steps = [];
   const { levelOverride, onlyModuleId } = options;
@@ -57,7 +67,8 @@ export function buildQuestionFlow(modules, preferences, answers, options = {}) {
       if (q.dependsOn && !evaluateCondition({ ...q.dependsOn, op: q.dependsOn.op || 'eq' }, answers)) continue;
       if (q.when && !evaluateCondition(q.when, answers)) continue;
 
-      steps.push({ ...q, moduleId: mod.id, moduleName: mod.name, moduleIcon: mod.icon });
+      const question = applyModeOverride(q, options.mode);
+      steps.push({ ...question, moduleId: mod.id, moduleName: mod.name, moduleIcon: mod.icon });
     }
   }
 

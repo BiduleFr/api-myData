@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import AppearanceControls from '../components/AppearanceControls.jsx';
 
 export default function Register() {
   const { register } = useAuth();
@@ -45,6 +46,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-5 py-8">
+      <AppearanceControls />
       <div className="card w-full max-w-md p-6 sm:p-8 animate-fade-up space-y-6">
         <div className="text-center">
           <span className="text-3xl">🌱</span>
@@ -52,16 +54,11 @@ export default function Register() {
           <p className="text-sm text-slate-400 mt-1">Un pseudo et un mot de passe suffisent.</p>
         </div>
 
-        {/* Espace Vie privée & Sécurité avant inscription */}
         <div className="bg-brand-50/70 border border-brand-100 rounded-2xl p-4 text-xs text-slate-700 space-y-1.5">
           <p className="font-bold text-brand-900 flex items-center gap-1.5">
-            <span>🛡️</span> Vie privée & Sécurité
+            <span>🛡️</span> Vos données restent sous votre contrôle
           </p>
-          <ul className="space-y-1 list-disc list-inside text-slate-600">
-            <li>Vos données ne sont jamais vendues ni utilisées pour de la publicité.</li>
-            <li>Ne fournissez pas votre vrai nom pour garantir votre anonymat.</li>
-            <li>Vous pouvez exporter ou supprimer vos données à tout moment.</li>
-          </ul>
+          <p className="text-slate-600">Choisissez simplement un pseudo. Les détails sont disponibles dans notre politique de confidentialité.</p>
         </div>
 
         <form onSubmit={handleSubmit} autoComplete="on" className="flex flex-col gap-4">
@@ -71,9 +68,6 @@ export default function Register() {
               onChange={(e) => setUsername(e.target.value)}
               className="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
-            <p className="text-xs text-slate-400 mt-2">
-              Évitez d'utiliser votre vrai prénom, nom ou une information qui vous identifie : cela protège votre vie privée.
-            </p>
           </div>
 
           <input
@@ -88,10 +82,7 @@ export default function Register() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
-            <p className="text-xs text-slate-400 mt-2">
-              Facultatif : utile uniquement pour récupérer l'accès à votre compte en cas d'oubli du mot de passe.
-              Aucun email de publicité ne sera envoyé.
-            </p>
+            <p className="text-xs text-slate-400 mt-2">Facultatif : utile pour récupérer l'accès au compte.</p>
           </div>
 
           <label className="flex items-start gap-2.5 text-xs text-slate-600 pt-1 cursor-pointer select-none">

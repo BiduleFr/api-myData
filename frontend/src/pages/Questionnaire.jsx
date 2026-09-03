@@ -28,8 +28,8 @@ const MODE_LEVEL = {
 
 const MODES = [
   { value: 'rapide', label: 'Rapide', hint: '~1-2 min', icon: '⚡' },
-  { value: 'standard', label: 'Standard', hint: 'votre config habituelle', icon: '🙂' },
-  { value: 'approfondi', label: 'Approfondi', hint: 'tout activer', icon: '🔍' }
+  { value: 'standard', label: 'Intermédiaire', hint: 'votre sélection habituelle', icon: '🙂' },
+  { value: 'approfondi', label: 'Long', hint: 'toutes les questions', icon: '🔍' }
 ];
 
 function moduleStatus(mod, preferences, answers) {
@@ -89,7 +89,7 @@ export default function Questionnaire() {
   }, [token, date, withinWindow]);
 
   const flow = useMemo(
-    () => buildQuestionFlow(modules, preferences, answers, { levelOverride: MODE_LEVEL[mode] }),
+    () => buildQuestionFlow(modules, preferences, answers, { levelOverride: MODE_LEVEL[mode], mode }),
     [modules, preferences, answers, mode]
   );
   const current = flow[Math.min(index, flow.length - 1)];
@@ -109,6 +109,15 @@ export default function Questionnaire() {
     setAnswers(next);
     setAnswerStates(nextStates);
     scheduleAutosave(next, journalEntry, nextStates);
+  }
+
+  function saveDefaultAnswer(question) {
+    if (answers[question.id] !== undefined || question.config?.defaultValue === undefined) return;
+    const nextAnswers = { ...answers, [question.id]: question.config.defaultValue };
+    const nextStates = { ...answerStates, [question.id]: 'answered' };
+    setAnswers(nextAnswers);
+    setAnswerStates(nextStates);
+    scheduleAutosave(nextAnswers, journalEntry, nextStates);
   }
 
   function chooseContext(value) {
@@ -136,6 +145,7 @@ export default function Questionnaire() {
   }
 
   function goNext() {
+    saveDefaultAnswer(current);
     if (index < flow.length - 1) setIndex(index + 1);
   }
   function goBack() {
@@ -145,7 +155,13 @@ export default function Questionnaire() {
 
   async function finish() {
     setSaving(true);
-    const entry = await api.saveEntry({ date, answers, answerStates, journalEntry, completionStatus: 'complete' }, token);
+    const finalAnswers = current?.config?.defaultValue !== undefined && answers[current.id] === undefined
+      ? { ...answers, [current.id]: current.config.defaultValue }
+      : answers;
+    const finalAnswerStates = current?.config?.defaultValue !== undefined && answerStates[current.id] === undefined
+      ? { ...answerStates, [current.id]: 'answered' }
+      : answerStates;
+    const entry = await api.saveEntry({ date, answers: finalAnswers, answerStates: finalAnswerStates, journalEntry, completionStatus: 'complete' }, token);
     setSaving(false);
     setResult(entry);
     setPhase('result');
@@ -318,7 +334,9 @@ export default function Questionnaire() {
   }
 
   const isLast = index === flow.length - 1;
-  const canGoNext = !current.required || answers[current.id] !== undefined;
+  const currentValue = current.id === 'bilan_journal' ? journalEntry : answers[current.id];
+  const hasDefaultValue = current.config?.defaultValue !== undefined;
+  const canGoNext = !current.required || currentValue !== undefined || hasDefaultValue;
 
   return (
     <Layout>
@@ -336,16 +354,32 @@ export default function Questionnaire() {
           <ProgressBar current={index + 1} total={flow.length} />
         </div>
 
+        <div className="grid grid-cols-3 gap-2" aria-label="Mode du questionnaire">
+          {MODES.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => { setMode(option.value); setIndex(0); }}
+              className={`rounded-lg border px-2 py-2 text-xs font-semibold transition-colors ${
+                mode === option.value ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-200 bg-white text-slate-600 hover:border-brand-300'
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+
         <div key={current.id} className="animate-fade-up text-center space-y-8">
           <h1 className="text-xl sm:text-2xl font-bold text-slate-800">{current.label}</h1>
-          <QuestionRenderer question={current} value={answers[current.id]} onChange={handleAnswer} />
+          <QuestionRenderer question={current} value={currentValue} onChange={current.id === 'bilan_journal' ? handleJournal : handleAnswer} />
+          {current.help && current.type !== 'text' && <p className="mx-auto max-w-md text-sm text-slate-500">{current.help}</p>}
         </div>
 
         <div className="flex items-center justify-between pt-4">
           <button onClick={goBack} className="btn-ghost">← Retour</button>
           <span className="text-xs text-slate-300">{saving ? 'Enregistrement…' : 'Enregistré'}</span>
           {isLast ? (
-            <button onClick={() => setPhase('journal')} className="btn-primary">Continuer →</button>
+            <button onClick={finish} disabled={!canGoNext} className="btn-primary">Enregistrer ma journée</button>
           ) : (
             <button onClick={goNext} disabled={!canGoNext} className="btn-primary">Suivant →</button>
           )}

@@ -112,20 +112,13 @@ export default function About() {
           </div>
         </section>
 
-        {/* 3. Confidentialité & Protection des données */}
         <section className="card p-6 sm:p-8 space-y-4">
           <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-            <span>🔒</span> Protection de vos données personnelles
+            <span>🔒</span> Vie privée et données
           </h2>
           <p className="text-sm text-slate-600 leading-relaxed">
-            Vos données de bien-être sont sensibles. Nous appliquons des règles de conception strictes :
+            Retrouvez les informations sur la gestion, l'exportation et la suppression de vos données dans la politique de confidentialité.
           </p>
-          <ul className="text-sm text-slate-600 space-y-2 list-disc list-inside">
-            <li><strong>Pseudonymat encouragé :</strong> aucun besoin de fournir votre vrai nom ni votre prénom.</li>
-            <li><strong>Email facultatif :</strong> utile uniquement comme secours en cas d'oubli de mot de passe.</li>
-            <li><strong>Aucune revente de données :</strong> aucune publicité ciblée, aucun profilage commercial.</li>
-            <li><strong>Contrôle total :</strong> export de vos données en JSON et suppression définitive en un clic.</li>
-          </ul>
           <div className="flex flex-wrap gap-3 pt-2">
             <Link to="/confidentialite" className="btn-secondary text-sm">
               Consulter la Politique de Confidentialité →

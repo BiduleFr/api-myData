@@ -1,5 +1,6 @@
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useAppearance } from '../context/AppearanceContext.jsx';
 
 const LINKS = [
   { to: '/', label: 'Accueil', icon: '🏠' },
@@ -11,6 +12,7 @@ const LINKS = [
 
 export default function Layout({ children }) {
   const { user, token, isGuest, logout } = useAuth();
+  const { theme, setTheme, locale, setLocale } = useAppearance();
   const navigate = useNavigate();
 
   function handleLogout() {
@@ -41,9 +43,8 @@ export default function Layout({ children }) {
             ))}
           </nav>
           <div className="flex items-center gap-2">
-            <Link to="/bienvenue" className="hidden sm:inline btn-ghost text-xs text-slate-500 hover:text-brand-600">
-              Page d'arrivée
-            </Link>
+            <button type="button" onClick={() => setLocale(locale === 'fr' ? 'en' : 'fr')} className="btn-ghost px-2 text-xs" aria-label="Changer de langue">{locale.toUpperCase()}</button>
+            <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="btn-ghost px-2 text-sm" aria-label="Changer de thème">{theme === 'dark' ? '☀️' : '🌙'}</button>
             {user?.username && (
               <span className="hidden sm:inline text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">
                 {user.username}
@@ -79,8 +80,6 @@ export default function Layout({ children }) {
         <div className="max-w-3xl mx-auto px-5 flex flex-wrap justify-center items-center gap-x-4 gap-y-2">
           <Link to="/" className="hover:text-brand-600 transition-colors">Accueil</Link>
           <span>•</span>
-          <Link to="/bienvenue" className="hover:text-brand-600 transition-colors">Page d'arrivée</Link>
-          <span>•</span>
           <Link to="/a-propos" className="hover:text-brand-600 transition-colors">À propos & Équipe</Link>
           <span>•</span>
           <Link to="/conditions" className="hover:text-brand-600 transition-colors">Conditions d'utilisation</Link>
@@ -89,7 +88,7 @@ export default function Layout({ children }) {
           <span>•</span>
           <Link to="/a-propos#contact" className="hover:text-brand-600 transition-colors">Contact</Link>
         </div>
-        <p className="mt-2 text-[11px] text-slate-400">Élan · Auto-observation quotidienne & bienveillante · Données protégées</p>
+        <p className="mt-2 text-[11px] text-slate-400">Élan · Auto-observation quotidienne et bienveillante</p>
       </footer>
 
       <nav className="sm:hidden sticky bottom-0 z-10 bg-white/90 backdrop-blur border-t border-black/5 flex justify-around py-2">

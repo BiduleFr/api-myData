@@ -9,6 +9,9 @@ import TextQuestion from './TextQuestion.jsx';
 import QuickStepperQuestion from './QuickStepperQuestion.jsx';
 import BodyMapQuestion from './BodyMapQuestion.jsx';
 import TimelineQuestion from './TimelineQuestion.jsx';
+import RatingQuestion from './RatingQuestion.jsx';
+import DurationQuestion from './DurationQuestion.jsx';
+import DualRatingQuestion from './DualRatingQuestion.jsx';
 
 const REGISTRY = {
   slider: SliderQuestion,
@@ -21,7 +24,10 @@ const REGISTRY = {
   text: TextQuestion,
   quickstep: QuickStepperQuestion,
   bodymap: BodyMapQuestion,
-  timeline: TimelineQuestion
+  timeline: TimelineQuestion,
+  rating: RatingQuestion,
+  duration: DurationQuestion,
+  dualrating: DualRatingQuestion
 };
 
 export default function QuestionRenderer({ question, value, onChange }) {

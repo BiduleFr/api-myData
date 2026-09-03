@@ -13,24 +13,24 @@
         "required": true,
         "weight": 1.6,
         "label": "Combien de temps avez-vous dormi ?",
-        "config": { "min": 0, "max": 12, "step": 0.25, "unit": "h", "targetMin": 7, "targetMax": 9 }
+        "config": { "min": 0, "max": 12, "step": 0.25, "unit": "h", "targetMin": 7, "targetMax": 9, "defaultValue": 6 }
       },
       {
         "id": "sommeil_qualite",
-        "type": "scale",
+        "type": "rating",
         "level": "essentiel",
         "required": true,
         "weight": 1.4,
         "label": "Comment etait la qualite de votre sommeil ?",
-        "config": { "min": 1, "max": 5 }
+        "config": { "min": 1, "max": 5, "defaultValue": 3, "labels": ["Impossible de dormir", "Réveils fréquents", "Comme sur un nuage"] }
       },
       {
         "id": "sommeil_recup",
-        "type": "scale",
+        "type": "rating",
         "level": "detaille",
         "weight": 1.2,
         "label": "A quel point vous sentez-vous recupere(e) ?",
-        "config": { "min": 0, "max": 10 }
+        "config": { "min": 1, "max": 10, "defaultValue": 5 }
       },
       {
         "id": "sommeil_endormissement",
@@ -60,7 +60,7 @@
         "level": "detaille",
         "weight": 0,
         "label": "Duree de la sieste",
-        "config": { "min": 0, "max": 90, "step": 5, "unit": "min" }
+        "config": { "min": 0, "max": 90, "step": 5, "unit": "min", "defaultValue": 0 }
       },
       {
         "id": "sommeil_ecran_soir",
@@ -85,6 +85,14 @@
     "weight": 0.14,
     "questions": [
       {
+        "id": "alim_hydratation_subjective",
+        "type": "rating",
+        "level": "essentiel",
+        "weight": 1.2,
+        "label": "Avez-vous suffisamment bu aujourd'hui ?",
+        "config": { "min": 1, "max": 5, "defaultValue": 3, "labels": ["J'ai souvent eu soif", "Moyen", "Bien hydraté"] }
+      },
+      {
         "id": "alim_nombre_repas",
         "type": "quickstep",
         "level": "essentiel",
@@ -94,12 +102,28 @@
         "config": { "max": 5, "plusLabel": "5+" }
       },
       {
-        "id": "alim_hydratation_subjective",
-        "type": "scale",
-        "level": "essentiel",
-        "weight": 1.2,
-        "label": "Avez-vous suffisamment bu aujourd'hui ?",
-        "config": { "min": 1, "max": 5, "labels": ["J'ai souvent eu soif", "Peu bu", "Moyen", "Bien bu", "Bien hydrate"] }
+        "id": "alim_boissons",
+        "type": "multichoice",
+        "level": "detaille",
+        "weight": 0,
+        "label": "Quelles boissons avez-vous bues aujourd'hui ?",
+        "options": [
+          { "value": "eau", "label": "Eau" },
+          { "value": "sodas", "label": "Sodas" },
+          { "value": "alcool", "label": "Alcool" },
+          { "value": "alcool_fort", "label": "Alcool fort" },
+          { "value": "the", "label": "Thé" },
+          { "value": "jus_frais", "label": "Jus frais" },
+          { "value": "jus_industriel", "label": "Jus industriel" }
+        ]
+      },
+      {
+        "id": "alim_cafe",
+        "type": "number",
+        "level": "detaille",
+        "weight": 0,
+        "label": "Combien de cafés avez-vous consommés ?",
+        "config": { "min": 0, "max": 20, "step": 1, "unit": "", "defaultValue": 0 }
       },
       {
         "id": "alim_satiete",
@@ -117,27 +141,22 @@
       },
       {
         "id": "alim_qualite_globale",
-        "type": "scale",
+        "type": "rating",
         "level": "essentiel",
         "weight": 1,
-        "label": "Qualite globale de votre alimentation",
-        "config": { "min": 0, "max": 10 }
-      },
-      {
-        "id": "alim_hydratation",
-        "type": "number",
-        "level": "detaille",
-        "weight": 0.6,
-        "label": "Combien de verres d'eau ?",
-        "config": { "min": 0, "max": 20, "unit": "", "target": 8 }
-      },
-      {
-        "id": "alim_repas_principaux",
-        "type": "number",
-        "level": "detaille",
-        "weight": 0.6,
-        "label": "Nombre de repas principaux",
-        "config": { "min": 0, "max": 6, "unit": "" }
+        "label": "Qualité nutritionnelle de vos repas",
+        "config": { "min": 1, "max": 10, "defaultValue": 5 },
+        "modeOverrides": {
+          "rapide": {
+            "type": "rating",
+            "label": "Qualité nutritionnelle globale de votre alimentation",
+            "config": { "min": 1, "max": 10, "defaultValue": 5 }
+          },
+          "approfondi": {
+            "type": "dualrating",
+            "config": { "min": 1, "max": 10, "defaultValue": 5 }
+          }
+        }
       },
       {
         "id": "alim_fruits_legumes",
@@ -145,7 +164,15 @@
         "level": "detaille",
         "weight": 0.8,
         "label": "Portions fruits et legumes",
-        "config": { "min": 0, "max": 12, "unit": "", "target": 5 }
+        "config": { "min": 0, "max": 12, "step": 1, "unit": "", "target": 5, "help": "Une portion correspond environ à un tiers d'une assiette classique normalement remplie." }
+      },
+      {
+        "id": "alim_gout_repas",
+        "type": "rating",
+        "level": "detaille",
+        "weight": 0,
+        "label": "Comment avez-vous trouvé le goût de vos repas aujourd'hui ?",
+        "config": { "min": 1, "max": 10, "defaultValue": 5, "labels": ["Peu agréable", "Correct", "Excellent"] }
       },
       {
         "id": "alim_ultra_transformes",
@@ -195,20 +222,20 @@
       },
       {
         "id": "actif_duree",
-        "type": "slider",
+        "type": "duration",
         "level": "essentiel",
         "weight": 1.1,
         "label": "Duree totale d'activite",
-        "config": { "min": 0, "max": 180, "step": 5, "unit": "min", "target": 45 },
+        "config": { "values": [0, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 270, 300, 330, 360, 390, 420, 450, 480, 510, 540, 570, 600, 630, 660, 690, 720, 750, 780, 810, 840, 870, 900, 930, 960, 990, 1020, 1050, 1080, 1110, 1140, 1170, 1200, 1230, 1260, 1290, 1320, 1350, 1380, 1410, 1440], "target": 45 },
         "when": { "all": [{ "questionId": "actif_aujourdhui", "op": "eq", "value": true }] }
       },
       {
         "id": "actif_intensite",
-        "type": "scale",
+        "type": "rating",
         "level": "essentiel",
         "weight": 0.7,
         "label": "Intensite ressentie",
-        "config": { "min": 0, "max": 10 },
+        "config": { "min": 1, "max": 10, "defaultValue": 5 },
         "when": { "all": [{ "questionId": "actif_aujourdhui", "op": "eq", "value": true }] }
       },
       {
@@ -347,11 +374,11 @@
       },
       {
         "id": "travail_charge",
-        "type": "scale",
+        "type": "rating",
         "level": "essentiel",
         "weight": 0.9,
         "label": "Charge mentale et pression ressentie",
-        "config": { "min": 0, "max": 10, "invert": true }
+        "config": { "min": 1, "max": 10, "invert": true, "defaultValue": 5 }
       },
       {
         "id": "travail_tache_cle",
@@ -411,7 +438,14 @@
         "required": true,
         "weight": 1.5,
         "label": "Comment votre humeur a-t-elle evolue au cours de la journee ?",
-        "config": { "points": 6, "levels": 5 }
+        "config": { "points": 6, "levels": 5, "defaultValue": { "matin": 3, "matinee": 3, "midi": 3, "aprem": 3, "fin_journee": 3, "soir": 3 } },
+        "modeOverrides": {
+          "rapide": {
+            "type": "rating",
+            "label": "Humeur générale",
+            "config": { "min": 1, "max": 5, "defaultValue": 3 }
+          }
+        }
       },
       {
         "id": "mental_stress_evolution",
@@ -419,54 +453,46 @@
         "level": "essentiel",
         "weight": 1.2,
         "label": "Comment votre stress a-t-il evolue au cours de la journee ?",
-        "config": { "points": 6, "levels": 5, "invert": true }
+        "config": { "points": 6, "levels": 5, "invert": true, "defaultValue": { "matin": 3, "matinee": 3, "midi": 3, "aprem": 3, "fin_journee": 3, "soir": 3 } },
+        "modeOverrides": {
+          "rapide": {
+            "type": "rating",
+            "label": "Niveau de stress",
+            "config": { "min": 1, "max": 5, "invert": true, "defaultValue": 3 }
+          }
+        }
       },
       {
         "id": "mental_confiance",
-        "type": "scale",
+        "type": "rating",
         "level": "essentiel",
         "weight": 1,
         "label": "Confiance en soi",
-        "config": { "min": 1, "max": 10 }
+        "config": { "min": 1, "max": 10, "defaultValue": 5 }
       },
       {
         "id": "mental_controle",
-        "type": "scale",
+        "type": "rating",
         "level": "detaille",
         "weight": 0.8,
         "label": "Sentiment de controle sur votre journee",
-        "config": { "min": 0, "max": 10 }
+        "config": { "min": 1, "max": 10, "defaultValue": 5 }
       },
       {
         "id": "mental_anxiete",
-        "type": "scale",
+        "type": "rating",
         "level": "detaille",
         "weight": 0.8,
         "label": "Anxiete ressentie",
-        "config": { "min": 0, "max": 10, "invert": true }
+        "config": { "min": 1, "max": 10, "invert": true, "defaultValue": 5 }
       },
       {
         "id": "mental_relations",
-        "type": "scale",
+        "type": "rating",
         "level": "avance",
         "weight": 0.4,
         "label": "Qualite des interactions sociales",
-        "config": { "min": 0, "max": 10 }
-      },
-      {
-        "id": "mental_declencheur_stress",
-        "type": "choice",
-        "level": "avance",
-        "weight": 0,
-        "label": "Principal declencheur de stress",
-        "options": [
-          { "value": "travail", "label": "Travail" },
-          { "value": "relations", "label": "Relations" },
-          { "value": "sante", "label": "Sante" },
-          { "value": "argent", "label": "Argent" },
-          { "value": "autre", "label": "Autre" }
-        ],
-        "when": { "all": [{ "questionId": "mental_stress_evolution", "op": "exists", "value": true }] }
+        "config": { "min": 1, "max": 10, "defaultValue": 5 }
       }
     ]
   },
@@ -479,39 +505,51 @@
     "questions": [
       {
         "id": "bilan_note",
-        "type": "scale",
+        "type": "rating",
         "level": "essentiel",
         "required": true,
         "weight": 1.2,
-        "label": "Note de votre journee",
-        "config": { "min": 0, "max": 10 }
-      },
-      {
-        "id": "bilan_journal",
-        "type": "text",
-        "level": "essentiel",
-        "weight": 0.8,
-        "label": "Racontez brievement votre journee",
-        "help": "Un moment important, un evenement, avec qui vous etiez, quelque chose dont vous voulez vous souvenir, un point positif, un point negatif, une anecdote... (quelques phrases seulement, ce n'est pas un journal detaille)"
+        "label": "Satisfaction générale de votre journée",
+        "config": { "min": 1, "max": 10, "defaultValue": 5 }
       },
       {
         "id": "bilan_fierte",
-        "type": "scale",
+        "type": "rating",
         "level": "detaille",
         "weight": 1,
         "label": "A quel point etes-vous fier(e) de ce que vous avez fait ?",
-        "config": { "min": 0, "max": 10 }
+        "config": { "min": 1, "max": 10, "defaultValue": 5 }
       },
       {
         "id": "bilan_progression",
         "type": "choice",
         "level": "detaille",
         "weight": 1,
-        "label": "Avez-vous avance vers un objectif important ?",
+        "label": "Avez-vous avancé sur des projets personnels ?",
         "options": [
           { "value": "none", "label": "Pas aujourd'hui", "score": 25 },
           { "value": "small", "label": "Un peu", "score": 65 },
           { "value": "clear", "label": "Oui clairement", "score": 100 }
+        ]
+      },
+      {
+        "id": "bilan_journal",
+        "type": "text",
+        "level": "essentiel",
+        "weight": 0,
+        "label": "Racontez globalement votre journée et ses points forts pour vous en souvenir",
+        "help": "Cette réponse sert uniquement à garder une trace de votre journée et n'entre pas dans le calcul de votre score."
+      },
+      {
+        "id": "bilan_journee_speciale",
+        "type": "choice",
+        "level": "avance",
+        "weight": 0,
+        "label": "C'était une journée spéciale ?",
+        "options": [
+          { "value": "non", "label": "Non" },
+          { "value": "un_peu_exceptionnelle", "label": "Un peu exceptionnelle" },
+          { "value": "tres_speciale", "label": "Très spéciale" }
         ]
       },
       {
