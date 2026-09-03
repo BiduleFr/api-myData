@@ -29,6 +29,13 @@ function scoreQuestion(question, value) {
       if (v < targetMin) return clamp((v / targetMin) * 100);
       return clamp(100 - ((v - targetMax) / (max - targetMax)) * 100);
     }
+    case 'duration': {
+      const { values = [], target = 60, invert = false } = question.config || {};
+      if (!values.includes(Number(value))) return null;
+      let s = clamp((Number(value) / target) * 100);
+      if (invert) s = clamp(100 - s);
+      return s;
+    }
     case 'number': {
       const { target = 60, invert = false } = question.config || {};
       let s = clamp((Number(value) / target) * 100);

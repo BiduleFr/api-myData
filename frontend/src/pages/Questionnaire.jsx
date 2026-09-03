@@ -94,6 +94,15 @@ export default function Questionnaire() {
   );
   const current = flow[Math.min(index, flow.length - 1)];
 
+  function changeMode(nextMode) {
+    const currentQuestionId = current?.id;
+    setMode(nextMode);
+    const nextFlow = buildQuestionFlow(modules, preferences, answers, { levelOverride: MODE_LEVEL[nextMode], mode: nextMode });
+    const nextIndex = nextFlow.findIndex((question) => question.id === currentQuestionId);
+    if (nextIndex >= 0) setIndex(nextIndex);
+    else setIndex(Math.min(index, Math.max(0, nextFlow.length - 1)));
+  }
+
   const scheduleAutosave = useCallback((nextAnswers, nextJournal = journalEntry, nextStates = answerStates) => {
     setSaving(true);
     clearTimeout(saveTimer.current);
@@ -336,7 +345,7 @@ export default function Questionnaire() {
   const isLast = index === flow.length - 1;
   const currentValue = current.id === 'bilan_journal' ? journalEntry : answers[current.id];
   const hasDefaultValue = current.config?.defaultValue !== undefined;
-  const canGoNext = !current.required || currentValue !== undefined || hasDefaultValue;
+  const canGoNext = true;
 
   return (
     <Layout>
@@ -359,7 +368,7 @@ export default function Questionnaire() {
             <button
               key={option.value}
               type="button"
-              onClick={() => { setMode(option.value); setIndex(0); }}
+              onClick={() => changeMode(option.value)}
               className={`rounded-lg border px-2 py-2 text-xs font-semibold transition-colors ${
                 mode === option.value ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-200 bg-white text-slate-600 hover:border-brand-300'
               }`}
@@ -375,7 +384,7 @@ export default function Questionnaire() {
           {current.help && current.type !== 'text' && <p className="mx-auto max-w-md text-sm text-slate-500">{current.help}</p>}
         </div>
 
-        <div className="flex items-center justify-between pt-4">
+        <div className="sticky bottom-0 -mx-5 flex items-center justify-between border-t border-slate-200 bg-white/95 px-5 py-4 backdrop-blur dark:border-slate-700 dark:bg-slate-900/95">
           <button onClick={goBack} className="btn-ghost">← Retour</button>
           <span className="text-xs text-slate-300">{saving ? 'Enregistrement…' : 'Enregistré'}</span>
           {isLast ? (

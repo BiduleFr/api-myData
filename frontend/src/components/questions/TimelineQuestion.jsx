@@ -11,16 +11,36 @@ export default function TimelineQuestion({ question, value, onChange }) {
   const defaults = question.config?.defaultValue || Object.fromEntries(POINTS.map(({ id }) => [id, 3]));
   const current = value && typeof value === 'object' ? { ...defaults, ...value } : defaults;
 
+  const chartPoints = POINTS.map((point, index) => {
+    const x = 8 + index * (84 / (POINTS.length - 1));
+    const y = 90 - ((current[point.id] - 1) / 4) * 80;
+    return `${x},${y}`;
+  }).join(' ');
+  const globalValue = Math.round(POINTS.reduce((sum, point) => sum + current[point.id], 0) / POINTS.length);
+
   function changePoint(pointId, nextValue) {
     onChange({ ...current, [pointId]: Number(nextValue) });
   }
 
+  function changeAll(nextValue) {
+    onChange(Object.fromEntries(POINTS.map(({ id }) => [id, Number(nextValue)])));
+  }
+
   return (
     <div className="mx-auto w-full max-w-2xl rounded-xl border border-slate-200 bg-white p-4">
-      <div className="mb-3 flex justify-between text-xs font-medium text-slate-500">
-        <span>{question.config?.invert ? 'Très stressé' : 'Très mauvaise'}</span>
-        <span>{question.config?.invert ? 'Très calme' : 'Très bonne'}</span>
+      <div className="mb-4 rounded-lg bg-slate-50 px-4 py-3">
+        <label className="block text-sm font-semibold text-slate-600">
+          Ajuster tous les points
+          <input type="range" min="1" max="5" step="1" value={globalValue} onChange={(event) => changeAll(event.target.value)} className="elan-rating mt-3 w-full" aria-label="Ajuster tous les points" />
+        </label>
       </div>
+      <svg viewBox="0 0 100 100" className="mb-2 h-28 w-full overflow-visible" role="img" aria-label="Évolution de la journée">
+        <polyline points={chartPoints} fill="none" stroke="#6a3fe3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        {POINTS.map((point, index) => {
+          const [x, y] = chartPoints.split(' ')[index].split(',');
+          return <circle key={point.id} cx={x} cy={y} r="3" fill="#6a3fe3" />;
+        })}
+      </svg>
       <div className="grid grid-cols-6 gap-2 border-b-2 border-slate-200 pb-3">
         {POINTS.map((point) => (
           <label key={point.id} className="flex min-w-0 flex-col items-center gap-2 text-center">
