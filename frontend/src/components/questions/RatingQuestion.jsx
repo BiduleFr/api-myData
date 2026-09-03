@@ -1,7 +1,6 @@
 export default function RatingQuestion({ question, value, onChange }) {
   const { min = 1, max = 10, defaultValue = Math.ceil((min + max) / 2), labels = [] } = question.config || {};
   const current = value ?? defaultValue;
-  const progress = ((current - min) / (max - min || 1)) * 100;
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -16,7 +15,7 @@ export default function RatingQuestion({ question, value, onChange }) {
         value={current}
         onChange={(event) => onChange(Number(event.target.value))}
         className="elan-rating w-full"
-        style={{ background: `linear-gradient(90deg, #ef4444 0%, #f59e0b 45%, #22c55e 100%)`, backgroundSize: `${Math.max(progress, 8)}% 100%, 100% 100%` }}
+        style={{ background: 'linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #22c55e 100%)' }}
         aria-label={question.label}
       />
       {labels.length > 0 && (

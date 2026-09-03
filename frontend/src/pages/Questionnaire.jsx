@@ -94,6 +94,10 @@ export default function Questionnaire() {
   );
   const current = flow[Math.min(index, flow.length - 1)];
 
+  useEffect(() => {
+    if (flow.length && index >= flow.length) setIndex(flow.length - 1);
+  }, [flow.length, index]);
+
   function changeMode(nextMode) {
     const currentQuestionId = current?.id;
     setMode(nextMode);
@@ -349,7 +353,7 @@ export default function Questionnaire() {
 
   return (
     <Layout>
-      <div className="max-w-lg mx-auto space-y-8">
+      <div className="max-w-lg mx-auto space-y-8 pb-24">
         {forceEdit && (
           <div className="text-center text-xs text-amber-600 bg-amber-50 rounded-xl py-2 px-3">
             Modification d'une journée ancienne ({date})
@@ -384,7 +388,7 @@ export default function Questionnaire() {
           {current.help && current.type !== 'text' && <p className="mx-auto max-w-md text-sm text-slate-500">{current.help}</p>}
         </div>
 
-        <div className="sticky bottom-0 -mx-5 flex items-center justify-between border-t border-slate-200 bg-white/95 px-5 py-4 backdrop-blur dark:border-slate-700 dark:bg-slate-900/95">
+        <div className="fixed inset-x-5 bottom-16 z-20 mx-auto flex max-w-lg items-center justify-between px-1 py-2 sm:bottom-4">
           <button onClick={goBack} className="btn-ghost">← Retour</button>
           <span className="text-xs text-slate-300">{saving ? 'Enregistrement…' : 'Enregistré'}</span>
           {isLast ? (

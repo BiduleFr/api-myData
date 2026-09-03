@@ -30,7 +30,7 @@
         "level": "detaille",
         "weight": 1.2,
         "label": "A quel point vous sentez-vous recupere(e) ?",
-        "config": { "min": 1, "max": 10, "defaultValue": 5 }
+        "config": { "min": 0, "max": 10, "defaultValue": 5 }
       },
       {
         "id": "sommeil_endormissement",
@@ -100,6 +100,7 @@
         "label": "Quelles boissons avez-vous bues aujourd'hui ?",
         "options": [
           { "value": "eau", "label": "Eau" },
+          { "value": "cafe", "label": "Café" },
           { "value": "sodas", "label": "Sodas" },
           { "value": "alcool", "label": "Alcool" },
           { "value": "alcool_fort", "label": "Alcool fort" },
@@ -114,7 +115,17 @@
         "level": "detaille",
         "weight": 0,
         "label": "Combien de cafés avez-vous consommés ?",
-        "config": { "min": 0, "max": 20, "step": 1, "unit": "", "defaultValue": 0 }
+        "config": { "min": 0, "max": 20, "step": 1, "unit": "", "defaultValue": 0 },
+        "when": { "all": [{ "questionId": "alim_boissons", "op": "includes", "value": "cafe" }] }
+      },
+      {
+        "id": "alim_alcool",
+        "type": "slider",
+        "level": "detaille",
+        "weight": 0,
+        "label": "Combien de verres d'alcool avez-vous consommés ?",
+        "config": { "min": 0, "max": 20, "step": 1, "unit": "", "defaultValue": 0 },
+        "when": { "any": [{ "questionId": "alim_boissons", "op": "includes", "value": "alcool" }, { "questionId": "alim_boissons", "op": "includes", "value": "alcool_fort" }] }
       },
       {
         "id": "alim_nombre_repas",
@@ -266,6 +277,11 @@
           { "value": "football", "label": "Football", "score": 90 },
           { "value": "velo", "label": "Vélo", "score": 85 },
           { "value": "course", "label": "Course", "score": 90 },
+          { "value": "danse", "label": "Danse", "score": 85 },
+          { "value": "combat", "label": "Sport de combat", "score": 90 },
+          { "value": "rugby", "label": "Rugby", "score": 90 },
+          { "value": "basketball", "label": "Basket-ball", "score": 90 },
+          { "value": "yoga", "label": "Yoga", "score": 85 },
           { "value": "mobilite", "label": "Mobilite", "score": 85 },
           { "value": "autre", "label": "Autre", "score": 80 }
         ],
@@ -281,11 +297,11 @@
       },
       {
         "id": "actif_recuperation",
-        "type": "scale",
+        "type": "rating",
         "level": "avance",
         "weight": 0.8,
         "label": "Qualite de recuperation physique",
-        "config": { "min": 0, "max": 10 },
+        "config": { "min": 0, "max": 10, "defaultValue": 5 },
         "when": { "all": [{ "questionId": "actif_aujourdhui", "op": "eq", "value": true }] }
       }
     ]
@@ -326,11 +342,11 @@
       },
       {
         "id": "douleur_intensite",
-        "type": "scale",
+        "type": "rating",
         "level": "essentiel",
         "weight": 0,
         "label": "Intensite de la douleur",
-        "config": { "min": 0, "max": 10, "invert": true },
+        "config": { "min": 0, "max": 10, "invert": true, "defaultValue": 5 },
         "when": { "all": [{ "questionId": "douleur_presente", "op": "eq", "value": true }] }
       },
       {
@@ -355,6 +371,8 @@
         "options": [
           { "value": "na", "label": "Non applicable", "score": 50 },
           { "value": "yes", "label": "Oui", "score": 100 },
+          { "value": "un_peu", "label": "Un peu", "score": 60 },
+          { "value": "beaucoup", "label": "Beaucoup", "score": 85 },
           { "value": "no", "label": "Non", "score": 20 }
         ]
       }
@@ -396,7 +414,7 @@
         "level": "essentiel",
         "weight": 0.9,
         "label": "Charge mentale et pression ressentie",
-        "config": { "min": 1, "max": 10, "invert": true, "defaultValue": 5 }
+        "config": { "min": 0, "max": 10, "invert": true, "defaultValue": 5 }
       },
       {
         "id": "travail_tache_cle",
@@ -488,7 +506,7 @@
         "level": "essentiel",
         "weight": 1,
         "label": "Confiance en soi",
-        "config": { "min": 1, "max": 10, "defaultValue": 5 }
+        "config": { "min": 0, "max": 10, "defaultValue": 5 }
       },
       {
         "id": "mental_controle",
@@ -496,7 +514,7 @@
         "level": "detaille",
         "weight": 0.8,
         "label": "Sentiment de controle sur votre journee",
-        "config": { "min": 1, "max": 10, "defaultValue": 5 }
+        "config": { "min": 0, "max": 10, "defaultValue": 5 }
       },
       {
         "id": "mental_anxiete",
@@ -504,7 +522,7 @@
         "level": "detaille",
         "weight": 0.8,
         "label": "Anxiete ressentie",
-        "config": { "min": 1, "max": 10, "invert": true, "defaultValue": 5 }
+        "config": { "min": 0, "max": 10, "invert": true, "defaultValue": 5 }
       },
       {
         "id": "mental_relations",
@@ -512,7 +530,7 @@
         "level": "avance",
         "weight": 0.4,
         "label": "Qualite des interactions sociales",
-        "config": { "min": 1, "max": 10, "defaultValue": 5 }
+        "config": { "min": 0, "max": 10, "defaultValue": 5 }
       }
     ]
   },
@@ -530,7 +548,7 @@
         "required": true,
         "weight": 1.2,
         "label": "Satisfaction générale de votre journée",
-        "config": { "min": 1, "max": 10, "defaultValue": 5 }
+        "config": { "min": 0, "max": 10, "defaultValue": 5 }
       },
       {
         "id": "bilan_progression",
