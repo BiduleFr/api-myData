@@ -13,7 +13,15 @@
         "required": true,
         "weight": 1.6,
         "label": "Combien de temps avez-vous dormi ?",
-        "config": { "min": 0, "max": 12, "step": 0.25, "unit": "h", "targetMin": 7, "targetMax": 9, "defaultValue": 6 }
+        "config": {
+          "min": 0,
+          "max": 12,
+          "step": 0.25,
+          "unit": "h",
+          "targetMin": 7,
+          "targetMax": 9,
+          "defaultValue": 6
+        }
       },
       {
         "id": "sommeil_qualite",
@@ -22,7 +30,16 @@
         "required": true,
         "weight": 1.4,
         "label": "Comment etait la qualite de votre sommeil ?",
-        "config": { "min": 1, "max": 5, "defaultValue": 3, "labels": ["Impossible de dormir", "Réveils fréquents", "Comme sur un nuage"] }
+        "config": {
+          "min": 1,
+          "max": 5,
+          "defaultValue": 3,
+          "labels": [
+            "Impossible de dormir",
+            "Réveils fréquents",
+            "Comme sur un nuage"
+          ]
+        }
       },
       {
         "id": "sommeil_recup",
@@ -30,7 +47,11 @@
         "level": "detaille",
         "weight": 1.2,
         "label": "A quel point vous sentez-vous recupere(e) ?",
-        "config": { "min": 0, "max": 10, "defaultValue": 5 }
+        "config": {
+          "min": 0,
+          "max": 10,
+          "defaultValue": 5
+        }
       },
       {
         "id": "sommeil_endormissement",
@@ -39,11 +60,31 @@
         "weight": 0.8,
         "label": "L'endormissement a ete...",
         "options": [
-          { "value": "immediat", "label": "Immediat", "score": 100 },
-          { "value": "rapide", "label": "Rapide", "score": 85 },
-          { "value": "moyen", "label": "Moyen", "score": 60 },
-          { "value": "long", "label": "Long", "score": 35 },
-          { "value": "tres_long", "label": "Tres long", "score": 15 }
+          {
+            "value": "immediat",
+            "label": "Immediat",
+            "score": 100
+          },
+          {
+            "value": "rapide",
+            "label": "Rapide",
+            "score": 85
+          },
+          {
+            "value": "moyen",
+            "label": "Moyen",
+            "score": 60
+          },
+          {
+            "value": "long",
+            "label": "Long",
+            "score": 35
+          },
+          {
+            "value": "tres_long",
+            "label": "Tres long",
+            "score": 15
+          }
         ]
       },
       {
@@ -52,7 +93,11 @@
         "level": "detaille",
         "weight": 0.6,
         "label": "Combien de reveils nocturnes ?",
-        "config": { "max": 5, "invert": true, "plusLabel": "5+" }
+        "config": {
+          "max": 5,
+          "invert": true,
+          "plusLabel": "5+"
+        }
       },
       {
         "id": "sommeil_sieste_duree",
@@ -60,7 +105,13 @@
         "level": "detaille",
         "weight": 0,
         "label": "Duree de la sieste",
-        "config": { "min": 0, "max": 90, "step": 5, "unit": "min", "defaultValue": 0 }
+        "config": {
+          "min": 0,
+          "max": 90,
+          "step": 5,
+          "unit": "min",
+          "defaultValue": 0
+        }
       },
       {
         "id": "sommeil_ecran_soir",
@@ -69,10 +120,26 @@
         "weight": 0.3,
         "label": "Temps d'ecran dans l'heure avant de dormir",
         "options": [
-          { "value": "none", "label": "Aucun", "score": 100 },
-          { "value": "short", "label": "Moins de 30 min", "score": 80 },
-          { "value": "medium", "label": "30-60 min", "score": 55 },
-          { "value": "long", "label": "Plus de 60 min", "score": 30 }
+          {
+            "value": "none",
+            "label": "Aucun",
+            "score": 100
+          },
+          {
+            "value": "short",
+            "label": "Moins de 30 min",
+            "score": 80
+          },
+          {
+            "value": "medium",
+            "label": "30-60 min",
+            "score": 55
+          },
+          {
+            "value": "long",
+            "label": "Plus de 60 min",
+            "score": 30
+          }
         ]
       }
     ]
@@ -90,42 +157,108 @@
         "level": "essentiel",
         "weight": 1.2,
         "label": "Avez-vous suffisamment bu aujourd'hui ?",
-        "config": { "min": 1, "max": 5, "defaultValue": 3, "labels": ["J'ai souvent eu soif", "Moyen", "Bien hydraté"] }
+        "config": {
+          "min": 1,
+          "max": 5,
+          "defaultValue": 3,
+          "labels": [
+            "J'ai souvent eu soif",
+            "Moyen",
+            "Bien hydraté"
+          ]
+        }
       },
       {
         "id": "alim_boissons",
         "type": "multichoice",
-        "level": "detaille",
+        "level": "essentiel",
         "weight": 0,
         "label": "Quelles boissons avez-vous bues aujourd'hui ?",
         "options": [
-          { "value": "eau", "label": "Eau" },
-          { "value": "cafe", "label": "Café" },
-          { "value": "sodas", "label": "Sodas" },
-          { "value": "alcool", "label": "Alcool" },
-          { "value": "alcool_fort", "label": "Alcool fort" },
-          { "value": "the", "label": "Thé" },
-          { "value": "jus_frais", "label": "Jus frais" },
-          { "value": "jus_industriel", "label": "Jus industriel" }
+          {
+            "value": "eau",
+            "label": "Eau"
+          },
+          {
+            "value": "cafe",
+            "label": "Café"
+          },
+          {
+            "value": "sodas",
+            "label": "Sodas"
+          },
+          {
+            "value": "alcool",
+            "label": "Alcool"
+          },
+          {
+            "value": "alcool_fort",
+            "label": "Alcool fort"
+          },
+          {
+            "value": "the",
+            "label": "Thé"
+          },
+          {
+            "value": "jus_frais",
+            "label": "Jus frais"
+          },
+          {
+            "value": "jus_industriel",
+            "label": "Jus industriel"
+          }
         ]
       },
       {
         "id": "alim_cafe",
         "type": "slider",
-        "level": "detaille",
+        "level": "essentiel",
         "weight": 0,
         "label": "Combien de cafés avez-vous consommés ?",
-        "config": { "min": 0, "max": 20, "step": 1, "unit": "", "defaultValue": 0 },
-        "when": { "all": [{ "questionId": "alim_boissons", "op": "includes", "value": "cafe" }] }
+        "config": {
+          "min": 0,
+          "max": 20,
+          "step": 1,
+          "unit": "",
+          "defaultValue": 0
+        },
+        "when": {
+          "all": [
+            {
+              "questionId": "alim_boissons",
+              "op": "includes",
+              "value": "cafe"
+            }
+          ]
+        }
       },
       {
         "id": "alim_alcool",
         "type": "slider",
-        "level": "detaille",
+        "level": "essentiel",
         "weight": 0,
         "label": "Combien de verres d'alcool avez-vous consommés ?",
-        "config": { "min": 0, "max": 20, "step": 1, "unit": "", "defaultValue": 0 },
-        "when": { "any": [{ "questionId": "alim_boissons", "op": "includes", "value": "alcool" }, { "questionId": "alim_boissons", "op": "includes", "value": "alcool_fort" }] }
+        "config": {
+          "min": 0,
+          "max": 20,
+          "step": 1,
+          "unit": "",
+          "defaultValue": 0
+        },
+        "when": {
+          "any": [
+            {
+              "questionId": "alim_boissons",
+              "op": "includes",
+              "value": "alcool"
+            },
+            {
+              "questionId": "alim_boissons",
+              "op": "includes",
+              "value": "alcool_fort"
+            }
+          ]
+        }
       },
       {
         "id": "alim_nombre_repas",
@@ -134,7 +267,10 @@
         "required": true,
         "weight": 1.3,
         "label": "Combien de repas avez-vous pris aujourd'hui ?",
-        "config": { "max": 5, "plusLabel": "5+" }
+        "config": {
+          "max": 5,
+          "plusLabel": "5+"
+        }
       },
       {
         "id": "alim_grignotage",
@@ -143,10 +279,22 @@
         "weight": 0,
         "label": "Avez-vous grignoté dans la journée ?",
         "options": [
-          { "value": "non", "label": "Non" },
-          { "value": "un_peu", "label": "Un peu" },
-          { "value": "moyen", "label": "Moyen" },
-          { "value": "beaucoup", "label": "Beaucoup" }
+          {
+            "value": "non",
+            "label": "Non"
+          },
+          {
+            "value": "un_peu",
+            "label": "Un peu"
+          },
+          {
+            "value": "moyen",
+            "label": "Moyen"
+          },
+          {
+            "value": "beaucoup",
+            "label": "Beaucoup"
+          }
         ]
       },
       {
@@ -156,11 +304,31 @@
         "weight": 1.1,
         "label": "Quantite de nourriture consommee",
         "options": [
-          { "value": "not_enough", "label": "Pas tout a fait assez", "score": 50 },
-          { "value": "somewhat_less", "label": "Un peu trop peu", "score": 75 },
-          { "value": "just_right", "label": "Bien mange", "score": 100 },
-          { "value": "somewhat_more", "label": "Un peu trop", "score": 70 },
-          { "value": "too_much", "label": "Beaucoup trop", "score": 40 }
+          {
+            "value": "not_enough",
+            "label": "Pas tout a fait assez",
+            "score": 50
+          },
+          {
+            "value": "somewhat_less",
+            "label": "Un peu trop peu",
+            "score": 75
+          },
+          {
+            "value": "just_right",
+            "label": "Bien mange",
+            "score": 100
+          },
+          {
+            "value": "somewhat_more",
+            "label": "Un peu trop",
+            "score": 70
+          },
+          {
+            "value": "too_much",
+            "label": "Beaucoup trop",
+            "score": 40
+          }
         ]
       },
       {
@@ -169,16 +337,28 @@
         "level": "essentiel",
         "weight": 1,
         "label": "Qualité nutritionnelle de vos repas",
-        "config": { "min": 1, "max": 10, "defaultValue": 5 },
+        "config": {
+          "min": 1,
+          "max": 10,
+          "defaultValue": 5
+        },
         "modeOverrides": {
           "rapide": {
             "type": "rating",
             "label": "Qualité nutritionnelle globale de votre alimentation",
-            "config": { "min": 1, "max": 10, "defaultValue": 5 }
+            "config": {
+              "min": 1,
+              "max": 10,
+              "defaultValue": 5
+            }
           },
           "approfondi": {
             "type": "dualrating",
-            "config": { "min": 1, "max": 10, "defaultValue": 5 }
+            "config": {
+              "min": 1,
+              "max": 10,
+              "defaultValue": 5
+            }
           }
         }
       },
@@ -188,7 +368,14 @@
         "level": "detaille",
         "weight": 0.8,
         "label": "Portions fruits et legumes",
-        "config": { "min": 0, "max": 12, "step": 1, "unit": "", "target": 5, "help": "Une portion correspond environ à un tiers d'une assiette classique normalement remplie." }
+        "config": {
+          "min": 0,
+          "max": 12,
+          "step": 1,
+          "unit": "",
+          "target": 5,
+          "help": "Une portion correspond environ à un tiers d'une assiette classique normalement remplie."
+        }
       },
       {
         "id": "alim_gout_repas",
@@ -196,7 +383,16 @@
         "level": "detaille",
         "weight": 0,
         "label": "Comment avez-vous trouvé le goût de vos repas aujourd'hui ?",
-        "config": { "min": 1, "max": 10, "defaultValue": 5, "labels": ["Peu agréable", "Correct", "Excellent"] }
+        "config": {
+          "min": 1,
+          "max": 10,
+          "defaultValue": 5,
+          "labels": [
+            "Peu agréable",
+            "Correct",
+            "Excellent"
+          ]
+        }
       },
       {
         "id": "alim_ultra_transformes",
@@ -205,10 +401,26 @@
         "weight": 1,
         "label": "Consommation d'aliments ultra-transformes",
         "options": [
-          { "value": "none", "label": "Aucune", "score": 100 },
-          { "value": "low", "label": "Faible", "score": 80 },
-          { "value": "medium", "label": "Moyenne", "score": 55 },
-          { "value": "high", "label": "Elevee", "score": 25 }
+          {
+            "value": "none",
+            "label": "Aucune",
+            "score": 100
+          },
+          {
+            "value": "low",
+            "label": "Faible",
+            "score": 80
+          },
+          {
+            "value": "medium",
+            "label": "Moyenne",
+            "score": 55
+          },
+          {
+            "value": "high",
+            "label": "Elevee",
+            "score": 25
+          }
         ]
       },
       {
@@ -224,8 +436,21 @@
         "level": "avance",
         "weight": 0,
         "label": "Intensite de la fringale",
-        "config": { "min": 1, "max": 10, "invert": true, "defaultValue": 5 },
-        "when": { "all": [{ "questionId": "alim_fringale", "op": "eq", "value": true }] }
+        "config": {
+          "min": 1,
+          "max": 10,
+          "invert": true,
+          "defaultValue": 5
+        },
+        "when": {
+          "all": [
+            {
+              "questionId": "alim_fringale",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
       }
     ]
   },
@@ -250,8 +475,84 @@
         "level": "essentiel",
         "weight": 1.1,
         "label": "Duree totale d'activite",
-        "config": { "values": [0, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 270, 300, 330, 360, 390, 420, 450, 480, 510, 540, 570, 600, 630, 660, 690, 720, 750, 780, 810, 840, 870, 900, 930, 960, 990, 1020, 1050, 1080, 1110, 1140, 1170, 1200, 1230, 1260, 1290, 1320, 1350, 1380, 1410, 1440], "target": 45 },
-        "when": { "all": [{ "questionId": "actif_aujourdhui", "op": "eq", "value": true }] }
+        "config": {
+          "values": [
+            0,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+            55,
+            60,
+            75,
+            90,
+            105,
+            120,
+            135,
+            150,
+            165,
+            180,
+            195,
+            210,
+            225,
+            240,
+            270,
+            300,
+            330,
+            360,
+            390,
+            420,
+            450,
+            480,
+            510,
+            540,
+            570,
+            600,
+            630,
+            660,
+            690,
+            720,
+            750,
+            780,
+            810,
+            840,
+            870,
+            900,
+            930,
+            960,
+            990,
+            1020,
+            1050,
+            1080,
+            1110,
+            1140,
+            1170,
+            1200,
+            1230,
+            1260,
+            1290,
+            1320,
+            1350,
+            1380,
+            1410,
+            1440
+          ],
+          "target": 45
+        },
+        "when": {
+          "all": [
+            {
+              "questionId": "actif_aujourdhui",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
       },
       {
         "id": "actif_intensite",
@@ -259,33 +560,111 @@
         "level": "essentiel",
         "weight": 0.7,
         "label": "Intensite ressentie",
-        "config": { "min": 1, "max": 10, "defaultValue": 5 },
-        "when": { "all": [{ "questionId": "actif_aujourdhui", "op": "eq", "value": true }] }
+        "config": {
+          "min": 1,
+          "max": 10,
+          "defaultValue": 5
+        },
+        "when": {
+          "all": [
+            {
+              "questionId": "actif_aujourdhui",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
       },
       {
         "id": "actif_type",
         "type": "choice",
-        "level": "detaille",
+        "level": "essentiel",
         "weight": 0,
         "label": "Type principal",
-        "config": { "display": "tiles" },
+        "config": {
+          "display": "tiles"
+        },
         "options": [
-          { "value": "marche", "label": "Marche", "score": 80 },
-          { "value": "cardio", "label": "Cardio", "score": 90 },
-          { "value": "musculation", "label": "Musculation", "score": 90 },
-          { "value": "natation", "label": "Natation", "score": 90 },
-          { "value": "football", "label": "Football", "score": 90 },
-          { "value": "velo", "label": "Vélo", "score": 85 },
-          { "value": "course", "label": "Course", "score": 90 },
-          { "value": "danse", "label": "Danse", "score": 85 },
-          { "value": "combat", "label": "Sport de combat", "score": 90 },
-          { "value": "rugby", "label": "Rugby", "score": 90 },
-          { "value": "basketball", "label": "Basket-ball", "score": 90 },
-          { "value": "yoga", "label": "Yoga", "score": 85 },
-          { "value": "mobilite", "label": "Mobilite", "score": 85 },
-          { "value": "autre", "label": "Autre", "score": 80 }
+          {
+            "value": "marche",
+            "label": "Marche",
+            "score": 80
+          },
+          {
+            "value": "cardio",
+            "label": "Cardio",
+            "score": 90
+          },
+          {
+            "value": "musculation",
+            "label": "Musculation",
+            "score": 90
+          },
+          {
+            "value": "natation",
+            "label": "Natation",
+            "score": 90
+          },
+          {
+            "value": "football",
+            "label": "Football",
+            "score": 90
+          },
+          {
+            "value": "velo",
+            "label": "Vélo",
+            "score": 85
+          },
+          {
+            "value": "course",
+            "label": "Course",
+            "score": 90
+          },
+          {
+            "value": "danse",
+            "label": "Danse",
+            "score": 85
+          },
+          {
+            "value": "combat",
+            "label": "Sport de combat",
+            "score": 90
+          },
+          {
+            "value": "rugby",
+            "label": "Rugby",
+            "score": 90
+          },
+          {
+            "value": "basketball",
+            "label": "Basket-ball",
+            "score": 90
+          },
+          {
+            "value": "yoga",
+            "label": "Yoga",
+            "score": 85
+          },
+          {
+            "value": "mobilite",
+            "label": "Mobilite",
+            "score": 85
+          },
+          {
+            "value": "autre",
+            "label": "Autre",
+            "score": 80
+          }
         ],
-        "when": { "all": [{ "questionId": "actif_aujourdhui", "op": "eq", "value": true }] }
+        "when": {
+          "all": [
+            {
+              "questionId": "actif_aujourdhui",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
       },
       {
         "id": "actif_sedentarite",
@@ -293,16 +672,97 @@
         "level": "detaille",
         "weight": 0.8,
         "label": "Temps assis dans la journee",
-        "config": { "values": [0, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 270, 300, 330, 360, 390, 420, 450, 480, 510, 540, 570, 600, 630, 660, 690, 720, 750, 780, 810, 840, 870, 900, 930, 960, 990, 1020, 1050, 1080, 1110, 1140, 1170, 1200, 1230, 1260, 1290, 1320, 1350, 1380, 1410, 1440], "target": 360, "invert": true }
+        "config": {
+          "values": [
+            0,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+            55,
+            60,
+            75,
+            90,
+            105,
+            120,
+            135,
+            150,
+            165,
+            180,
+            195,
+            210,
+            225,
+            240,
+            270,
+            300,
+            330,
+            360,
+            390,
+            420,
+            450,
+            480,
+            510,
+            540,
+            570,
+            600,
+            630,
+            660,
+            690,
+            720,
+            750,
+            780,
+            810,
+            840,
+            870,
+            900,
+            930,
+            960,
+            990,
+            1020,
+            1050,
+            1080,
+            1110,
+            1140,
+            1170,
+            1200,
+            1230,
+            1260,
+            1290,
+            1320,
+            1350,
+            1380,
+            1410,
+            1440
+          ],
+          "target": 360,
+          "invert": true
+        }
       },
       {
         "id": "actif_recuperation",
         "type": "rating",
-        "level": "avance",
+        "level": "detaille",
         "weight": 0.8,
         "label": "Qualite de recuperation physique",
-        "config": { "min": 0, "max": 10, "defaultValue": 5 },
-        "when": { "all": [{ "questionId": "actif_aujourdhui", "op": "eq", "value": true }] }
+        "config": {
+          "min": 0,
+          "max": 10,
+          "defaultValue": 5
+        },
+        "when": {
+          "all": [
+            {
+              "questionId": "actif_aujourdhui",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
       }
     ]
   },
@@ -327,18 +787,56 @@
         "weight": 0,
         "label": "Ou se situe la douleur ?",
         "options": [
-          { "value": "tete", "label": "Tete" },
-          { "value": "nuque_epaules", "label": "Nuque / epaules" },
-          { "value": "dos_haut", "label": "Haut du dos" },
-          { "value": "dos_bas", "label": "Bas du dos" },
-          { "value": "poitrine", "label": "Poitrine" },
-          { "value": "bras", "label": "Bras / mains" },
-          { "value": "ventre", "label": "Ventre" },
-          { "value": "hanches", "label": "Hanches" },
-          { "value": "jambes", "label": "Jambes" },
-          { "value": "pieds", "label": "Pieds" }
+          {
+            "value": "tete",
+            "label": "Tete"
+          },
+          {
+            "value": "nuque_epaules",
+            "label": "Nuque / epaules"
+          },
+          {
+            "value": "dos_haut",
+            "label": "Haut du dos"
+          },
+          {
+            "value": "dos_bas",
+            "label": "Bas du dos"
+          },
+          {
+            "value": "poitrine",
+            "label": "Poitrine"
+          },
+          {
+            "value": "bras",
+            "label": "Bras / mains"
+          },
+          {
+            "value": "ventre",
+            "label": "Ventre"
+          },
+          {
+            "value": "hanches",
+            "label": "Hanches"
+          },
+          {
+            "value": "jambes",
+            "label": "Jambes"
+          },
+          {
+            "value": "pieds",
+            "label": "Pieds"
+          }
         ],
-        "when": { "all": [{ "questionId": "douleur_presente", "op": "eq", "value": true }] }
+        "when": {
+          "all": [
+            {
+              "questionId": "douleur_presente",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
       },
       {
         "id": "douleur_intensite",
@@ -346,8 +844,21 @@
         "level": "essentiel",
         "weight": 0,
         "label": "Intensite de la douleur",
-        "config": { "min": 0, "max": 10, "invert": true, "defaultValue": 5 },
-        "when": { "all": [{ "questionId": "douleur_presente", "op": "eq", "value": true }] }
+        "config": {
+          "min": 0,
+          "max": 10,
+          "invert": true,
+          "defaultValue": 5
+        },
+        "when": {
+          "all": [
+            {
+              "questionId": "douleur_presente",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
       },
       {
         "id": "douleur_evolution",
@@ -356,11 +867,28 @@
         "weight": 0,
         "label": "Evolution par rapport a d'habitude",
         "options": [
-          { "value": "ameliore", "label": "En amelioration" },
-          { "value": "stable", "label": "Stable" },
-          { "value": "aggrave", "label": "En aggravation" }
+          {
+            "value": "ameliore",
+            "label": "En amelioration"
+          },
+          {
+            "value": "stable",
+            "label": "Stable"
+          },
+          {
+            "value": "aggrave",
+            "label": "En aggravation"
+          }
         ],
-        "when": { "all": [{ "questionId": "douleur_presente", "op": "eq", "value": true }] }
+        "when": {
+          "all": [
+            {
+              "questionId": "douleur_presente",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
       },
       {
         "id": "addiction_resistance",
@@ -369,11 +897,31 @@
         "weight": 0.5,
         "label": "Avez-vous resiste a une addiction ou une habitude difficile ?",
         "options": [
-          { "value": "na", "label": "Non applicable", "score": 50 },
-          { "value": "yes", "label": "Oui", "score": 100 },
-          { "value": "un_peu", "label": "Un peu", "score": 60 },
-          { "value": "beaucoup", "label": "Beaucoup", "score": 85 },
-          { "value": "no", "label": "Non", "score": 20 }
+          {
+            "value": "na",
+            "label": "Non applicable",
+            "score": 50
+          },
+          {
+            "value": "yes",
+            "label": "Oui",
+            "score": 100
+          },
+          {
+            "value": "un_peu",
+            "label": "Un peu",
+            "score": 60
+          },
+          {
+            "value": "beaucoup",
+            "label": "Beaucoup",
+            "score": 85
+          },
+          {
+            "value": "no",
+            "label": "Non",
+            "score": 20
+          }
         ]
       }
     ]
@@ -392,7 +940,76 @@
         "required": true,
         "weight": 1.2,
         "label": "Combien de temps avez-vous travaille ?",
-        "config": { "values": [0, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 270, 300, 330, 360, 390, 420, 450, 480, 510, 540, 570, 600, 630, 660, 690, 720, 750, 780, 810, 840, 870, 900, 930, 960, 990, 1020, 1050, 1080, 1110, 1140, 1170, 1200, 1230, 1260, 1290, 1320, 1350, 1380, 1410, 1440], "target": 480, "defaultValue": 0 }
+        "config": {
+          "values": [
+            0,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+            55,
+            60,
+            75,
+            90,
+            105,
+            120,
+            135,
+            150,
+            165,
+            180,
+            195,
+            210,
+            225,
+            240,
+            270,
+            300,
+            330,
+            360,
+            390,
+            420,
+            450,
+            480,
+            510,
+            540,
+            570,
+            600,
+            630,
+            660,
+            690,
+            720,
+            750,
+            780,
+            810,
+            840,
+            870,
+            900,
+            930,
+            960,
+            990,
+            1020,
+            1050,
+            1080,
+            1110,
+            1140,
+            1170,
+            1200,
+            1230,
+            1260,
+            1290,
+            1320,
+            1350,
+            1380,
+            1410,
+            1440
+          ],
+          "target": 480,
+          "defaultValue": 0
+        }
       },
       {
         "id": "travail_quantite_accomplie",
@@ -401,11 +1018,31 @@
         "weight": 1.1,
         "label": "Quelle quantite de travail avez-vous accomplie ?",
         "options": [
-          { "value": "quasi_rien", "label": "Quasi rien", "score": 15 },
-          { "value": "peu", "label": "Peu", "score": 35 },
-          { "value": "moyen", "label": "Moyen", "score": 65 },
-          { "value": "beaucoup", "label": "Beaucoup", "score": 85 },
-          { "value": "tout_termine", "label": "Tout est termine", "score": 100 }
+          {
+            "value": "quasi_rien",
+            "label": "Quasi rien",
+            "score": 15
+          },
+          {
+            "value": "peu",
+            "label": "Peu",
+            "score": 35
+          },
+          {
+            "value": "moyen",
+            "label": "Moyen",
+            "score": 65
+          },
+          {
+            "value": "beaucoup",
+            "label": "Beaucoup",
+            "score": 85
+          },
+          {
+            "value": "tout_termine",
+            "label": "Tout est termine",
+            "score": 100
+          }
         ]
       },
       {
@@ -414,7 +1051,12 @@
         "level": "essentiel",
         "weight": 0.9,
         "label": "Charge mentale et pression ressentie",
-        "config": { "min": 0, "max": 10, "invert": true, "defaultValue": 5 }
+        "config": {
+          "min": 0,
+          "max": 10,
+          "invert": true,
+          "defaultValue": 5
+        }
       },
       {
         "id": "travail_tache_cle",
@@ -423,9 +1065,21 @@
         "weight": 1,
         "label": "Avez-vous avance sur votre tache la plus importante ?",
         "options": [
-          { "value": "none", "label": "Pas du tout", "score": 20 },
-          { "value": "partial", "label": "Partiellement", "score": 65 },
-          { "value": "done", "label": "Oui", "score": 100 }
+          {
+            "value": "none",
+            "label": "Pas du tout",
+            "score": 20
+          },
+          {
+            "value": "partial",
+            "label": "Partiellement",
+            "score": 65
+          },
+          {
+            "value": "done",
+            "label": "Oui",
+            "score": 100
+          }
         ]
       },
       {
@@ -434,7 +1088,11 @@
         "level": "detaille",
         "weight": 0.4,
         "label": "Interruptions majeures",
-        "config": { "max": 5, "invert": true, "plusLabel": "5+" }
+        "config": {
+          "max": 5,
+          "invert": true,
+          "plusLabel": "5+"
+        }
       },
       {
         "id": "travail_blocage",
@@ -450,15 +1108,44 @@
         "weight": 0,
         "label": "Quel type de blocage ?",
         "options": [
-          { "value": "clarte", "label": "Manque de clarte" },
-          { "value": "dependance", "label": "Dependance externe" },
-          { "value": "fatigue", "label": "Fatigue" },
-          { "value": "priorites", "label": "Priorites floues" },
-          { "value": "interruption", "label": "Interruption" },
-          { "value": "deconcentration", "label": "Déconcentration" },
-          { "value": "autre", "label": "Autre" }
+          {
+            "value": "clarte",
+            "label": "Manque de clarte"
+          },
+          {
+            "value": "dependance",
+            "label": "Dependance externe"
+          },
+          {
+            "value": "fatigue",
+            "label": "Fatigue"
+          },
+          {
+            "value": "priorites",
+            "label": "Priorites floues"
+          },
+          {
+            "value": "interruption",
+            "label": "Interruption"
+          },
+          {
+            "value": "deconcentration",
+            "label": "Déconcentration"
+          },
+          {
+            "value": "autre",
+            "label": "Autre"
+          }
         ],
-        "when": { "all": [{ "questionId": "travail_blocage", "op": "eq", "value": true }] }
+        "when": {
+          "all": [
+            {
+              "questionId": "travail_blocage",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
       }
     ]
   },
@@ -476,12 +1163,27 @@
         "required": true,
         "weight": 1.5,
         "label": "Comment votre humeur a-t-elle evolue au cours de la journee ?",
-        "config": { "points": 6, "levels": 5, "defaultValue": { "matin": 3, "matinee": 3, "midi": 3, "aprem": 3, "fin_journee": 3, "soir": 3 } },
+        "config": {
+          "points": 6,
+          "levels": 5,
+          "defaultValue": {
+            "matin": 3,
+            "matinee": 3,
+            "midi": 3,
+            "aprem": 3,
+            "fin_journee": 3,
+            "soir": 3
+          }
+        },
         "modeOverrides": {
           "rapide": {
             "type": "rating",
             "label": "Humeur générale",
-            "config": { "min": 1, "max": 5, "defaultValue": 3 }
+            "config": {
+              "min": 1,
+              "max": 5,
+              "defaultValue": 3
+            }
           }
         }
       },
@@ -491,12 +1193,29 @@
         "level": "essentiel",
         "weight": 1.2,
         "label": "Comment votre stress a-t-il evolue au cours de la journee ?",
-        "config": { "points": 6, "levels": 5, "invert": true, "defaultValue": { "matin": 3, "matinee": 3, "midi": 3, "aprem": 3, "fin_journee": 3, "soir": 3 } },
+        "config": {
+          "points": 6,
+          "levels": 5,
+          "invert": true,
+          "defaultValue": {
+            "matin": 3,
+            "matinee": 3,
+            "midi": 3,
+            "aprem": 3,
+            "fin_journee": 3,
+            "soir": 3
+          }
+        },
         "modeOverrides": {
           "rapide": {
             "type": "rating",
             "label": "Niveau de stress",
-            "config": { "min": 1, "max": 5, "invert": true, "defaultValue": 3 }
+            "config": {
+              "min": 1,
+              "max": 5,
+              "invert": true,
+              "defaultValue": 3
+            }
           }
         }
       },
@@ -506,7 +1225,11 @@
         "level": "essentiel",
         "weight": 1,
         "label": "Confiance en soi",
-        "config": { "min": 0, "max": 10, "defaultValue": 5 }
+        "config": {
+          "min": 0,
+          "max": 10,
+          "defaultValue": 5
+        }
       },
       {
         "id": "mental_controle",
@@ -514,7 +1237,11 @@
         "level": "detaille",
         "weight": 0.8,
         "label": "Sentiment de controle sur votre journee",
-        "config": { "min": 0, "max": 10, "defaultValue": 5 }
+        "config": {
+          "min": 0,
+          "max": 10,
+          "defaultValue": 5
+        }
       },
       {
         "id": "mental_anxiete",
@@ -522,7 +1249,12 @@
         "level": "detaille",
         "weight": 0.8,
         "label": "Anxiete ressentie",
-        "config": { "min": 0, "max": 10, "invert": true, "defaultValue": 5 }
+        "config": {
+          "min": 0,
+          "max": 10,
+          "invert": true,
+          "defaultValue": 5
+        }
       },
       {
         "id": "mental_relations",
@@ -530,7 +1262,11 @@
         "level": "avance",
         "weight": 0.4,
         "label": "Qualite des interactions sociales",
-        "config": { "min": 0, "max": 10, "defaultValue": 5 }
+        "config": {
+          "min": 0,
+          "max": 10,
+          "defaultValue": 5
+        }
       }
     ]
   },
@@ -548,7 +1284,11 @@
         "required": true,
         "weight": 1.2,
         "label": "Satisfaction générale de votre journée",
-        "config": { "min": 0, "max": 10, "defaultValue": 5 }
+        "config": {
+          "min": 0,
+          "max": 10,
+          "defaultValue": 5
+        }
       },
       {
         "id": "bilan_progression",
@@ -557,9 +1297,21 @@
         "weight": 1,
         "label": "Avez-vous avancé sur des projets personnels ?",
         "options": [
-          { "value": "none", "label": "Pas aujourd'hui", "score": 25 },
-          { "value": "small", "label": "Un peu", "score": 65 },
-          { "value": "clear", "label": "Oui clairement", "score": 100 }
+          {
+            "value": "none",
+            "label": "Pas aujourd'hui",
+            "score": 25
+          },
+          {
+            "value": "small",
+            "label": "Un peu",
+            "score": 65
+          },
+          {
+            "value": "clear",
+            "label": "Oui clairement",
+            "score": 100
+          }
         ]
       },
       {
@@ -577,9 +1329,18 @@
         "weight": 0,
         "label": "C'était une journée spéciale ?",
         "options": [
-          { "value": "non", "label": "Non" },
-          { "value": "un_peu_exceptionnelle", "label": "Un peu exceptionnelle" },
-          { "value": "tres_speciale", "label": "Très spéciale" }
+          {
+            "value": "non",
+            "label": "Non"
+          },
+          {
+            "value": "un_peu_exceptionnelle",
+            "label": "Un peu exceptionnelle"
+          },
+          {
+            "value": "tres_speciale",
+            "label": "Très spéciale"
+          }
         ]
       },
       {
@@ -595,6 +1356,110 @@
         "level": "avance",
         "weight": 0,
         "label": "Une chose a ameliorer demain"
+      }
+    ]
+  },
+  {
+    "id": "famille",
+    "name": "Famille et proches",
+    "icon": "👨‍👩‍👧",
+    "description": "Lien, temps partagé et soutien proche",
+    "weight": 0.08,
+    "questions": [
+      {
+        "id": "famille_temps",
+        "type": "choice",
+        "level": "detaille",
+        "weight": 1,
+        "label": "Avez-vous passé du temps avec votre famille ou vos proches aujourd'hui ?",
+        "options": [
+          {
+            "value": "aucun",
+            "label": "Non",
+            "score": 25
+          },
+          {
+            "value": "peu",
+            "label": "Un peu",
+            "score": 55
+          },
+          {
+            "value": "qualite",
+            "label": "Un vrai temps de qualité",
+            "score": 100
+          }
+        ]
+      },
+      {
+        "id": "famille_satisfaction",
+        "type": "rating",
+        "level": "detaille",
+        "weight": 1,
+        "label": "Qualité de vos liens avec vos proches",
+        "config": {
+          "min": 0,
+          "max": 10,
+          "defaultValue": 5
+        },
+        "when": {
+          "all": [
+            {
+              "questionId": "famille_temps",
+              "op": "neq",
+              "value": "aucun"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "argent",
+    "name": "Argent",
+    "icon": "💶",
+    "description": "Pression financière et gestion simple",
+    "weight": 0.08,
+    "questions": [
+      {
+        "id": "argent_pression",
+        "type": "rating",
+        "level": "detaille",
+        "weight": 1,
+        "label": "Pression financière ressentie aujourd'hui",
+        "config": {
+          "min": 0,
+          "max": 10,
+          "invert": true,
+          "defaultValue": 5
+        }
+      },
+      {
+        "id": "argent_controle",
+        "type": "choice",
+        "level": "avance",
+        "weight": 0.8,
+        "label": "Gestion financière du jour",
+        "options": [
+          {
+            "value": "sous_controle",
+            "label": "Sous contrôle",
+            "score": 100
+          },
+          {
+            "value": "a_surveiller",
+            "label": "À surveiller",
+            "score": 60
+          },
+          {
+            "value": "depensee",
+            "label": "Dépensé plus que prévu",
+            "score": 35
+          },
+          {
+            "value": "na",
+            "label": "Non pertinent"
+          }
+        ]
       }
     ]
   }

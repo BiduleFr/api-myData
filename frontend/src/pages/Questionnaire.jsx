@@ -388,18 +388,14 @@ export default function Questionnaire() {
           {current.help && current.type !== 'text' && <p className="mx-auto max-w-md text-sm text-slate-500">{current.help}</p>}
         </div>
 
-        <div className="fixed inset-x-5 bottom-16 z-20 mx-auto flex max-w-lg items-center justify-between px-1 py-2 sm:bottom-4">
-          <button onClick={goBack} className="btn-ghost">← Retour</button>
+        <div className="pointer-events-none fixed inset-x-5 bottom-28 z-20 mx-auto flex max-w-lg items-center justify-between px-1 py-2 sm:bottom-20">
+          <button onClick={goBack} className="btn-ghost pointer-events-auto">← Retour</button>
           <span className="text-xs text-slate-300">{saving ? 'Enregistrement…' : 'Enregistré'}</span>
           {isLast ? (
-            <button onClick={finish} disabled={!canGoNext} className="btn-primary">Enregistrer ma journée</button>
+            <button onClick={finish} disabled={!canGoNext} className="btn-primary pointer-events-auto">Enregistrer ma journée</button>
           ) : (
-            <button onClick={goNext} disabled={!canGoNext} className="btn-primary">Suivant →</button>
+            <button onClick={goNext} disabled={!canGoNext} className="btn-primary pointer-events-auto">Suivant →</button>
           )}
-        </div>
-
-        <div className="text-center">
-          <button onClick={() => navigate('/')} className="btn-ghost text-sm">Quitter et reprendre plus tard</button>
         </div>
       </div>
     </Layout>
