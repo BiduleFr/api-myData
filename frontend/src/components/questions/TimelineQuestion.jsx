@@ -33,7 +33,9 @@ export default function TimelineQuestion({ question, value, onChange }) {
         <svg viewBox="0 0 100 30" preserveAspectRatio="none" className="pointer-events-none absolute inset-x-4 top-2 h-24 w-[calc(100%-2rem)] overflow-visible" role="img" aria-label="Évolution de la journée">
           <polyline
             points={POINTS.map((point, index) => {
-              const x = (index / (POINTS.length - 1)) * 100;
+              // Les colonnes sont à largeur égale et sans marge : le centre de
+              // chaque point correspond exactement au centre de son curseur.
+              const x = ((index + 0.5) / POINTS.length) * 100;
               const y = 26 - ((current[point.id] - 1) / 4) * 22;
               return `${x},${y}`;
             }).join(' ')}
@@ -44,9 +46,9 @@ export default function TimelineQuestion({ question, value, onChange }) {
             strokeLinejoin="round"
           />
         </svg>
-        <div className="relative grid grid-cols-6 gap-2">
+        <div className="relative grid grid-cols-6">
           {POINTS.map((point) => (
-            <label key={point.id} className="flex min-w-0 flex-col items-center gap-2 text-center">
+            <label key={point.id} className="flex min-w-0 flex-col items-center gap-2 px-1 text-center">
               <input type="range" min="1" max="5" step="1" value={current[point.id]} onChange={(event) => changePoint(point.id, event.target.value)} className="timeline-slider h-24 cursor-pointer" aria-label={`${question.label} : ${point.label}`} />
               <span className="text-xs font-semibold text-slate-600">{point.label}</span>
             </label>

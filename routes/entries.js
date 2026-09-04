@@ -21,11 +21,15 @@ router.get('/', auth, async (req, res) => {
       if (from) where.date[Op.gte] = from;
       if (to) where.date[Op.lte] = to;
     }
+    const parsedLimit = limit ? parseInt(limit, 10) : undefined;
+    // Avec une limite et sans borne explicite, on veut les N journées les plus
+    // récentes : on trie en DESC pour appliquer la limite, puis on remet en ASC.
     const entries = await DailyEntry.findAll({
       where,
-      order: [['date', 'ASC']],
-      limit: limit ? parseInt(limit, 10) : undefined
+      order: [['date', parsedLimit ? 'DESC' : 'ASC']],
+      limit: parsedLimit
     });
+    if (parsedLimit) entries.reverse();
     res.json(entries);
   } catch (error) {
     res.status(500).json({ error: 'Impossible de récupérer l\'historique.', details: error.message });

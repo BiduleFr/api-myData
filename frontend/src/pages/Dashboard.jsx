@@ -5,6 +5,7 @@ import ScoreRing from '../components/ScoreRing.jsx';
 import LineChart from '../components/LineChart.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api, todayISO } from '../lib/api';
+import { isDateEditable } from '../lib/editableWindow';
 
 function greeting() {
   const h = new Date().getHours();
@@ -41,8 +42,11 @@ export default function Dashboard() {
   const [config, setConfig] = useState(null);
   const [entry, setEntry] = useState(null);
   const [history, setHistory] = useState([]);
+  const [fullHistory, setFullHistory] = useState([]);
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [visibleDays, setVisibleDays] = useState(10);
+  const [searchDate, setSearchDate] = useState('');
 
   useEffect(() => {
     const date = todayISO();
@@ -50,12 +54,14 @@ export default function Dashboard() {
       api.getConfig(),
       api.getEntry(date, token),
       api.getHistory({ limit: 14 }, token),
+      api.getHistory({ limit: 120 }, token),
       api.getGoals(token)
     ])
-      .then(([cfg, todayEntry, hist, gs]) => {
+      .then(([cfg, todayEntry, hist, fullHist, gs]) => {
         setConfig(cfg.modules);
         setEntry(todayEntry);
         setHistory(hist);
+        setFullHistory(fullHist);
         setGoals(gs || []);
       })
       .finally(() => setLoading(false));
@@ -125,42 +131,75 @@ export default function Dashboard() {
             <h2 className="text-sm font-semibold text-slate-500">Évolution récente</h2>
             <Link to="/statistiques" className="text-sm text-brand-600 font-semibold">Voir les statistiques →</Link>
           </div>
-          <LineChart data={history.map((h) => ({ date: h.date, value: h.globalScore }))} height={140} />
+          <LineChart data={history.map((h) => ({ date: h.date, value: h.globalScore }))} height={220} />
         </div>
 
         <div className="card p-6">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-slate-500">Historique des 7 derniers jours</h2>
+            <h2 className="text-sm font-semibold text-slate-500">Historique des journées</h2>
+            <span className="text-xs text-slate-400">🔒 = lecture seule</span>
           </div>
+          {visibleDays > 10 && (
+            <input
+              type="date"
+              value={searchDate}
+              onChange={(e) => setSearchDate(e.target.value)}
+              max={todayISO()}
+              className="mb-3 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
+              aria-label="Rechercher une journée par date"
+            />
+          )}
           <div className="space-y-2">
-            {lastNDates(7).map((d) => {
-              const e = history.find((h) => h.date === d);
+            {(searchDate ? [searchDate] : lastNDates(visibleDays)).map((d) => {
+              const e = fullHistory.find((h) => h.date === d);
+              const editable = isDateEditable(d, todayISO());
+              const hasData = e?.completionStatus && e.completionStatus !== 'not_started';
               const status = e?.completionStatus || 'not_started';
               const isToday = d === todayISO();
+              const scoreBadge = e?.globalScore != null ? (
+                <span className="font-bold text-slate-800 bg-brand-50 text-brand-700 px-2 py-0.5 rounded-lg">
+                  {Number(e.globalScore).toLocaleString('fr-FR', { maximumFractionDigits: 1 })}/100
+                </span>
+              ) : (
+                <span className="text-slate-400">Non renseigné</span>
+              );
+
+              if (!editable && !hasData) {
+                return (
+                  <div key={d} className="flex items-center justify-between text-sm rounded-xl px-3 py-2 opacity-60">
+                    <span className="flex items-center gap-2 text-slate-500 font-medium">{d}</span>
+                    <span className="text-xs text-slate-400">Non renseigné</span>
+                  </div>
+                );
+              }
+
               return (
                 <Link
                   key={d}
-                  to={`/questionnaire?date=${d}`}
+                  to={editable ? `/questionnaire?date=${d}` : `/journee/${d}`}
                   className="flex items-center justify-between text-sm rounded-xl px-3 py-2 hover:bg-slate-50 transition-colors"
                 >
                   <span className="flex items-center gap-2 text-slate-700 font-medium">
                     <span className={`w-2.5 h-2.5 rounded-full ${STATUS_DOT[status]}`} />
                     {isToday ? "Aujourd'hui" : d}
+                    {!editable && <span title="Journée non modifiable">🔒</span>}
                   </span>
                   <span className="flex items-center gap-3 text-xs text-slate-500">
-                    {e?.globalScore != null ? (
-                      <span className="font-bold text-slate-800 bg-brand-50 text-brand-700 px-2 py-0.5 rounded-lg">
-                        {Number(e.globalScore).toLocaleString('fr-FR', { maximumFractionDigits: 1 })}/100
-                      </span>
-                    ) : (
-                      <span className="text-slate-400">Non renseigné</span>
-                    )}
+                    {scoreBadge}
                     <span>{STATUS_LABEL[status]}</span>
                   </span>
                 </Link>
               );
             })}
           </div>
+          {!searchDate && visibleDays < 120 && (
+            <button
+              onClick={() => setVisibleDays((v) => Math.min(v + 10, 120))}
+              className="btn-ghost text-sm mt-3 w-full justify-center"
+            >
+              Voir plus
+            </button>
+          )}
         </div>
 
         <div className="card p-6">

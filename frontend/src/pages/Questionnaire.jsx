@@ -6,9 +6,11 @@ import QuestionRenderer from '../components/questions/QuestionRenderer.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api, todayISO } from '../lib/api';
 import { buildQuestionFlow } from '../lib/questionFlow';
+import { EDITABLE_WINDOW_DAYS, daysBetween } from '../lib/editableWindow';
 
-const EDITABLE_WINDOW_DAYS = 14;
 const CONTEXT_KEY = '_contexte_journee';
+// Types dont une seule interaction (clic) suffit à donner une réponse définitive.
+const AUTO_ADVANCE_TYPES = new Set(['boolean', 'choice', 'quickstep']);
 
 const CONTEXT_OPTIONS = [
   { value: 'normale', label: 'Journée normale', icon: '🙂' },
@@ -43,12 +45,6 @@ function moduleStatus(mod, preferences, answers) {
 const STATUS_DOT = { not_started: 'bg-slate-200', partial: 'bg-amber-400', done: 'bg-emerald-500', disabled: 'bg-slate-100' };
 const STATUS_LABEL = { not_started: 'Non commencé', partial: 'En cours', done: 'Terminé', disabled: 'Désactivé' };
 
-function daysBetween(dateA, dateB) {
-  const a = new Date(`${dateA}T00:00:00`);
-  const b = new Date(`${dateB}T00:00:00`);
-  return Math.round((a - b) / 86400000);
-}
-
 export default function Questionnaire() {
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -71,6 +67,10 @@ export default function Questionnaire() {
   const [forceEdit, setForceEdit] = useState(false);
   const [mode, setMode] = useState('standard');
   const saveTimer = useRef(null);
+  const autoAdvanceTimer = useRef(null);
+
+  const clearAutoAdvance = useCallback(() => clearTimeout(autoAdvanceTimer.current), []);
+  useEffect(() => () => clearAutoAdvance(), [clearAutoAdvance]);
 
   useEffect(() => {
     setLoading(true);
@@ -99,6 +99,7 @@ export default function Questionnaire() {
   }, [flow.length, index]);
 
   function changeMode(nextMode) {
+    clearAutoAdvance();
     const currentQuestionId = current?.id;
     setMode(nextMode);
     const nextFlow = buildQuestionFlow(modules, preferences, answers, { levelOverride: MODE_LEVEL[nextMode], mode: nextMode });
@@ -122,6 +123,15 @@ export default function Questionnaire() {
     setAnswers(next);
     setAnswerStates(nextStates);
     scheduleAutosave(next, journalEntry, nextStates);
+
+    clearAutoAdvance();
+    if (AUTO_ADVANCE_TYPES.has(current.type)) {
+      const nextFlow = buildQuestionFlow(modules, preferences, next, { levelOverride: MODE_LEVEL[mode], mode });
+      const currentIndex = nextFlow.findIndex((q) => q.id === current.id);
+      if (currentIndex >= 0 && currentIndex < nextFlow.length - 1) {
+        autoAdvanceTimer.current = setTimeout(() => setIndex(currentIndex + 1), 280);
+      }
+    }
   }
 
   function saveDefaultAnswer(question) {
@@ -142,12 +152,14 @@ export default function Questionnaire() {
   }
 
   function jumpToModule(moduleId) {
+    clearAutoAdvance();
     const target = flow.findIndex((step) => step.moduleId === moduleId);
     setIndex(target >= 0 ? target : 0);
     setPhase('flow');
   }
 
   function startFromBeginning() {
+    clearAutoAdvance();
     setIndex(0);
     setPhase('flow');
   }
@@ -158,10 +170,12 @@ export default function Questionnaire() {
   }
 
   function goNext() {
+    clearAutoAdvance();
     saveDefaultAnswer(current);
     if (index < flow.length - 1) setIndex(index + 1);
   }
   function goBack() {
+    clearAutoAdvance();
     if (index > 0) setIndex(index - 1);
     else setPhase('overview');
   }
@@ -388,7 +402,7 @@ export default function Questionnaire() {
           {current.help && current.type !== 'text' && <p className="mx-auto max-w-md text-sm text-slate-500">{current.help}</p>}
         </div>
 
-        <div className="pointer-events-none fixed inset-x-5 bottom-28 z-20 mx-auto flex max-w-lg items-center justify-between px-1 py-2 sm:bottom-20">
+        <div className="pointer-events-none fixed inset-x-5 bottom-36 z-20 mx-auto flex max-w-lg items-center justify-between px-1 py-2 sm:bottom-28">
           <button onClick={goBack} className="btn-ghost pointer-events-auto">← Retour</button>
           <span className="text-xs text-slate-300">{saving ? 'Enregistrement…' : 'Enregistré'}</span>
           {isLast ? (

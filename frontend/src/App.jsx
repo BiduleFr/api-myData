@@ -10,6 +10,7 @@ import Suivi from './pages/Suivi.jsx';
 import Privacy from './pages/Privacy.jsx';
 import About from './pages/About.jsx';
 import Terms from './pages/Terms.jsx';
+import DayDetail from './pages/DayDetail.jsx';
 
 function WelcomeStandalone() {
   const navigate = useNavigate();
@@ -36,6 +37,7 @@ export default function App() {
       <Route path="/terms" element={<Navigate to="/conditions" replace />} />
       <Route path="/" element={<Home />} />
       <Route path="/questionnaire" element={<Questionnaire />} />
+      <Route path="/journee/:date" element={<DayDetail />} />
       <Route path="/statistiques" element={<Stats />} />
       <Route path="/suivi" element={<Suivi />} />
       <Route path="/objectifs" element={<Navigate to="/suivi" replace />} />
