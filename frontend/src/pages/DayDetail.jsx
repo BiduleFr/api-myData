@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import ScoreRing from '../components/ScoreRing.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
-import { api } from '../lib/api';
+import { api, todayISO } from '../lib/api';
 import { formatAnswerValue } from '../lib/formatAnswer';
+import { isDateEditable } from '../lib/editableWindow';
 
 export default function DayDetail() {
   const { date } = useParams();
@@ -33,13 +34,18 @@ export default function DayDetail() {
   }
 
   const hasData = entry?.completionStatus && entry.completionStatus !== 'not_started';
+  const editable = isDateEditable(date, todayISO());
 
   return (
     <Layout>
       <div className="max-w-2xl mx-auto space-y-8 animate-fade-up">
         <div className="flex items-center justify-between">
           <button onClick={() => navigate(-1)} className="btn-ghost">← Retour</button>
-          <span className="text-sm text-slate-400">🔒 Journée non modifiable</span>
+          {editable ? (
+            <Link to={`/questionnaire?date=${date}`} className="btn-secondary text-sm">Modifier cette journée</Link>
+          ) : (
+            <span className="text-sm text-slate-400">🔒 Journée non modifiable</span>
+          )}
         </div>
 
         <div className="text-center space-y-4">
@@ -90,6 +96,12 @@ export default function DayDetail() {
             <h2 className="text-sm font-semibold text-slate-500">📝 Ce que vous avez retenu de cette journée</h2>
             <p className="text-sm text-slate-700 whitespace-pre-wrap">{entry.journalEntry}</p>
           </div>
+        )}
+
+        {!editable && (
+          <p className="text-center text-xs text-slate-400">
+            <Link to={`/questionnaire?date=${date}`} className="hover:text-brand-600 underline">Corriger quand même</Link>
+          </p>
         )}
       </div>
     </Layout>

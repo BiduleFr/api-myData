@@ -173,10 +173,13 @@ export default function Dashboard() {
                 );
               }
 
+              // Une journée terminée ou hors fenêtre modifiable s'ouvre en résumé, jamais en édition directe.
+              const goToSummary = !editable || status === 'complete';
+
               return (
                 <Link
                   key={d}
-                  to={editable ? `/questionnaire?date=${d}` : `/journee/${d}`}
+                  to={goToSummary ? `/journee/${d}` : `/questionnaire?date=${d}`}
                   className="flex items-center justify-between text-sm rounded-xl px-3 py-2 hover:bg-slate-50 transition-colors"
                 >
                   <span className="flex items-center gap-2 text-slate-700 font-medium">

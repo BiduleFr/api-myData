@@ -1363,53 +1363,137 @@
     "id": "famille",
     "name": "Famille et proches",
     "icon": "👨‍👩‍👧",
-    "description": "Lien, temps partagé et soutien proche",
+    "description": "Présence, qualité et importance des relations dans la journée",
     "weight": 0.08,
     "questions": [
       {
-        "id": "famille_temps",
-        "type": "choice",
-        "level": "detaille",
+        "id": "famille_temps_proches",
+        "type": "boolean",
+        "level": "avance",
         "weight": 1,
-        "label": "Avez-vous passé du temps avec votre famille ou vos proches aujourd'hui ?",
+        "label": "Avez-vous passé du temps avec des personnes qui comptent pour vous aujourd'hui ?"
+      },
+      {
+        "id": "famille_temps_proches_raison",
+        "type": "choice",
+        "level": "avance",
+        "weight": 0,
+        "label": "Pourquoi n'avez-vous pas passé de temps avec vos proches aujourd'hui ?",
         "options": [
-          {
-            "value": "aucun",
-            "label": "Non",
-            "score": 25
-          },
-          {
-            "value": "peu",
-            "label": "Un peu",
-            "score": 55
-          },
-          {
-            "value": "qualite",
-            "label": "Un vrai temps de qualité",
-            "score": 100
-          }
+          { "value": "pas_occasion", "label": "Je n'en ai pas eu l'occasion" },
+          { "value": "trop_occupe", "label": "J'étais trop occupé" },
+          { "value": "besoin_seul", "label": "J'avais besoin d'être seul" },
+          { "value": "pas_envie", "label": "Je n'en avais pas envie" },
+          { "value": "proches_indisponibles", "label": "Ils n'étaient pas disponibles" },
+          { "value": "loin_proches", "label": "Je suis loin de mes proches" },
+          { "value": "pas_habituel", "label": "Ce n'est pas habituel pour moi" },
+          { "value": "autre", "label": "Autre" }
+        ],
+        "when": { "all": [{ "questionId": "famille_temps_proches", "op": "eq", "value": false }] }
+      },
+      {
+        "id": "famille_temps_proches_raison_autre",
+        "type": "text",
+        "level": "avance",
+        "weight": 0,
+        "label": "Précisez si vous le souhaitez",
+        "when": { "all": [{ "questionId": "famille_temps_proches_raison", "op": "eq", "value": "autre" }] }
+      },
+      {
+        "id": "famille_qualite_temps",
+        "type": "rating",
+        "level": "avance",
+        "weight": 1.2,
+        "label": "Comment avez-vous trouvé la qualité de ce temps passé avec vos proches aujourd'hui ?",
+        "config": { "min": 1, "max": 10, "defaultValue": 5, "labels": ["Très mauvaise qualité", "Moyenne", "Excellente qualité"] },
+        "when": { "all": [{ "questionId": "famille_temps_proches", "op": "eq", "value": true }] }
+      },
+      {
+        "id": "famille_qualite_temps_raison",
+        "type": "choice",
+        "level": "avance",
+        "weight": 0,
+        "label": "Pourquoi ce moment avec vos proches n'a-t-il pas été de bonne qualité ?",
+        "options": [
+          { "value": "desaccord", "label": "Désaccord ou conflit" },
+          { "value": "mauvaise_communication", "label": "Mauvaise communication" },
+          { "value": "fatigue", "label": "Fatigue" },
+          { "value": "manque_temps", "label": "Manque de temps" },
+          { "value": "pas_present_mentalement", "label": "Je n'étais pas vraiment présent mentalement" },
+          { "value": "autre_pas_disponible", "label": "L'autre personne n'était pas disponible mentalement" },
+          { "value": "ambiance_difficile", "label": "Ambiance difficile" },
+          { "value": "pas_envie", "label": "Je n'en avais simplement pas envie" },
+          { "value": "autre", "label": "Autre" }
+        ],
+        "when": { "all": [{ "questionId": "famille_qualite_temps", "op": "lte", "value": 4 }] }
+      },
+      {
+        "id": "famille_qualite_temps_raison_autre",
+        "type": "text",
+        "level": "avance",
+        "weight": 0,
+        "label": "Précisez si vous le souhaitez",
+        "when": { "all": [{ "questionId": "famille_qualite_temps_raison", "op": "eq", "value": "autre" }] }
+      },
+      {
+        "id": "famille_solitude",
+        "type": "rating",
+        "level": "avance",
+        "weight": 1,
+        "label": "Vous êtes-vous senti seul ou isolé aujourd'hui ?",
+        "config": { "min": 1, "max": 10, "invert": true, "defaultValue": 5, "labels": ["Pas du tout", "Moyennement", "Beaucoup"] }
+      },
+      {
+        "id": "famille_entretien_relation",
+        "type": "choice",
+        "level": "avance",
+        "weight": 0.8,
+        "label": "Avez-vous fait quelque chose pour entretenir ou renforcer une relation aujourd'hui ?",
+        "options": [
+          { "value": "non", "label": "Non", "score": 20 },
+          { "value": "un_peu", "label": "Un peu", "score": 60 },
+          { "value": "significatif", "label": "Oui, de manière significative", "score": 100 }
         ]
       },
       {
-        "id": "famille_satisfaction",
+        "id": "famille_satisfaction_relationnelle",
         "type": "rating",
-        "level": "detaille",
+        "level": "avance",
         "weight": 1,
-        "label": "Qualité de vos liens avec vos proches",
-        "config": {
-          "min": 0,
-          "max": 10,
-          "defaultValue": 5
-        },
-        "when": {
-          "all": [
-            {
-              "questionId": "famille_temps",
-              "op": "neq",
-              "value": "aucun"
-            }
-          ]
-        }
+        "label": "Globalement, êtes-vous satisfait de votre vie relationnelle en ce moment ?",
+        "config": { "min": 1, "max": 10, "defaultValue": 5, "labels": ["Pas du tout satisfait", "Moyennement", "Très satisfait"] }
+      },
+      {
+        "id": "famille_nouvelles_rencontres",
+        "type": "choice",
+        "level": "avance",
+        "weight": 0,
+        "label": "Avez-vous rencontré de nouvelles personnes aujourd'hui ?",
+        "options": [
+          { "value": "non", "label": "Non" },
+          { "value": "une", "label": "Oui, une personne" },
+          { "value": "plusieurs", "label": "Oui, plusieurs personnes" }
+        ]
+      },
+      {
+        "id": "famille_pensee_personne",
+        "type": "choice",
+        "level": "avance",
+        "weight": 0,
+        "label": "Avez-vous pensé à une personne en particulier aujourd'hui ?",
+        "options": [
+          { "value": "non", "label": "Non" },
+          { "value": "une", "label": "Oui, une personne" },
+          { "value": "plusieurs", "label": "Oui, plusieurs personnes" }
+        ]
+      },
+      {
+        "id": "famille_pensee_personne_note",
+        "type": "text",
+        "level": "avance",
+        "weight": 0,
+        "label": "Qui, ou pourquoi ? (facultatif)",
+        "when": { "all": [{ "questionId": "famille_pensee_personne", "op": "exists" }, { "questionId": "famille_pensee_personne", "op": "neq", "value": "non" }] }
       }
     ]
   },
@@ -1417,49 +1501,134 @@
     "id": "argent",
     "name": "Argent",
     "icon": "💶",
-    "description": "Pression financière et gestion simple",
+    "description": "Gestion, sécurité et sérénité financière du quotidien",
     "weight": 0.08,
     "questions": [
       {
-        "id": "argent_pression",
-        "type": "rating",
-        "level": "detaille",
-        "weight": 1,
-        "label": "Pression financière ressentie aujourd'hui",
-        "config": {
-          "min": 0,
-          "max": 10,
-          "invert": true,
-          "defaultValue": 5
-        }
+        "id": "finance_depense",
+        "type": "boolean",
+        "level": "avance",
+        "weight": 0,
+        "label": "Avez-vous dépensé de l'argent aujourd'hui ?"
       },
       {
-        "id": "argent_controle",
+        "id": "finance_depense_montant",
+        "type": "choice",
+        "level": "avance",
+        "weight": 0,
+        "label": "Est-ce que c'était beaucoup d'argent ?",
+        "options": [
+          { "value": "petite", "label": "Non, une petite dépense" },
+          { "value": "importante", "label": "Une dépense assez importante" },
+          { "value": "beaucoup", "label": "Oui, beaucoup d'argent" }
+        ],
+        "when": { "all": [{ "questionId": "finance_depense", "op": "eq", "value": true }] }
+      },
+      {
+        "id": "finance_depense_reflexion",
+        "type": "choice",
+        "level": "avance",
+        "weight": 0.6,
+        "label": "Y avez-vous réfléchi avant de faire cette dépense ?",
+        "options": [
+          { "value": "impulsif", "label": "Pas vraiment, c'était impulsif", "score": 30 },
+          { "value": "un_peu", "label": "Un peu", "score": 65 },
+          { "value": "reflechi", "label": "Oui, j'y avais bien réfléchi", "score": 100 }
+        ],
+        "when": { "any": [{ "questionId": "finance_depense_montant", "op": "eq", "value": "importante" }, { "questionId": "finance_depense_montant", "op": "eq", "value": "beaucoup" }] }
+      },
+      {
+        "id": "finance_depense_utilite",
         "type": "choice",
         "level": "avance",
         "weight": 0.8,
-        "label": "Gestion financière du jour",
+        "label": "Est-ce que cette dépense était utile ?",
         "options": [
-          {
-            "value": "sous_controle",
-            "label": "Sous contrôle",
-            "score": 100
-          },
-          {
-            "value": "a_surveiller",
-            "label": "À surveiller",
-            "score": 60
-          },
-          {
-            "value": "depensee",
-            "label": "Dépensé plus que prévu",
-            "score": 35
-          },
-          {
-            "value": "na",
-            "label": "Non pertinent"
-          }
+          { "value": "pas_du_tout", "label": "Pas du tout", "score": 10 },
+          { "value": "plutot_non", "label": "Plutôt non", "score": 35 },
+          { "value": "moyennement", "label": "Moyennement", "score": 60 },
+          { "value": "plutot_oui", "label": "Plutôt oui", "score": 80 },
+          { "value": "totalement", "label": "Oui, totalement", "score": 100 }
+        ],
+        "when": { "any": [{ "questionId": "finance_depense_montant", "op": "eq", "value": "importante" }, { "questionId": "finance_depense_montant", "op": "eq", "value": "beaucoup" }] }
+      },
+      {
+        "id": "finance_epargne_effort",
+        "type": "choice",
+        "level": "avance",
+        "weight": 0.6,
+        "label": "Avez-vous essayé d'économiser de l'argent aujourd'hui ?",
+        "options": [
+          { "value": "non", "label": "Non", "score": 20 },
+          { "value": "un_peu", "label": "Un peu", "score": 60 },
+          { "value": "oui", "label": "Oui", "score": 100 }
         ]
+      },
+      {
+        "id": "finance_objectif_epargne",
+        "type": "choice",
+        "level": "avance",
+        "weight": 0.5,
+        "label": "Avez-vous un objectif ou un but d'épargne clair ?",
+        "options": [
+          { "value": "non", "label": "Non", "score": 20 },
+          { "value": "jaimerais", "label": "J'aimerais en avoir un", "score": 40 },
+          { "value": "pas_precis", "label": "Oui, mais il n'est pas très précis", "score": 70 },
+          { "value": "clair", "label": "Oui, j'ai un objectif clair", "score": 100 }
+        ]
+      },
+      {
+        "id": "finance_securite_niveau",
+        "type": "choice",
+        "level": "avance",
+        "weight": 1,
+        "label": "Quel est votre niveau de sécurité financière ?",
+        "options": [
+          { "value": "surendette", "label": "Surendetté", "score": 0 },
+          { "value": "credit_conso", "label": "Crédit à la consommation", "score": 12.5 },
+          { "value": "negatif", "label": "En négatif", "score": 25 },
+          { "value": "equilibre", "label": "À l'équilibre", "score": 37.5 },
+          { "value": "quelques_jours", "label": "Quelques jours d'argent de côté", "score": 50 },
+          { "value": "un_mois", "label": "Un mois d'épargne", "score": 62.5 },
+          { "value": "trois_mois", "label": "3 mois de côté", "score": 75 },
+          { "value": "six_mois", "label": "6 mois de sécurité", "score": 87.5 },
+          { "value": "investis", "label": "J'investis", "score": 100 }
+        ]
+      },
+      {
+        "id": "finance_opportunite_revenu",
+        "type": "choice",
+        "level": "avance",
+        "weight": 0.4,
+        "label": "Avez-vous la possibilité de demander une augmentation ou de faire des heures supplémentaires ?",
+        "options": [
+          { "value": "non", "label": "Non", "score": 20 },
+          { "value": "peut_etre", "label": "Peut-être / cela dépend", "score": 50 },
+          { "value": "augmentation", "label": "Oui, je peux demander une augmentation", "score": 80 },
+          { "value": "heures_sup", "label": "Oui, je peux faire des heures supplémentaires", "score": 80 },
+          { "value": "les_deux", "label": "Oui, les deux", "score": 100 }
+        ]
+      },
+      {
+        "id": "finance_apprentissage",
+        "type": "choice",
+        "level": "avance",
+        "weight": 0.5,
+        "label": "Aujourd'hui, avez-vous appris quelque chose sur le fonctionnement de l'argent, la monnaie, l'investissement ou la finance ?",
+        "options": [
+          { "value": "non", "label": "Non", "score": 20 },
+          { "value": "petit", "label": "Oui, un petit quelque chose", "score": 55 },
+          { "value": "interessant", "label": "Oui, quelque chose d'intéressant", "score": 80 },
+          { "value": "important", "label": "Oui, j'ai appris quelque chose d'important", "score": 100 }
+        ]
+      },
+      {
+        "id": "finance_apprentissage_note",
+        "type": "text",
+        "level": "avance",
+        "weight": 0,
+        "label": "Qu'avez-vous appris ? (facultatif)",
+        "when": { "all": [{ "questionId": "finance_apprentissage", "op": "exists" }, { "questionId": "finance_apprentissage", "op": "neq", "value": "non" }] }
       }
     ]
   }

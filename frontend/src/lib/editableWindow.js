@@ -1,5 +1,5 @@
 // Fenêtre de modification des journées, partagée entre le questionnaire et l'historique.
-export const EDITABLE_WINDOW_DAYS = 14;
+export const EDITABLE_WINDOW_DAYS = 7;
 
 export function daysBetween(dateA, dateB) {
   const a = new Date(`${dateA}T00:00:00`);
