@@ -55,7 +55,10 @@ export function buildQuestionFlow(modules, preferences, answers, options = {}) {
     if (onlyModuleId && mod.id !== onlyModuleId) continue;
     const modPref = preferences?.[mod.id];
     if (modPref?.enabled === false) continue;
-    const level = normalizeLevel((moduleLevelOverrides?.[mod.id] ?? levelOverride) || modPref?.level || 'essentiel');
+    const hasLockedMode = Object.hasOwn(moduleModes || {}, mod.id);
+    const lockedMode = moduleModes?.[mod.id];
+    const lockedLevel = lockedMode === 'standard' ? undefined : moduleLevelOverrides?.[mod.id];
+    const level = normalizeLevel((hasLockedMode ? lockedLevel : levelOverride) || modPref?.level || 'essentiel');
 
     for (const q of mod.questions) {
       const qLevel = normalizeLevel(q.level || 'essentiel');

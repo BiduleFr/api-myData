@@ -11,6 +11,7 @@ import Privacy from './pages/Privacy.jsx';
 import About from './pages/About.jsx';
 import Terms from './pages/Terms.jsx';
 import DayDetail from './pages/DayDetail.jsx';
+import Advice from './pages/Advice.jsx';
 
 function WelcomeStandalone() {
   const navigate = useNavigate();
@@ -40,6 +41,7 @@ export default function App() {
       <Route path="/journee/:date" element={<DayDetail />} />
       <Route path="/statistiques" element={<Stats />} />
       <Route path="/suivi" element={<Suivi />} />
+      <Route path="/conseils" element={<Advice />} />
       <Route path="/objectifs" element={<Navigate to="/suivi" replace />} />
       <Route path="/personnaliser" element={<Customize />} />
       <Route path="/confidentialite" element={<Privacy />} />

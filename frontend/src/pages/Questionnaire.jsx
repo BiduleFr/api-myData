@@ -7,6 +7,8 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { api, todayISO } from '../lib/api';
 import { buildQuestionFlow } from '../lib/questionFlow';
 import { EDITABLE_WINDOW_DAYS, daysBetween } from '../lib/editableWindow';
+import { useAppearance } from '../context/AppearanceContext.jsx';
+import { t } from '../lib/i18n.js';
 
 const CONTEXT_KEY = '_contexte_journee';
 // Types dont une seule interaction (clic) suffit à donner une réponse définitive.
@@ -47,6 +49,7 @@ const STATUS_LABEL = { not_started: 'Non commencé', partial: 'En cours', done: 
 
 export default function Questionnaire() {
   const { token } = useAuth();
+  const { locale } = useAppearance();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const date = searchParams.get('date') || todayISO();
@@ -404,7 +407,7 @@ export default function Questionnaire() {
             Modification d'une journée ancienne ({date})
           </div>
         )}
-        <div className="space-y-2">
+        <div className="space-y-5">
           <div className="grid grid-cols-3 gap-2" aria-label="Mode du questionnaire">
             {MODES.map((option) => (
               <button
@@ -415,7 +418,7 @@ export default function Questionnaire() {
                   mode === option.value ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-200 bg-white text-slate-600 hover:border-brand-300'
                 }`}
               >
-                {option.label}
+                {t(locale, option.label)}
               </button>
             ))}
           </div>
@@ -439,12 +442,12 @@ export default function Questionnaire() {
         </div>
 
         <div className="pointer-events-none fixed inset-x-5 bottom-36 z-20 mx-auto flex max-w-lg items-center justify-between px-1 py-2 sm:bottom-28">
-          <button onClick={goBack} className="btn-ghost pointer-events-auto">← Retour</button>
+            <button onClick={goBack} className="btn-ghost pointer-events-auto">← {t(locale, 'Retour')}</button>
           <span className="text-xs text-slate-300">{saving ? 'Enregistrement…' : 'Enregistré'}</span>
           {isLast ? (
-            <button onClick={finish} disabled={!canGoNext} className="btn-primary pointer-events-auto">Enregistrer ma journée</button>
+            <button onClick={finish} disabled={!canGoNext} className="btn-primary pointer-events-auto">{t(locale, 'Enregistrer ma journée')}</button>
           ) : (
-            <button onClick={goNext} disabled={!canGoNext} className="btn-primary pointer-events-auto">Suivant →</button>
+            <button onClick={goNext} disabled={!canGoNext} className="btn-primary pointer-events-auto">{t(locale, 'Suivant')} →</button>
           )}
         </div>
       </div>

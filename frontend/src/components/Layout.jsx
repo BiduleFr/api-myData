@@ -1,11 +1,13 @@
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useAppearance } from '../context/AppearanceContext.jsx';
+import { t } from '../lib/i18n.js';
 
 const LINKS = [
   { to: '/', label: 'Accueil', icon: '🏠' },
   { to: '/statistiques', label: 'Statistiques', icon: '📈' },
   { to: '/suivi', label: 'Suivi', icon: '🎯' },
+  { to: '/conseils', label: 'Conseils', icon: '💡' },
   { to: '/personnaliser', label: 'Personnaliser', icon: '⚙️' },
   { to: '/confidentialite', label: 'Données', icon: '🔒' }
 ];
@@ -38,7 +40,7 @@ export default function Layout({ children }) {
                   }`
                 }
               >
-                {l.icon} {l.label}
+                {l.icon} {t(locale, l.label)}
               </NavLink>
             ))}
           </nav>
@@ -55,19 +57,19 @@ export default function Layout({ children }) {
                 onClick={handleLogout}
                 className="btn-ghost text-sm font-medium hover:text-red-600"
               >
-                Déconnexion
+                {t(locale, 'Déconnexion')}
               </button>
             ) : isGuest ? (
               <>
-                <Link to="/connexion" className="btn-primary text-xs py-1.5 px-3">Connexion</Link>
+                <Link to="/connexion" className="btn-primary text-xs py-1.5 px-3">{t(locale, 'Connexion')}</Link>
                 <button onClick={handleLogout} className="btn-ghost text-xs text-slate-400 hover:text-slate-600">
-                  Quitter
+                  {t(locale, 'Quitter')}
                 </button>
               </>
             ) : (
               <>
-                <Link to="/a-propos" className="hidden sm:inline btn-ghost text-sm">À propos</Link>
-                <Link to="/connexion" className="btn-ghost text-sm font-semibold text-brand-600">Se connecter</Link>
+                <Link to="/a-propos" className="hidden sm:inline btn-ghost text-sm">{t(locale, 'À propos')}</Link>
+                <Link to="/connexion" className="btn-ghost text-sm font-semibold text-brand-600">{t(locale, 'Se connecter')}</Link>
               </>
             )}
           </div>
@@ -78,13 +80,13 @@ export default function Layout({ children }) {
 
       <footer className="border-t border-black/5 bg-white/40 py-6 text-center text-xs text-slate-400">
         <div className="max-w-3xl mx-auto px-5 flex flex-wrap justify-center items-center gap-x-4 gap-y-2">
-          <Link to="/" className="hover:text-brand-600 transition-colors">Accueil</Link>
+          <Link to="/" className="hover:text-brand-600 transition-colors">{t(locale, 'Accueil')}</Link>
           <span>•</span>
           <Link to="/a-propos" className="hover:text-brand-600 transition-colors">À propos & Équipe</Link>
           <span>•</span>
           <Link to="/conditions" className="hover:text-brand-600 transition-colors">Conditions d'utilisation</Link>
           <span>•</span>
-          <Link to="/confidentialite" className="hover:text-brand-600 transition-colors">Vie privée & Données</Link>
+          <Link to="/confidentialite" className="hover:text-brand-600 transition-colors">{t(locale, 'Vie privée & Données')}</Link>
           <span>•</span>
           <Link to="/a-propos#contact" className="hover:text-brand-600 transition-colors">Contact</Link>
         </div>
@@ -103,7 +105,7 @@ export default function Layout({ children }) {
             }
           >
             <span className="text-lg">{l.icon}</span>
-            {l.label}
+            {t(locale, l.label)}
           </NavLink>
         ))}
       </nav>

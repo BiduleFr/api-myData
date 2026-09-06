@@ -7,8 +7,8 @@ const LEVELS = ['essentiel', 'detaille', 'avance'];
 const LEVEL_LABELS = {
   simple: 'Essentiel',
   essentiel: 'Essentiel',
-  detaille: 'Detaille',
-  avance: 'Avance'
+  detaille: 'Détaillé',
+  avance: 'Avancé'
 };
 
 function normalizeLevel(level) {
@@ -19,6 +19,13 @@ function normalizeLevel(level) {
 function levelAllowed(questionLevel, selectedLevel) {
   const order = { essentiel: 0, detaille: 1, avance: 2 };
   return order[normalizeLevel(questionLevel || 'essentiel')] <= order[normalizeLevel(selectedLevel)];
+}
+
+function dependencyLabel(question, questionsById) {
+  const rules = question.when?.all || question.when?.any || (question.dependsOn ? [question.dependsOn] : []);
+  if (!rules.length) return null;
+  const parent = questionsById.get(rules[0].questionId);
+  return parent?.label || 'une réponse précédente';
 }
 
 export default function Customize() {
@@ -122,13 +129,15 @@ export default function Customize() {
                         ))}
                       </div>
                     )}
-                    <div className="grid sm:grid-cols-2 gap-2">
+                    <div className="space-y-2">
                       {m.questions
                         .filter((q) => levelAllowed(q.level, level))
                         .map((q) => {
                           const qEnabled = modPref.questions?.[q.id]?.enabled !== false;
+                          const questionsById = new Map(m.questions.map((question) => [question.id, question]));
+                          const dependsOn = dependencyLabel(q, questionsById);
                           return (
-                            <label key={q.id} className="flex items-center gap-2 text-sm text-slate-600">
+                            <label key={q.id} className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-600 ${dependsOn ? 'ml-6 border-l-2 border-brand-200 bg-brand-50/50' : 'border border-slate-100'}`}>
                               <input
                                 type="checkbox"
                                 checked={qEnabled}
@@ -136,7 +145,10 @@ export default function Customize() {
                                 onChange={(e) => toggleQuestion(m.id, q.id, e.target.checked)}
                                 className="accent-brand-600"
                               />
-                              {q.label}
+                              <span className="flex min-w-0 flex-col">
+                                <span>{dependsOn && <span className="mr-1 text-brand-600">↳</span>}{q.label}</span>
+                                {dependsOn && <span className="text-xs text-slate-400">Affichée selon : {dependsOn}</span>}
+                              </span>
                             </label>
                           );
                         })}
