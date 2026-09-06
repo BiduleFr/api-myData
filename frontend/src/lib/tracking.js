@@ -73,7 +73,7 @@ function isDue(entry, date) {
   return entry.active !== false && entry.startDate && entry.startDate < date;
 }
 
-export function buildTrackingQuestions(preferences, { date, locale = 'fr', includeStartPrompts = true } = {}) {
+export function buildTrackingQuestions(preferences, { date, locale = 'fr' } = {}) {
   const tracking = getTracking(preferences);
   const questions = [];
   const moduleName = locale === 'en' ? 'Daily tracking' : 'Suivi du jour';
@@ -109,29 +109,6 @@ export function buildTrackingQuestions(preferences, { date, locale = 'fr', inclu
       moduleId: 'suivi',
       moduleName,
       moduleIcon: behavior.icon || '🛡️'
-    });
-  }
-
-  if (includeStartPrompts) {
-    questions.push({
-      id: 'tracking_start_habits',
-      type: 'boolean',
-      level: 'essentiel',
-      weight: 0,
-      label: locale === 'en' ? 'Would you like to start a new habit?' : 'Souhaitez-vous commencer une nouvelle habitude ?',
-      moduleId: 'suivi',
-      moduleName,
-      moduleIcon: '🌱'
-    });
-    questions.push({
-      id: 'tracking_start_behaviors',
-      type: 'boolean',
-      level: 'essentiel',
-      weight: 0,
-      label: locale === 'en' ? 'Would you like to start watching a behavior?' : 'Souhaitez-vous surveiller un comportement ?',
-      moduleId: 'suivi',
-      moduleName,
-      moduleIcon: '🛡️'
     });
   }
 

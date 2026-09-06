@@ -26,5 +26,10 @@
     "pg": "^8.13.1",
     "sequelize": "^6.37.5"
   },
-  "description": ""
+  "description": "",
+  "overrides": {
+    "uuid": "^11.1.1",
+    "tar": "^7.5.21",
+    "qs": "^6.15.4"
+  }
 }

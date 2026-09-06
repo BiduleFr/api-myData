@@ -5,6 +5,7 @@ import { useAppearance } from '../context/AppearanceContext.jsx';
 import { api } from '../lib/api';
 import { applyModeOverride } from '../lib/questionFlow';
 import { translateModuleName, translateQuestion } from '../lib/schemaTranslations.js';
+import { TRACKING_KEY, getTracking, buildTrackingQuestions } from '../lib/tracking';
 
 const LEVELS = ['essentiel', 'detaille', 'avance'];
 const LEVEL_LABELS = {
@@ -29,6 +30,69 @@ function dependencyLabel(question, questionsById) {
   if (!rules.length) return null;
   const parent = questionsById.get(rules[0].questionId);
   return parent?.label || 'une réponse précédente';
+}
+
+// Une question est non désactivable si elle fait partie du niveau Essentiel,
+// ou si sa question parente fait partie du niveau Essentiel.
+function isEssentialChain(question, questionsById) {
+  if (normalizeLevel(question.level || 'essentiel') === 'essentiel') return true;
+  const rules = question.when?.all || question.when?.any || (question.dependsOn ? [question.dependsOn] : []);
+  for (const rule of rules) {
+    const parent = questionsById.get(rule.questionId);
+    if (parent && isEssentialChain(parent, questionsById)) return true;
+  }
+  return false;
+}
+
+// Carte listant les questions de suivi générées par les habitudes/comportements actifs.
+function TrackingQuestionsCard({ preferences, locale, onToggleQuestion }) {
+  const tracking = getTracking(preferences);
+  const activeHabits = tracking.habits.filter((item) => item.active !== false);
+  const activeBehaviors = tracking.behaviors.filter((item) => item.active !== false);
+  const total = activeHabits.length + activeBehaviors.length;
+  const questions = buildTrackingQuestions(preferences, { date: '2999-12-31', locale });
+
+  return (
+    <div className="card p-5 space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">🌱</span>
+          <div>
+            <p className="font-bold text-slate-800">{locale === 'en' ? 'Daily tracking' : 'Suivi du jour'}</p>
+            <p className="text-xs text-slate-400">
+              {locale === 'en'
+                ? `${total} tracking question${total === 1 ? '' : 's'} added to the questionnaire`
+                : `${total} question${total === 1 ? '' : 's'} de suivi ajoutée${total === 1 ? '' : 's'} au questionnaire`}
+            </p>
+          </div>
+        </div>
+      </div>
+      {total === 0 ? (
+        <p className="text-sm text-slate-400">
+          {locale === 'en'
+            ? 'No active habit or behavior. Add them from the Tracking tab.'
+            : 'Aucune habitude ni comportement actif. Ajoutez-les depuis l’onglet Suivi.'}
+        </p>
+      ) : (
+        <div className="space-y-2">
+          {questions.map((q) => {
+            const qEnabled = preferences[TRACKING_KEY]?.questions?.[q.id]?.enabled !== false;
+            return (
+              <label key={q.id} className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-600 border border-slate-100">
+                <input
+                  type="checkbox"
+                  checked={qEnabled}
+                  onChange={(e) => onToggleQuestion(TRACKING_KEY, q.id, e.target.checked)}
+                  className="accent-brand-600"
+                />
+                <span>{q.label}</span>
+              </label>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function Customize() {
@@ -91,6 +155,7 @@ export default function Customize() {
         </div>
 
         <div className="space-y-4">
+          <TrackingQuestionsCard preferences={preferences} locale={locale} onToggleQuestion={toggleQuestion} />
           {modules.map((m) => {
             const modPref = preferences[m.id] || {};
             const enabled = modPref.enabled !== false;
@@ -141,25 +206,24 @@ export default function Customize() {
                           const questionsById = new Map(m.questions.map((question) => [question.id, question]));
                           const dependsOn = dependencyLabel(q, questionsById);
                           // Au niveau Essentiel, on affiche l'ébauche du questionnaire rapide
-                          // (surcharges par mode). Aux niveaux supérieurs, les questions
-                          // essentielles sont grisées car déjà incluses par défaut.
+                          // (surcharges par mode). Ce qui est dans Essentiel est non désactivable,
+// y compris les sous-questions dont la question générale est essentielle.
                           const displayQuestion = level === 'essentiel' ? applyModeOverride(q, 'rapide') : q;
-                          const isEssentielLevel = normalizeLevel(q.level || 'essentiel') === 'essentiel';
-                          const dimmed = isEssentielLevel && level !== 'essentiel';
+                          const locked = isEssentialChain(q, questionsById) || q.required;
                           const translated = translateQuestion(displayQuestion, locale);
                           const translatedDependsOn = dependsOn ? (translateQuestion(questionsById.get((q.when?.all || q.when?.any || (q.dependsOn ? [q.dependsOn] : []))[0]?.questionId) || {}, locale).label || dependsOn) : null;
                           return (
-                            <label key={q.id} className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-600 ${dependsOn ? 'ml-6 border-l-2 border-brand-200 bg-brand-50/50' : 'border border-slate-100'} ${dimmed ? 'opacity-50' : ''}`}>
+                            <label key={q.id} className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-600 ${dependsOn ? 'ml-6 border-l-2 border-brand-200 bg-brand-50/50' : 'border border-slate-100'}`}>
                               <input
                                 type="checkbox"
                                 checked={qEnabled}
-                                disabled={q.required}
+                                disabled={locked}
                                 onChange={(e) => toggleQuestion(m.id, q.id, e.target.checked)}
                                 className="accent-brand-600"
                               />
                               <span className="flex min-w-0 flex-col">
                                 <span>{dependsOn && <span className="mr-1 text-brand-600">↳</span>}{translated.label}</span>
-                                {dimmed && <span className="text-xs text-slate-400">{locale === 'en' ? 'Included in Essential' : 'Incluse dans Essentiel'}</span>}
+                                {locked && <span className="text-xs text-brand-600 font-semibold">{locale === 'en' ? 'Always included (Essential)' : 'Toujours incluse (Essentiel)'}</span>}
                                 {translatedDependsOn && <span className="text-xs text-slate-400">{locale === 'en' ? 'Shown depending on:' : 'Affichée selon :'} {translatedDependsOn}</span>}
                               </span>
                             </label>

@@ -47,6 +47,21 @@ function scoreColorClass(score) {
   return 'text-red-500';
 }
 
+// Nombre de jours consécutifs avec un bilan terminé (aujourd'hui inclus si terminé).
+function computeCheckInStreak(history) {
+  const doneDates = new Set(history.filter((h) => h.completionStatus === 'complete').map((h) => h.date));
+  let streak = 0;
+  const cursor = new Date();
+  if (!doneDates.has(cursor.toISOString().slice(0, 10))) cursor.setDate(cursor.getDate() - 1);
+  for (;;) {
+    const key = cursor.toISOString().slice(0, 10);
+    if (!doneDates.has(key)) break;
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return streak;
+}
+
 export default function Dashboard() {
   const { user, token } = useAuth();
   const { locale } = useAppearance();
@@ -89,6 +104,7 @@ export default function Dashboard() {
   const isComplete = entry?.completionStatus === 'complete';
   const isDraft = entry?.completionStatus === 'draft';
   const moduleScores = entry?.moduleScores || {};
+  const checkInStreak = computeCheckInStreak(fullHistory);
 
   return (
     <Layout>
@@ -102,6 +118,11 @@ export default function Dashboard() {
               ? t(locale, 'Vous avez commencé votre bilan du jour. Envie de le terminer ?')
               : t(locale, 'Comment s’est passée votre journée ?')}
           </p>
+          {checkInStreak > 0 && (
+            <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-brand-50 border border-brand-100 px-3 py-1 text-sm font-semibold text-brand-700">
+              🔥 {checkInStreak} {locale === 'en' ? (checkInStreak === 1 ? 'day in a row' : 'days in a row') : (checkInStreak === 1 ? 'jour d’affilée' : 'jours d’affilée')}
+            </p>
+          )}
         </div>
 
         <div className="card p-8 flex flex-col sm:flex-row items-center gap-8">

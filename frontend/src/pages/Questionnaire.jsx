@@ -9,9 +9,8 @@ import { buildQuestionFlow } from '../lib/questionFlow';
 import { EDITABLE_WINDOW_DAYS, daysBetween } from '../lib/editableWindow';
 import { useAppearance } from '../context/AppearanceContext.jsx';
 import { t } from '../lib/i18n.js';
-import { TRACKING_KEY, getTracking, buildTrackingQuestions } from '../lib/tracking';
+import { TRACKING_KEY, buildTrackingQuestions } from '../lib/tracking';
 import { translateModuleName } from '../lib/schemaTranslations.js';
-import TrackingPicker from '../components/TrackingPicker.jsx';
 
 const CONTEXT_KEY = '_contexte_journee';
 // Types dont une seule interaction (clic) suffit à donner une réponse définitive.
@@ -105,7 +104,8 @@ export default function Questionnaire() {
   const flow = useMemo(() => {
     const base = buildQuestionFlow(modules, preferences, answers, { levelOverride: MODE_LEVEL[mode], mode, moduleLevelOverrides, moduleModes: moduleModeLock });
     // Suivi quotidien : habitudes et comportements actifs, insérés avant le bilan final.
-    const trackingQuestions = buildTrackingQuestions(preferences, { date, locale, includeStartPrompts: mode !== 'rapide' });
+    const trackingQuestions = buildTrackingQuestions(preferences, { date, locale })
+      .filter((q) => preferences[TRACKING_KEY]?.questions?.[q.id]?.enabled !== false);
     const insertAt = base.findIndex((step) => step.moduleId === 'accomplissement');
     const at = insertAt >= 0 ? insertAt : base.length;
     return [...base.slice(0, at), ...trackingQuestions, ...base.slice(at)];
@@ -167,7 +167,8 @@ export default function Questionnaire() {
     clearAutoAdvance();
     if (AUTO_ADVANCE_TYPES.has(current.type)) {
       const rebuilt = buildQuestionFlow(modules, preferences, next, { levelOverride: MODE_LEVEL[mode], mode, moduleLevelOverrides, moduleModes: moduleModeLock });
-      const rebuiltTracking = buildTrackingQuestions(preferences, { date, locale, includeStartPrompts: mode !== 'rapide' });
+      const rebuiltTracking = buildTrackingQuestions(preferences, { date, locale })
+        .filter((q) => preferences[TRACKING_KEY]?.questions?.[q.id]?.enabled !== false);
       const insertAt = rebuilt.findIndex((step) => step.moduleId === 'accomplissement');
       const at = insertAt >= 0 ? insertAt : rebuilt.length;
       const nextFullFlow = [...rebuilt.slice(0, at), ...rebuiltTracking, ...rebuilt.slice(at)];
@@ -176,19 +177,6 @@ export default function Questionnaire() {
         autoAdvanceTimer.current = setTimeout(() => setIndex(currentIndex + 1), 280);
       }
     }
-  }
-
-  function toggleTrackingItem(kind, itemId) {
-    const tracking = getTracking(preferences);
-    const listKey = kind === 'habit' ? 'habits' : 'behaviors';
-    const list = tracking[listKey];
-    const existing = list.find((item) => item.id === itemId);
-    const nextList = existing
-      ? list.map((item) => (item.id === itemId ? { ...item, active: item.active === false } : item))
-      : [...list, { id: itemId, startDate: todayISO(), active: true }];
-    const nextPrefs = { ...preferences, [TRACKING_KEY]: { ...tracking, [listKey]: nextList } };
-    setPreferences(nextPrefs);
-    api.savePreferences(nextPrefs, token);
   }
 
   function saveDefaultAnswer(question) {
@@ -463,15 +451,6 @@ export default function Questionnaire() {
           <h1 className="text-xl sm:text-2xl font-bold text-slate-800">{current.label}</h1>
           <QuestionRenderer question={current} value={currentValue} onChange={current.id === 'bilan_journal' ? handleJournal : handleAnswer} />
           {current.help && current.type !== 'text' && <p className="mx-auto max-w-md text-sm text-slate-500">{current.help}</p>}
-
-          {(current.id === 'tracking_start_habits' || current.id === 'tracking_start_behaviors') && currentValue === true && (
-            <TrackingPicker
-              kind={current.id === 'tracking_start_habits' ? 'habit' : 'behavior'}
-              preferences={preferences}
-              locale={locale}
-              onToggle={toggleTrackingItem}
-            />
-          )}
         </div>
 
         <div className="pointer-events-none fixed inset-x-5 bottom-36 z-20 mx-auto flex max-w-lg items-center justify-between px-1 py-2 sm:bottom-28">
