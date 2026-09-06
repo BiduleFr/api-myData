@@ -14,15 +14,24 @@ body {
 
 .dark body {
   @apply bg-slate-950 text-slate-100;
+  background-image: none;
 }
 
-.dark .bg-white, .dark .bg-white\/90, .dark .bg-white\/70, .dark .bg-white\/40 {
+.dark .bg-white, .dark .bg-white\/90, .dark .bg-white\/70, .dark .bg-white\/40, .dark .bg-white\/95 {
   @apply bg-slate-900;
 }
 
-.dark .bg-slate-50, .dark .bg-brand-50, .dark .bg-brand-50\/60, .dark .bg-brand-50\/70 {
+.dark .bg-slate-50, .dark .bg-slate-50\/50, .dark .bg-slate-100,
+.dark .bg-brand-50, .dark .bg-brand-50\/50, .dark .bg-brand-50\/60, .dark .bg-brand-50\/70, .dark .bg-brand-100 {
   @apply bg-slate-800;
 }
+
+.dark .bg-emerald-50 { @apply bg-emerald-950; }
+.dark .bg-amber-50, .dark .bg-amber-50\/40 { @apply bg-amber-950; }
+.dark .bg-red-50 { @apply bg-red-950; }
+
+.dark .hover\:bg-brand-50:hover, .dark .hover\:bg-slate-100:hover { @apply bg-slate-800; }
+.dark .hover\:bg-red-50:hover { @apply bg-red-950; }
 
 .dark .text-slate-800, .dark .text-slate-700, .dark .text-slate-600 {
   @apply text-slate-100;
@@ -32,9 +41,18 @@ body {
   @apply text-slate-300;
 }
 
-.dark .border-slate-200, .dark .border-black\/5, .dark .border-brand-100 {
+.dark .text-brand-700, .dark .text-brand-600 { @apply text-brand-300; }
+.dark .text-amber-600 { @apply text-amber-400; }
+.dark .text-red-500 { @apply text-red-400; }
+
+.dark .border-slate-200, .dark .border-black\/5,
+.dark .border-brand-100, .dark .border-brand-200 {
   @apply border-slate-700;
 }
+
+.dark .border-amber-400 { @apply border-amber-700; }
+.dark .border-red-200 { @apply border-red-800; }
+.dark .border-emerald-200 { @apply border-emerald-800; }
 
 .dark input, .dark textarea, .dark select {
   @apply border-slate-700 bg-slate-900 text-slate-100;

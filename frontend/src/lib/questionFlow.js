@@ -49,13 +49,13 @@ function applyModeOverride(question, mode) {
 
 export function buildQuestionFlow(modules, preferences, answers, options = {}) {
   const steps = [];
-  const { levelOverride, onlyModuleId } = options;
+  const { levelOverride, onlyModuleId, moduleLevelOverrides, moduleModes } = options;
 
   for (const mod of modules) {
     if (onlyModuleId && mod.id !== onlyModuleId) continue;
     const modPref = preferences?.[mod.id];
     if (modPref?.enabled === false) continue;
-    const level = normalizeLevel(levelOverride || modPref?.level || 'essentiel');
+    const level = normalizeLevel((moduleLevelOverrides?.[mod.id] ?? levelOverride) || modPref?.level || 'essentiel');
 
     for (const q of mod.questions) {
       const qLevel = normalizeLevel(q.level || 'essentiel');
@@ -67,7 +67,7 @@ export function buildQuestionFlow(modules, preferences, answers, options = {}) {
       if (q.dependsOn && !evaluateCondition({ ...q.dependsOn, op: q.dependsOn.op || 'eq' }, answers)) continue;
       if (q.when && !evaluateCondition(q.when, answers)) continue;
 
-      const question = applyModeOverride(q, options.mode);
+      const question = applyModeOverride(q, moduleModes?.[mod.id] ?? options.mode);
       steps.push({ ...question, moduleId: mod.id, moduleName: mod.name, moduleIcon: mod.icon });
     }
   }

@@ -1,17 +1,18 @@
 export default function RatingQuestion({ question, value, onChange }) {
-  const { min = 1, max = 10, defaultValue = Math.ceil((min + max) / 2), labels = [] } = question.config || {};
+  const { min = 1, max = 10, step = 1, defaultValue = Math.ceil((min + max) / 2), labels = [] } = question.config || {};
   const current = value ?? defaultValue;
+  const displayValue = Number.isInteger(current) ? current : current.toFixed(1);
 
   return (
     <div className="w-full max-w-md mx-auto">
       <output className="mb-5 block text-center text-5xl font-extrabold tabular-nums text-brand-700">
-        {current}<span className="ml-1 text-lg text-slate-400">/ {max}</span>
+        {displayValue}<span className="ml-1 text-lg text-slate-400">/ {max}</span>
       </output>
       <input
         type="range"
         min={min}
         max={max}
-        step="1"
+        step={step}
         value={current}
         onChange={(event) => onChange(Number(event.target.value))}
         className="elan-rating w-full"

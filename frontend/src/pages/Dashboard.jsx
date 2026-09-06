@@ -37,6 +37,13 @@ const STATUS_DOT = {
   not_started: 'bg-slate-200'
 };
 
+function scoreColorClass(score) {
+  if (score >= 85) return 'text-emerald-600';
+  if (score >= 65) return 'text-lime-600';
+  if (score >= 45) return 'text-amber-600';
+  return 'text-red-500';
+}
+
 export default function Dashboard() {
   const { user, token } = useAuth();
   const [config, setConfig] = useState(null);
@@ -157,8 +164,11 @@ export default function Dashboard() {
               const status = e?.completionStatus || 'not_started';
               const isToday = d === todayISO();
               const scoreBadge = e?.globalScore != null ? (
-                <span className="font-bold text-slate-800 bg-brand-50 text-brand-700 px-2 py-0.5 rounded-lg">
-                  {Number(e.globalScore).toLocaleString('fr-FR', { maximumFractionDigits: 1 })}/100
+                <span className="font-bold bg-brand-50 px-2 py-0.5 rounded-lg">
+                  <span className={scoreColorClass(Number(e.globalScore))}>
+                    {Number(e.globalScore).toLocaleString('fr-FR', { maximumFractionDigits: 1 })}
+                  </span>
+                  <span className="text-slate-400">/100</span>
                 </span>
               ) : (
                 <span className="text-slate-400">Non renseigné</span>

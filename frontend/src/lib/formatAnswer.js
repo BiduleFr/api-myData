@@ -37,8 +37,10 @@ export function formatAnswerValue(question, value) {
     case 'number':
       return `${value}${question.config?.unit || ''}`;
     case 'rating':
-    case 'scale':
-      return `${value} / ${question.config?.max ?? 10}`;
+    case 'scale': {
+      const display = Number.isInteger(value) ? value : Number(value).toFixed(1);
+      return `${display} / ${question.config?.max ?? 10}`;
+    }
     case 'quickstep':
       return String(value);
     case 'dualrating': {

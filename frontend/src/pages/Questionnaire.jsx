@@ -66,6 +66,8 @@ export default function Questionnaire() {
   const [phase, setPhase] = useState('loading');
   const [forceEdit, setForceEdit] = useState(false);
   const [mode, setMode] = useState('standard');
+  // Niveau figé par bloc déjà visité : un changement de vitesse ne s'applique qu'aux blocs suivants.
+  const [moduleModeLock, setModuleModeLock] = useState({});
   const saveTimer = useRef(null);
   const autoAdvanceTimer = useRef(null);
 
@@ -74,6 +76,7 @@ export default function Questionnaire() {
 
   useEffect(() => {
     setLoading(true);
+    setModuleModeLock({});
     Promise.all([api.getConfig(), api.getPreferences(token), api.getEntry(date, token)])
       .then(([cfg, prefs, entry]) => {
         setModules(cfg.modules);
@@ -88,9 +91,14 @@ export default function Questionnaire() {
       .finally(() => setLoading(false));
   }, [token, date, withinWindow]);
 
+  const moduleLevelOverrides = useMemo(
+    () => Object.fromEntries(Object.entries(moduleModeLock).map(([id, m]) => [id, MODE_LEVEL[m]])),
+    [moduleModeLock]
+  );
+
   const flow = useMemo(
-    () => buildQuestionFlow(modules, preferences, answers, { levelOverride: MODE_LEVEL[mode], mode }),
-    [modules, preferences, answers, mode]
+    () => buildQuestionFlow(modules, preferences, answers, { levelOverride: MODE_LEVEL[mode], mode, moduleLevelOverrides, moduleModes: moduleModeLock }),
+    [modules, preferences, answers, mode, moduleLevelOverrides, moduleModeLock]
   );
   const current = flow[Math.min(index, flow.length - 1)];
 
@@ -98,14 +106,36 @@ export default function Questionnaire() {
     if (flow.length && index >= flow.length) setIndex(flow.length - 1);
   }, [flow.length, index]);
 
+  // Fige le niveau du bloc au moment où on l'atteint pour la première fois.
+  useEffect(() => {
+    if (phase !== 'flow' || !current) return;
+    setModuleModeLock((prev) => (prev[current.moduleId] ? prev : { ...prev, [current.moduleId]: mode }));
+  }, [phase, current?.moduleId, mode]);
+
+  const moduleOrder = useMemo(() => {
+    const seen = [];
+    for (const q of flow) if (!seen.includes(q.moduleId)) seen.push(q.moduleId);
+    return seen;
+  }, [flow]);
+  const moduleOrderIndex = current ? moduleOrder.indexOf(current.moduleId) : -1;
+
+  function goToPreviousModule() {
+    clearAutoAdvance();
+    if (moduleOrderIndex <= 0) return;
+    const target = flow.findIndex((step) => step.moduleId === moduleOrder[moduleOrderIndex - 1]);
+    if (target >= 0) setIndex(target);
+  }
+
+  function goToNextModule() {
+    clearAutoAdvance();
+    if (moduleOrderIndex < 0 || moduleOrderIndex >= moduleOrder.length - 1) return;
+    const target = flow.findIndex((step) => step.moduleId === moduleOrder[moduleOrderIndex + 1]);
+    if (target >= 0) setIndex(target);
+  }
+
   function changeMode(nextMode) {
     clearAutoAdvance();
-    const currentQuestionId = current?.id;
     setMode(nextMode);
-    const nextFlow = buildQuestionFlow(modules, preferences, answers, { levelOverride: MODE_LEVEL[nextMode], mode: nextMode });
-    const nextIndex = nextFlow.findIndex((question) => question.id === currentQuestionId);
-    if (nextIndex >= 0) setIndex(nextIndex);
-    else setIndex(Math.min(index, Math.max(0, nextFlow.length - 1)));
   }
 
   const scheduleAutosave = useCallback((nextAnswers, nextJournal = journalEntry, nextStates = answerStates) => {
@@ -126,7 +156,7 @@ export default function Questionnaire() {
 
     clearAutoAdvance();
     if (AUTO_ADVANCE_TYPES.has(current.type)) {
-      const nextFlow = buildQuestionFlow(modules, preferences, next, { levelOverride: MODE_LEVEL[mode], mode });
+      const nextFlow = buildQuestionFlow(modules, preferences, next, { levelOverride: MODE_LEVEL[mode], mode, moduleLevelOverrides, moduleModes: moduleModeLock });
       const currentIndex = nextFlow.findIndex((q) => q.id === current.id);
       if (currentIndex >= 0 && currentIndex < nextFlow.length - 1) {
         autoAdvanceTimer.current = setTimeout(() => setIndex(currentIndex + 1), 280);
@@ -160,6 +190,7 @@ export default function Questionnaire() {
 
   function startFromBeginning() {
     clearAutoAdvance();
+    setModuleModeLock({});
     setIndex(0);
     setPhase('flow');
   }
@@ -374,26 +405,31 @@ export default function Questionnaire() {
           </div>
         )}
         <div className="space-y-2">
+          <div className="grid grid-cols-3 gap-2" aria-label="Mode du questionnaire">
+            {MODES.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => changeMode(option.value)}
+                className={`rounded-lg border px-2 py-2 text-xs font-semibold transition-colors ${
+                  mode === option.value ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-200 bg-white text-slate-600 hover:border-brand-300'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+
           <div className="flex items-center justify-between text-xs text-slate-400">
-            <button onClick={() => setPhase('overview')} className="hover:text-brand-600">{current.moduleIcon} {current.moduleName} · Vue d'ensemble</button>
+            <button onClick={goToPreviousModule} disabled={moduleOrderIndex <= 0} className="hover:text-brand-600 disabled:opacity-30 disabled:hover:text-slate-400" aria-label="Bloc précédent">←</button>
+            <span className="font-semibold text-slate-500">{current.moduleIcon} {current.moduleName}</span>
+            <button onClick={goToNextModule} disabled={moduleOrderIndex >= moduleOrder.length - 1} className="hover:text-brand-600 disabled:opacity-30 disabled:hover:text-slate-400" aria-label="Bloc suivant">→</button>
+          </div>
+          <div className="flex items-center justify-between text-xs text-slate-400">
+            <span />
             <span>{index + 1} / {flow.length}</span>
           </div>
           <ProgressBar current={index + 1} total={flow.length} />
-        </div>
-
-        <div className="grid grid-cols-3 gap-2" aria-label="Mode du questionnaire">
-          {MODES.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => changeMode(option.value)}
-              className={`rounded-lg border px-2 py-2 text-xs font-semibold transition-colors ${
-                mode === option.value ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-200 bg-white text-slate-600 hover:border-brand-300'
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
         </div>
 
         <div key={current.id} className="animate-fade-up text-center space-y-8">
