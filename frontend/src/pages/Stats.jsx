@@ -2,7 +2,10 @@ import { useEffect, useState } from 'react';
 import Layout from '../components/Layout.jsx';
 import LineChart from '../components/LineChart.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useAppearance } from '../context/AppearanceContext.jsx';
 import { api } from '../lib/api';
+import { t } from '../lib/i18n.js';
+import { translateModuleName } from '../lib/schemaTranslations.js';
 
 const RANGES = [
   { key: '7', label: '7 jours', days: 7 },
@@ -13,6 +16,7 @@ const RANGES = [
 
 export default function Stats() {
   const { token } = useAuth();
+  const { locale } = useAppearance();
   const [modules, setModules] = useState([]);
   const [history, setHistory] = useState([]);
   const [range, setRange] = useState('30');
@@ -48,7 +52,7 @@ export default function Stats() {
   return (
     <Layout>
       <div className="space-y-6 animate-fade-up">
-        <h1 className="text-2xl font-extrabold text-slate-800">Statistiques</h1>
+        <h1 className="text-2xl font-extrabold text-slate-800">{t(locale, 'Statistiques')}</h1>
 
         <div className="flex flex-wrap gap-2">
           {RANGES.map((r) => (
@@ -59,7 +63,7 @@ export default function Stats() {
                 range === r.key ? 'bg-brand-600 text-white border-brand-600' : 'bg-white border-slate-200 text-slate-500'
               }`}
             >
-              {r.label}
+              {t(locale, r.label)}
             </button>
           ))}
         </div>
@@ -69,7 +73,7 @@ export default function Stats() {
             onClick={() => setMetric('global')}
             className={`px-3 py-1.5 rounded-full text-xs font-semibold ${metric === 'global' ? 'bg-brand-100 text-brand-700' : 'text-slate-400 hover:bg-slate-100'}`}
           >
-            Score global
+            {t(locale, 'Score global')}
           </button>
           {modules.map((m) => (
             <button
@@ -77,25 +81,25 @@ export default function Stats() {
               onClick={() => setMetric(m.id)}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold ${metric === m.id ? 'bg-brand-100 text-brand-700' : 'text-slate-400 hover:bg-slate-100'}`}
             >
-              {m.icon} {m.name}
+              {m.icon} {translateModuleName(m.name, locale)}
             </button>
           ))}
         </div>
 
         <div className="card p-6">
           <div className="flex items-baseline justify-between mb-4">
-            <span className="text-sm text-slate-400">Moyenne sur la période</span>
+            <span className="text-sm text-slate-400">{t(locale, 'Moyenne sur la période')}</span>
             <span className="text-2xl font-extrabold text-brand-700">{formattedAverage}</span>
           </div>
           {loading ? (
-            <div className="text-center text-slate-400 py-10">Chargement…</div>
+            <div className="text-center text-slate-400 py-10">{t(locale, 'Chargement…')}</div>
           ) : (
             <LineChart data={data} height={220} />
           )}
         </div>
 
         <p className="text-xs text-slate-400 text-center">
-          Les tendances affichées sont indicatives et ne constituent pas un avis médical.
+          {t(locale, 'Les tendances affichées sont indicatives et ne constituent pas un avis médical.')}
         </p>
       </div>
     </Layout>

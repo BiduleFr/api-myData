@@ -1,3 +1,5 @@
+import { useAppearance } from '../../context/AppearanceContext.jsx';
+
 const POINTS = [
   { id: 'matin', label: 'Matin' },
   { id: 'matinee', label: 'Matinée' },
@@ -7,7 +9,11 @@ const POINTS = [
   { id: 'soir', label: 'Soir' }
 ];
 
+const POINTS_EN = ['Morning', 'Late morning', 'Noon', 'Afternoon', 'End of day', 'Evening'];
+
 export default function TimelineQuestion({ question, value, onChange }) {
+  const { locale } = useAppearance();
+  const points = POINTS.map((point, index) => locale === 'en' ? { ...point, label: POINTS_EN[index] } : point);
   const defaults = question.config?.defaultValue || Object.fromEntries(POINTS.map(({ id }) => [id, 3]));
   const current = value && typeof value === 'object' ? { ...defaults, ...value } : defaults;
   const globalValue = Math.round(POINTS.reduce((sum, point) => sum + current[point.id], 0) / POINTS.length);
@@ -19,13 +25,12 @@ export default function TimelineQuestion({ question, value, onChange }) {
   function changeAll(nextValue) {
     onChange(Object.fromEntries(POINTS.map(({ id }) => [id, Number(nextValue)])));
   }
-
   return (
     <div className="mx-auto w-full max-w-2xl rounded-xl border border-slate-200 bg-white p-4">
       <div className="mb-5 rounded-lg bg-slate-50 px-4 py-3">
         <label className="block text-sm font-semibold text-slate-600">
-          Ajuster tous les points
-          <input type="range" min="1" max="5" step="1" value={globalValue} onChange={(event) => changeAll(event.target.value)} className="elan-rating mt-3 w-full" aria-label="Ajuster tous les points" />
+          {locale === 'en' ? 'Adjust all points' : 'Ajuster tous les points'}
+          <input type="range" min="1" max="5" step="1" value={globalValue} onChange={(event) => changeAll(event.target.value)} className="elan-rating mt-3 w-full" aria-label="Adjust all points" />
         </label>
       </div>
 
@@ -47,7 +52,7 @@ export default function TimelineQuestion({ question, value, onChange }) {
           />
         </svg>
         <div className="relative grid grid-cols-6">
-          {POINTS.map((point) => (
+          {points.map((point) => (
             <label key={point.id} className="flex min-w-0 flex-col items-center gap-2 px-1 text-center">
               <input type="range" min="1" max="5" step="1" value={current[point.id]} onChange={(event) => changePoint(point.id, event.target.value)} className="timeline-slider h-24 cursor-pointer" aria-label={`${question.label} : ${point.label}`} />
               <span className="text-xs font-semibold text-slate-600">{point.label}</span>
@@ -56,7 +61,7 @@ export default function TimelineQuestion({ question, value, onChange }) {
         </div>
       </div>
 
-      <p className="mt-3 text-center text-xs text-slate-500">Faites glisser les curseurs pour modifier les points reliés.</p>
+      <p className="mt-3 text-center text-xs text-slate-500">{locale === 'en' ? 'Drag the sliders to adjust the connected points.' : 'Faites glisser les curseurs pour modifier les points reliés.'}</p>
     </div>
   );
 }

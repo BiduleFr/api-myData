@@ -1,4 +1,9 @@
+import { useAppearance } from '../../context/AppearanceContext.jsx';
+
 export default function BooleanQuestion({ value, onChange }) {
+  const { locale } = useAppearance();
+  const yes = locale === 'en' ? 'Yes' : 'Oui';
+  const no = locale === 'en' ? 'No' : 'Non';
   return (
     <div className="flex justify-center gap-4">
       <button
@@ -10,7 +15,7 @@ export default function BooleanQuestion({ value, onChange }) {
             : 'bg-white border-slate-200 hover:border-brand-300 hover:bg-brand-50'
         }`}
       >
-        Oui
+        {yes}
       </button>
       <button
         type="button"
@@ -21,7 +26,7 @@ export default function BooleanQuestion({ value, onChange }) {
             : 'bg-white border-slate-200 hover:border-brand-300 hover:bg-brand-50'
         }`}
       >
-        Non
+        {no}
       </button>
     </div>
   );

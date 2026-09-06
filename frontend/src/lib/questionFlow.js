@@ -37,7 +37,7 @@ function evaluateCondition(rule, answers) {
   return compare(rule.op || 'eq', value, rule.value);
 }
 
-function applyModeOverride(question, mode) {
+export function applyModeOverride(question, mode) {
   const override = question.modeOverrides?.[mode];
   if (!override) return question;
   return {

@@ -4,8 +4,11 @@ import Layout from '../components/Layout.jsx';
 import ScoreRing from '../components/ScoreRing.jsx';
 import LineChart from '../components/LineChart.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useAppearance } from '../context/AppearanceContext.jsx';
 import { api, todayISO } from '../lib/api';
 import { isDateEditable } from '../lib/editableWindow';
+import { t } from '../lib/i18n.js';
+import { translateModuleName } from '../lib/schemaTranslations.js';
 
 function greeting() {
   const h = new Date().getHours();
@@ -46,6 +49,7 @@ function scoreColorClass(score) {
 
 export default function Dashboard() {
   const { user, token } = useAuth();
+  const { locale } = useAppearance();
   const [config, setConfig] = useState(null);
   const [entry, setEntry] = useState(null);
   const [history, setHistory] = useState([]);
@@ -90,13 +94,13 @@ export default function Dashboard() {
     <Layout>
       <div className="animate-fade-up space-y-8">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-800">{greeting()}, {user?.username} 👋</h1>
+          <h1 className="text-2xl font-extrabold text-slate-800">{t(locale, greeting())}, {user?.username} 👋</h1>
           <p className="text-slate-400 mt-1">
             {isComplete
-              ? 'Votre journée est enregistrée. Belle continuation !'
+              ? t(locale, 'Votre journée est enregistrée. Belle continuation !')
               : isDraft
-              ? 'Vous avez commencé votre bilan du jour. Envie de le terminer ?'
-              : 'Comment s\u2019est passée votre journée ?'}
+              ? t(locale, 'Vous avez commencé votre bilan du jour. Envie de le terminer ?')
+              : t(locale, 'Comment s’est passée votre journée ?')}
           </p>
         </div>
 
@@ -105,18 +109,18 @@ export default function Dashboard() {
           <div className="flex-1 text-center sm:text-left">
             <p className="text-sm text-slate-400 mb-3">
               {entry?.globalScore != null
-                ? 'Votre suivi du jour'
-                : 'Aucune donnée pour aujourd\u2019hui pour le moment'}
+                ? t(locale, 'Votre suivi du jour')
+                : t(locale, 'Aucune donnée pour aujourd’hui pour le moment')}
             </p>
             <Link to="/questionnaire" className="btn-primary">
-              {isComplete ? 'Modifier mon bilan' : isDraft ? 'Reprendre mon bilan' : 'Faire le point sur ma journée'}
+              {isComplete ? t(locale, 'Modifier mon bilan') : isDraft ? t(locale, 'Reprendre mon bilan') : t(locale, 'Faire le point sur ma journée')}
             </Link>
           </div>
         </div>
 
         {Object.keys(moduleScores).length > 0 && (
           <div>
-            <h2 className="text-sm font-semibold text-slate-500 mb-3">Aperçu par domaine</h2>
+            <h2 className="text-sm font-semibold text-slate-500 mb-3">{t(locale, 'Aperçu par domaine')}</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {config
                 ?.filter((m) => moduleScores[m.id] !== undefined)
@@ -124,7 +128,7 @@ export default function Dashboard() {
                   <div key={m.id} className="card p-4 flex items-center gap-3">
                     <span className="text-2xl">{m.icon}</span>
                     <div>
-                      <p className="text-xs text-slate-400">{m.name}</p>
+                      <p className="text-xs text-slate-400">{translateModuleName(m.name, locale)}</p>
                       <p className="font-bold text-slate-800">{moduleScores[m.id]}</p>
                     </div>
                   </div>
@@ -135,16 +139,16 @@ export default function Dashboard() {
 
         <div className="card p-6">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-slate-500">Évolution récente</h2>
-            <Link to="/statistiques" className="text-sm text-brand-600 font-semibold">Voir les statistiques →</Link>
+            <h2 className="text-sm font-semibold text-slate-500">{t(locale, 'Évolution récente')}</h2>
+            <Link to="/statistiques" className="text-sm text-brand-600 font-semibold">{t(locale, 'Voir les statistiques →')}</Link>
           </div>
           <LineChart data={history.map((h) => ({ date: h.date, value: h.globalScore }))} height={220} />
         </div>
 
         <div className="card p-6">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-slate-500">Historique des journées</h2>
-            <span className="text-xs text-slate-400">🔒 = lecture seule</span>
+            <h2 className="text-sm font-semibold text-slate-500">{t(locale, 'Historique des journées')}</h2>
+            <span className="text-xs text-slate-400">🔒 = {t(locale, 'lecture seule')}</span>
           </div>
           {visibleDays > 10 && (
             <input
@@ -171,7 +175,7 @@ export default function Dashboard() {
                   <span className="text-slate-400">/100</span>
                 </span>
               ) : (
-                <span className="text-slate-400">Non renseigné</span>
+                <span className="text-slate-400">{t(locale, 'Non renseigné')}</span>
               );
 
               if (!editable && !hasData) {
@@ -194,12 +198,12 @@ export default function Dashboard() {
                 >
                   <span className="flex items-center gap-2 text-slate-700 font-medium">
                     <span className={`w-2.5 h-2.5 rounded-full ${STATUS_DOT[status]}`} />
-                    {isToday ? "Aujourd'hui" : d}
+                    {isToday ? t(locale, "Aujourd'hui") : d}
                     {!editable && <span title="Journée non modifiable">🔒</span>}
                   </span>
                   <span className="flex items-center gap-3 text-xs text-slate-500">
                     {scoreBadge}
-                    <span>{STATUS_LABEL[status]}</span>
+                    <span>{t(locale, STATUS_LABEL[status])}</span>
                   </span>
                 </Link>
               );
@@ -210,24 +214,24 @@ export default function Dashboard() {
               onClick={() => setVisibleDays((v) => Math.min(v + 10, 120))}
               className="btn-ghost text-sm mt-3 w-full justify-center"
             >
-              Voir plus
+              {t(locale, 'Voir plus')}
             </button>
           )}
         </div>
 
         <div className="card p-6">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-slate-500">Objectifs actifs</h2>
-            <Link to="/suivi" className="text-sm text-brand-600 font-semibold">Gerer →</Link>
+            <h2 className="text-sm font-semibold text-slate-500">{t(locale, 'Objectifs actifs')}</h2>
+            <Link to="/suivi" className="text-sm text-brand-600 font-semibold">{t(locale, 'Gerer →')}</Link>
           </div>
           {goals.length === 0 ? (
-            <p className="text-sm text-slate-400">Ajoutez votre premier objectif pour suivre vos progres.</p>
+            <p className="text-sm text-slate-400">{t(locale, 'Ajoutez votre premier objectif pour suivre vos progres.')}</p>
           ) : (
             <div className="space-y-2">
               {goals.slice(0, 3).map((g) => (
                 <div key={g.id} className="flex items-center justify-between text-sm">
                   <span className="text-slate-600">🎯 {g.title}</span>
-                  <span className="text-slate-400">{g.period === 'week' ? 'Hebdo' : 'Mensuel'}</span>
+                  <span className="text-slate-400">{g.period === 'week' ? t(locale, 'Hebdo') : t(locale, 'Mensuel')}</span>
                 </div>
               ))}
             </div>

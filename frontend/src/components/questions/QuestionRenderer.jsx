@@ -12,6 +12,8 @@ import TimelineQuestion from './TimelineQuestion.jsx';
 import RatingQuestion from './RatingQuestion.jsx';
 import DurationQuestion from './DurationQuestion.jsx';
 import DualRatingQuestion from './DualRatingQuestion.jsx';
+import { useAppearance } from '../../context/AppearanceContext.jsx';
+import { translateQuestion } from '../../lib/schemaTranslations.js';
 
 const REGISTRY = {
   slider: SliderQuestion,
@@ -31,7 +33,8 @@ const REGISTRY = {
 };
 
 export default function QuestionRenderer({ question, value, onChange }) {
+  const { locale } = useAppearance();
   const Component = REGISTRY[question.type];
   if (!Component) return null;
-  return <Component question={question} value={value} onChange={onChange} />;
+  return <Component question={translateQuestion(question, locale)} value={value} onChange={onChange} />;
 }

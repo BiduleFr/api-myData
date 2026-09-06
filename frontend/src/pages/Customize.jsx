@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useAppearance } from '../context/AppearanceContext.jsx';
 import { api } from '../lib/api';
+import { applyModeOverride } from '../lib/questionFlow';
+import { translateModuleName, translateQuestion } from '../lib/schemaTranslations.js';
 
 const LEVELS = ['essentiel', 'detaille', 'avance'];
 const LEVEL_LABELS = {
@@ -30,6 +33,7 @@ function dependencyLabel(question, questionsById) {
 
 export default function Customize() {
   const { token } = useAuth();
+  const { locale } = useAppearance();
   const [modules, setModules] = useState([]);
   const [preferences, setPreferences] = useState({});
   const [loading, setLoading] = useState(true);
@@ -100,7 +104,7 @@ export default function Customize() {
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{m.icon}</span>
                     <div>
-                      <p className="font-bold text-slate-800">{m.name}</p>
+                      <p className="font-bold text-slate-800">{translateModuleName(m.name, locale)}</p>
                       <p className="text-xs text-slate-400">{LEVEL_LABELS[level]} · {enabledCount} indicateurs actifs</p>
                     </div>
                   </div>
@@ -136,8 +140,16 @@ export default function Customize() {
                           const qEnabled = modPref.questions?.[q.id]?.enabled !== false;
                           const questionsById = new Map(m.questions.map((question) => [question.id, question]));
                           const dependsOn = dependencyLabel(q, questionsById);
+                          // Au niveau Essentiel, on affiche l'ébauche du questionnaire rapide
+                          // (surcharges par mode). Aux niveaux supérieurs, les questions
+                          // essentielles sont grisées car déjà incluses par défaut.
+                          const displayQuestion = level === 'essentiel' ? applyModeOverride(q, 'rapide') : q;
+                          const isEssentielLevel = normalizeLevel(q.level || 'essentiel') === 'essentiel';
+                          const dimmed = isEssentielLevel && level !== 'essentiel';
+                          const translated = translateQuestion(displayQuestion, locale);
+                          const translatedDependsOn = dependsOn ? (translateQuestion(questionsById.get((q.when?.all || q.when?.any || (q.dependsOn ? [q.dependsOn] : []))[0]?.questionId) || {}, locale).label || dependsOn) : null;
                           return (
-                            <label key={q.id} className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-600 ${dependsOn ? 'ml-6 border-l-2 border-brand-200 bg-brand-50/50' : 'border border-slate-100'}`}>
+                            <label key={q.id} className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-600 ${dependsOn ? 'ml-6 border-l-2 border-brand-200 bg-brand-50/50' : 'border border-slate-100'} ${dimmed ? 'opacity-50' : ''}`}>
                               <input
                                 type="checkbox"
                                 checked={qEnabled}
@@ -146,8 +158,9 @@ export default function Customize() {
                                 className="accent-brand-600"
                               />
                               <span className="flex min-w-0 flex-col">
-                                <span>{dependsOn && <span className="mr-1 text-brand-600">↳</span>}{q.label}</span>
-                                {dependsOn && <span className="text-xs text-slate-400">Affichée selon : {dependsOn}</span>}
+                                <span>{dependsOn && <span className="mr-1 text-brand-600">↳</span>}{translated.label}</span>
+                                {dimmed && <span className="text-xs text-slate-400">{locale === 'en' ? 'Included in Essential' : 'Incluse dans Essentiel'}</span>}
+                                {translatedDependsOn && <span className="text-xs text-slate-400">{locale === 'en' ? 'Shown depending on:' : 'Affichée selon :'} {translatedDependsOn}</span>}
                               </span>
                             </label>
                           );

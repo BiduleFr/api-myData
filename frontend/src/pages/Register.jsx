@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useAppearance } from '../context/AppearanceContext.jsx';
 import AppearanceControls from '../components/AppearanceControls.jsx';
+import { t } from '../lib/i18n.js';
 
 export default function Register() {
   const { register } = useAuth();
+  const { locale } = useAppearance();
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -50,8 +53,8 @@ export default function Register() {
       <div className="card w-full max-w-md p-6 sm:p-8 animate-fade-up space-y-6">
         <div className="text-center">
           <span className="text-3xl">🌱</span>
-          <h1 className="text-2xl font-extrabold text-slate-800 mt-2">Créer votre suivi</h1>
-          <p className="text-sm text-slate-400 mt-1">Un pseudo et un mot de passe suffisent.</p>
+          <h1 className="text-2xl font-extrabold text-slate-800 mt-2">{t(locale, 'Créer votre suivi')}</h1>
+          <p className="text-sm text-slate-400 mt-1">{t(locale, 'Un pseudo et un mot de passe suffisent.')}</p>
         </div>
 
         <div className="bg-brand-50/70 border border-brand-100 rounded-2xl p-4 text-xs text-slate-700 space-y-1.5">
@@ -64,21 +67,21 @@ export default function Register() {
         <form onSubmit={handleSubmit} autoComplete="on" className="flex flex-col gap-4">
           <div>
             <input
-              type="text" required autoComplete="username" placeholder="Choisissez un pseudo" value={username}
+              type="text" required autoComplete="username" placeholder={t(locale, 'Choisissez un pseudo')} value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
           </div>
 
           <input
-            type="password" required minLength={8} autoComplete="new-password" placeholder="Mot de passe (8 caractères min.)" value={password}
+            type="password" required minLength={8} autoComplete="new-password" placeholder={t(locale, 'Mot de passe (8 caractères min.)')} value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
           />
 
           <div>
             <input
-              type="email" autoComplete="email" placeholder="Adresse e-mail (facultatif)" value={email}
+              type="email" autoComplete="email" placeholder={t(locale, 'Adresse e-mail (facultatif)')} value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
@@ -108,13 +111,13 @@ export default function Register() {
           {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
 
           <button type="submit" disabled={loading} className="btn-primary mt-2">
-            {loading ? 'Création…' : 'Créer mon compte'}
+            {loading ? t(locale, 'Création…') : t(locale, 'Créer mon compte')}
           </button>
         </form>
 
         <p className="text-center text-sm text-slate-400">
-          Déjà un compte ?{' '}
-          <Link to="/connexion" className="text-brand-600 font-semibold">Se connecter</Link>
+          {t(locale, 'Déjà un compte ?')}{' '}
+          <Link to="/connexion" className="text-brand-600 font-semibold">{t(locale, 'Se connecter')}</Link>
         </p>
       </div>
     </div>

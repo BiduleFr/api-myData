@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
+import { useAppearance } from '../context/AppearanceContext.jsx';
+import { t } from '../lib/i18n.js';
 
 export default function Welcome({ onContinue }) {
+  const { locale } = useAppearance();
   return (
     <div className="min-h-screen flex items-center justify-center px-5 py-10">
       <div className="max-w-lg w-full text-center space-y-8 animate-fade-up">
@@ -8,7 +11,7 @@ export default function Welcome({ onContinue }) {
           <span className="text-5xl">✨</span>
           <h1 className="text-3xl font-extrabold text-slate-800 mt-4">Elan</h1>
           <p className="text-slate-600 mt-3 text-xl font-medium">
-            Quelques minutes par jour pour mieux vous connaître.
+            {t(locale, 'Quelques minutes par jour pour mieux vous connaître.')}
           </p>
         </div>
 
@@ -27,22 +30,22 @@ export default function Welcome({ onContinue }) {
 
         <div className="flex flex-col gap-3">
           <Link to="/inscription" className="btn-primary justify-center text-base">
-            Créer un compte (pseudo + mot de passe suffisent)
+            {t(locale, 'Créer un compte (pseudo + mot de passe suffisent)')}
           </Link>
           <Link to="/connexion" className="btn-secondary justify-center text-base">
-            Se connecter
+            {t(locale, 'Se connecter')}
           </Link>
           <button onClick={onContinue} className="btn-ghost text-sm justify-center">
-            Essayer sans compte (données gardées sur cet appareil)
+            {t(locale, 'Essayer sans compte (données gardées sur cet appareil)')}
           </button>
         </div>
 
         <div className="flex flex-wrap justify-center gap-4 text-xs text-slate-400 pt-2">
-          <Link to="/a-propos" className="hover:text-brand-600 font-medium">À propos & Équipe</Link>
+          <Link to="/a-propos" className="hover:text-brand-600 font-medium">{t(locale, 'À propos & Équipe')}</Link>
           <span>•</span>
-          <Link to="/conditions" className="hover:text-brand-600 font-medium">Conditions d'utilisation</Link>
+          <Link to="/conditions" className="hover:text-brand-600 font-medium">{t(locale, "Conditions d'utilisation")}</Link>
           <span>•</span>
-          <Link to="/confidentialite" className="hover:text-brand-600 font-medium">Vie privée</Link>
+          <Link to="/confidentialite" className="hover:text-brand-600 font-medium">{t(locale, 'Vie privée')}</Link>
         </div>
       </div>
     </div>

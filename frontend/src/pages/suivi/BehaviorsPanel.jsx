@@ -1,112 +1,124 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { useAppearance } from '../../context/AppearanceContext.jsx';
 import { api, todayISO } from '../../lib/api';
+import { BEHAVIORS, TRACKING_KEY, getTracking, behaviorById, itemLabel, trackQuestionId } from '../../lib/tracking';
 
-const STATES = [
-  { value: 'none', label: 'Aucune envie', icon: '😌' },
-  { value: 'resisted', label: 'Résistance réussie', icon: '💪' },
-  { value: 'acted', label: 'Réalisé', icon: '⚠️' }
-];
-
-function computeStreakWithoutActing(logs) {
-  let streak = 0;
-  const d = new Date();
+function behaviorStats(history, behaviorId) {
+  const qid = trackQuestionId('behavior', behaviorId);
+  const answered = history.filter((entry) => entry.answers?.[qid] !== undefined);
+  const observed = answered.filter((entry) => entry.answers?.[qid] === true);
+  const last7 = history.slice(-7);
+  const last30 = history.slice(-30);
+  const observed7 = last7.filter((entry) => entry.answers?.[qid] === true).length;
+  const observed30 = last30.filter((entry) => entry.answers?.[qid] === true).length;
+  const byDate = new Map(history.map((entry) => [entry.date, entry.answers?.[qid]]));
+  let streakWithout = 0;
+  const cursor = new Date();
   for (;;) {
-    const key = d.toISOString().slice(0, 10);
-    const state = logs[key];
-    if (state === undefined) break;
-    if (state === 'acted') break;
-    streak += 1;
-    d.setDate(d.getDate() - 1);
+    const key = cursor.toISOString().slice(0, 10);
+    const value = byDate.get(key);
+    if (value === undefined) break;
+    if (value === true) break;
+    streakWithout += 1;
+    cursor.setDate(cursor.getDate() - 1);
   }
-  return streak;
+  return { answered: answered.length, observed: observed.length, observed7, observed30, streakWithout };
 }
 
 export default function BehaviorsPanel() {
   const { token } = useAuth();
-  const [behaviors, setBehaviors] = useState([]);
-  const [logs, setLogs] = useState({});
-  const [title, setTitle] = useState('');
+  const { locale } = useAppearance();
+  const [preferences, setPreferences] = useState({});
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
   const today = todayISO();
 
   useEffect(() => {
-    Promise.all([api.getBehaviors(token), api.getBehaviorLogs(token)]).then(([b, l]) => {
-      setBehaviors(b || []);
-      setLogs(l || {});
-    });
+    setLoading(true);
+    Promise.all([api.getPreferences(token), api.getHistory({ limit: 120 }, token)])
+      .then(([prefs, hist]) => {
+        setPreferences(prefs.modules || {});
+        setHistory(hist || []);
+      })
+      .finally(() => setLoading(false));
   }, [token]);
 
-  function addBehavior(e) {
-    e.preventDefault();
-    if (!title) return;
-    const next = [...behaviors, { id: crypto.randomUUID(), title, active: true }];
-    setBehaviors(next);
-    api.saveBehaviors(next, token);
-    setTitle('');
+  const tracking = getTracking(preferences);
+
+  function toggleBehavior(behaviorId) {
+    const list = tracking.behaviors;
+    const existing = list.find((item) => item.id === behaviorId);
+    const nextList = existing
+      ? list.map((item) => (item.id === behaviorId ? { ...item, active: item.active === false } : item))
+      : [...list, { id: behaviorId, startDate: today, active: true }];
+    const nextPrefs = { ...preferences, [TRACKING_KEY]: { ...tracking, behaviors: nextList } };
+    setPreferences(nextPrefs);
+    api.savePreferences(nextPrefs, token);
   }
 
-  function removeBehavior(id) {
-    const next = behaviors.filter((b) => b.id !== id);
-    setBehaviors(next);
-    api.saveBehaviors(next, token);
-    const nextLogs = { ...logs };
-    delete nextLogs[id];
-    setLogs(nextLogs);
-    api.saveBehaviorLogs(nextLogs, token);
+  if (loading) {
+    return <div className="animate-pulse text-slate-400 text-center py-10">{locale === 'en' ? 'Loading…' : 'Chargement…'}</div>;
   }
 
-  function setToday(behaviorId, state) {
-    const behaviorLogs = { ...(logs[behaviorId] || {}), [today]: state };
-    const next = { ...logs, [behaviorId]: behaviorLogs };
-    setLogs(next);
-    api.saveBehaviorLogs(next, token);
-  }
+  const tracked = tracking.behaviors;
+  const availableToAdd = BEHAVIORS.filter((behavior) => !tracked.some((item) => item.id === behavior.id && item.active !== false));
 
   return (
     <div className="space-y-6">
-      <form onSubmit={addBehavior} className="card p-5 flex gap-3">
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Comportement à surveiller (ex: Réseaux sociaux)"
-          className="flex-1 rounded-xl border border-slate-200 px-3 py-2"
-          required
-        />
-        <button type="submit" className="btn-primary">Ajouter</button>
-      </form>
+      {tracked.length === 0 && (
+        <p className="text-sm text-slate-400">
+          {locale === 'en'
+            ? 'No behavior watched yet. Start watching one below or from the daily questionnaire.'
+            : 'Aucun comportement surveillé pour le moment. Lancez-en un ci-dessous ou depuis le questionnaire quotidien.'}
+        </p>
+      )}
 
       <div className="space-y-3">
-        {behaviors.length === 0 && <div className="text-sm text-slate-400">Aucun comportement suivi pour le moment.</div>}
-        {behaviors.map((b) => {
-          const behaviorLogs = logs[b.id] || {};
-          const streak = computeStreakWithoutActing(behaviorLogs);
-          const todayState = behaviorLogs[today];
+        {tracked.map((entry) => {
+          const behavior = behaviorById(entry.id);
+          if (!behavior) return null;
+          const stats = behaviorStats(history, behavior.id);
+          const isActive = entry.active !== false;
           return (
-            <div key={b.id} className="card p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-slate-800">{b.title}</p>
-                  {streak > 0 && <p className="text-xs text-emerald-600">🔥 {streak} jours sans</p>}
-                </div>
-                <button onClick={() => removeBehavior(b.id)} className="text-xs text-slate-400 hover:text-red-500">Suppr.</button>
+            <div key={behavior.id} className={`card p-4 space-y-2 ${isActive ? '' : 'opacity-60'}`}>
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-semibold text-slate-800">{behavior.icon} {itemLabel(behavior, locale)}</p>
+                <button onClick={() => toggleBehavior(behavior.id)} className="text-xs text-slate-400 hover:text-red-500">
+                  {isActive ? (locale === 'en' ? 'Stop' : 'Arrêter') : (locale === 'en' ? 'Resume' : 'Reprendre')}
+                </button>
               </div>
-              <div className="flex gap-2 flex-wrap">
-                {STATES.map((s) => (
-                  <button
-                    key={s.value}
-                    onClick={() => setToday(b.id, s.value)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-                      todayState === s.value ? 'bg-brand-600 text-white border-brand-600' : 'bg-white border-slate-200 hover:border-brand-300'
-                    }`}
-                  >
-                    {s.icon} {s.label}
-                  </button>
-                ))}
-              </div>
+              <p className="text-xs text-slate-500">
+                {locale === 'en'
+                  ? `Observed ${stats.observed7} day(s) in the last 7 · ${stats.observed30} in the last 30${stats.streakWithout > 0 ? ` · 🔥 ${stats.streakWithout} days without` : ''}`
+                  : `Observé ${stats.observed7} jour(s) sur les 7 derniers · ${stats.observed30} sur les 30 derniers${stats.streakWithout > 0 ? ` · 🔥 ${stats.streakWithout} jours sans` : ''}`}
+              </p>
+              <p className="text-[11px] text-slate-400">
+                {locale === 'en' ? `Watched since ${entry.startDate}` : `Surveillé depuis le ${entry.startDate}`}
+              </p>
             </div>
           );
         })}
       </div>
+
+      {availableToAdd.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold text-slate-600">{locale === 'en' ? 'Watch a behavior' : 'Surveiller un comportement'}</p>
+          <div className="grid grid-cols-2 gap-2">
+            {availableToAdd.map((behavior) => (
+              <button
+                key={behavior.id}
+                type="button"
+                onClick={() => toggleBehavior(behavior.id)}
+                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-semibold hover:border-brand-300 hover:bg-brand-50 transition-all"
+              >
+                <span>{behavior.icon}</span>
+                <span>{itemLabel(behavior, locale)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

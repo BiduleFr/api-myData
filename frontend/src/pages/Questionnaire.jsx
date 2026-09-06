@@ -9,6 +9,9 @@ import { buildQuestionFlow } from '../lib/questionFlow';
 import { EDITABLE_WINDOW_DAYS, daysBetween } from '../lib/editableWindow';
 import { useAppearance } from '../context/AppearanceContext.jsx';
 import { t } from '../lib/i18n.js';
+import { TRACKING_KEY, getTracking, buildTrackingQuestions } from '../lib/tracking';
+import { translateModuleName } from '../lib/schemaTranslations.js';
+import TrackingPicker from '../components/TrackingPicker.jsx';
 
 const CONTEXT_KEY = '_contexte_journee';
 // Types dont une seule interaction (clic) suffit à donner une réponse définitive.
@@ -99,10 +102,14 @@ export default function Questionnaire() {
     [moduleModeLock]
   );
 
-  const flow = useMemo(
-    () => buildQuestionFlow(modules, preferences, answers, { levelOverride: MODE_LEVEL[mode], mode, moduleLevelOverrides, moduleModes: moduleModeLock }),
-    [modules, preferences, answers, mode, moduleLevelOverrides, moduleModeLock]
-  );
+  const flow = useMemo(() => {
+    const base = buildQuestionFlow(modules, preferences, answers, { levelOverride: MODE_LEVEL[mode], mode, moduleLevelOverrides, moduleModes: moduleModeLock });
+    // Suivi quotidien : habitudes et comportements actifs, insérés avant le bilan final.
+    const trackingQuestions = buildTrackingQuestions(preferences, { date, locale, includeStartPrompts: mode !== 'rapide' });
+    const insertAt = base.findIndex((step) => step.moduleId === 'accomplissement');
+    const at = insertAt >= 0 ? insertAt : base.length;
+    return [...base.slice(0, at), ...trackingQuestions, ...base.slice(at)];
+  }, [modules, preferences, answers, mode, moduleLevelOverrides, moduleModeLock, date, locale]);
   const current = flow[Math.min(index, flow.length - 1)];
 
   useEffect(() => {
@@ -159,12 +166,29 @@ export default function Questionnaire() {
 
     clearAutoAdvance();
     if (AUTO_ADVANCE_TYPES.has(current.type)) {
-      const nextFlow = buildQuestionFlow(modules, preferences, next, { levelOverride: MODE_LEVEL[mode], mode, moduleLevelOverrides, moduleModes: moduleModeLock });
-      const currentIndex = nextFlow.findIndex((q) => q.id === current.id);
-      if (currentIndex >= 0 && currentIndex < nextFlow.length - 1) {
+      const rebuilt = buildQuestionFlow(modules, preferences, next, { levelOverride: MODE_LEVEL[mode], mode, moduleLevelOverrides, moduleModes: moduleModeLock });
+      const rebuiltTracking = buildTrackingQuestions(preferences, { date, locale, includeStartPrompts: mode !== 'rapide' });
+      const insertAt = rebuilt.findIndex((step) => step.moduleId === 'accomplissement');
+      const at = insertAt >= 0 ? insertAt : rebuilt.length;
+      const nextFullFlow = [...rebuilt.slice(0, at), ...rebuiltTracking, ...rebuilt.slice(at)];
+      const currentIndex = nextFullFlow.findIndex((q) => q.id === current.id);
+      if (currentIndex >= 0 && currentIndex < nextFullFlow.length - 1) {
         autoAdvanceTimer.current = setTimeout(() => setIndex(currentIndex + 1), 280);
       }
     }
+  }
+
+  function toggleTrackingItem(kind, itemId) {
+    const tracking = getTracking(preferences);
+    const listKey = kind === 'habit' ? 'habits' : 'behaviors';
+    const list = tracking[listKey];
+    const existing = list.find((item) => item.id === itemId);
+    const nextList = existing
+      ? list.map((item) => (item.id === itemId ? { ...item, active: item.active === false } : item))
+      : [...list, { id: itemId, startDate: todayISO(), active: true }];
+    const nextPrefs = { ...preferences, [TRACKING_KEY]: { ...tracking, [listKey]: nextList } };
+    setPreferences(nextPrefs);
+    api.savePreferences(nextPrefs, token);
   }
 
   function saveDefaultAnswer(question) {
@@ -231,7 +255,7 @@ export default function Questionnaire() {
   if (loading || phase === 'loading') {
     return (
       <Layout>
-        <div className="animate-pulse text-slate-400 text-center py-20">Préparation de votre bilan…</div>
+        <div className="animate-pulse text-slate-400 text-center py-20">{t(locale, 'Préparation de votre bilan…')}</div>
       </Layout>
     );
   }
@@ -266,8 +290,8 @@ export default function Questionnaire() {
       <Layout>
         <div className="max-w-lg mx-auto space-y-8">
           <div className="text-center">
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Comment voulez-vous faire aujourd'hui ?</h1>
-            <p className="text-sm text-slate-400 mt-2">Choisissez un niveau, puis commencez ou allez directement à un thème.</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800">{t(locale, "Comment voulez-vous faire aujourd'hui ?")}</h1>
+            <p className="text-sm text-slate-400 mt-2">{t(locale, 'Choisissez un niveau, puis commencez ou allez directement à un thème.')}</p>
           </div>
 
           <div className="grid grid-cols-3 gap-2">
@@ -300,7 +324,7 @@ export default function Questionnaire() {
                 >
                   <span className="flex items-center gap-3">
                     <span className="text-xl">{mod.icon}</span>
-                    <span className="text-sm font-semibold text-slate-700">{mod.name}</span>
+                    <span className="text-sm font-semibold text-slate-700">{translateModuleName(mod.name, locale)}</span>
                   </span>
                   <span className="flex items-center gap-2 text-xs text-slate-400">
                     <span>{answered}/{total}</span>
@@ -312,7 +336,7 @@ export default function Questionnaire() {
           </div>
 
           <div className="space-y-2">
-            <p className="text-xs text-slate-400 text-center">Une chose à signaler pour aujourd'hui ? (facultatif)</p>
+            <p className="text-xs text-slate-400 text-center">{t(locale, "Une chose à signaler pour aujourd'hui ? (facultatif)")}</p>
             <div className="flex flex-wrap justify-center gap-2">
               {CONTEXT_OPTIONS.map((opt) => (
                 <button
@@ -329,7 +353,7 @@ export default function Questionnaire() {
           </div>
 
           <button onClick={startFromBeginning} className="btn-primary w-full justify-center">
-            Commencer
+            {t(locale, 'Commencer')}
           </button>
         </div>
       </Layout>
@@ -341,7 +365,7 @@ export default function Questionnaire() {
       <Layout>
         <div className="animate-pop max-w-md mx-auto text-center py-10 space-y-6">
           <span className="text-5xl">✅</span>
-          <h1 className="text-2xl font-extrabold text-slate-800">Votre journée est enregistrée</h1>
+          <h1 className="text-2xl font-extrabold text-slate-800">{t(locale, 'Votre journée est enregistrée')}</h1>
           <p className="text-5xl font-extrabold text-brand-700">{result.globalScore ?? '–'}<span className="text-lg text-slate-400">/100</span></p>
           <div className="card p-5 text-left space-y-2">
             {modules.filter((m) => result.moduleScores[m.id] !== undefined).map((m) => (
@@ -351,7 +375,7 @@ export default function Questionnaire() {
               </div>
             ))}
           </div>
-          <button onClick={() => navigate('/')} className="btn-primary">Retour à l’accueil</button>
+          <button onClick={() => navigate('/')} className="btn-primary">{t(locale, 'Retour à l’accueil')}</button>
         </div>
       </Layout>
     );
@@ -387,8 +411,8 @@ export default function Questionnaire() {
     return (
       <Layout>
         <div className="text-center py-20 space-y-4">
-          <p className="text-slate-400">Aucune question activée pour le moment.</p>
-          <button onClick={() => navigate('/personnaliser')} className="btn-secondary">Personnaliser mon suivi</button>
+          <p className="text-slate-400">{t(locale, 'Aucune question activée pour le moment.')}</p>
+          <button onClick={() => navigate('/personnaliser')} className="btn-secondary">{t(locale, 'Personnaliser mon suivi')}</button>
         </div>
       </Layout>
     );
@@ -424,9 +448,9 @@ export default function Questionnaire() {
           </div>
 
           <div className="flex items-center justify-between text-xs text-slate-400">
-            <button onClick={goToPreviousModule} disabled={moduleOrderIndex <= 0} className="hover:text-brand-600 disabled:opacity-30 disabled:hover:text-slate-400" aria-label="Bloc précédent">←</button>
+            <button onClick={goToPreviousModule} disabled={moduleOrderIndex <= 0} className="hover:text-brand-600 disabled:opacity-30 disabled:hover:text-slate-400" aria-label={t(locale, 'Bloc précédent')}>←</button>
             <span className="font-semibold text-slate-500">{current.moduleIcon} {current.moduleName}</span>
-            <button onClick={goToNextModule} disabled={moduleOrderIndex >= moduleOrder.length - 1} className="hover:text-brand-600 disabled:opacity-30 disabled:hover:text-slate-400" aria-label="Bloc suivant">→</button>
+            <button onClick={goToNextModule} disabled={moduleOrderIndex >= moduleOrder.length - 1} className="hover:text-brand-600 disabled:opacity-30 disabled:hover:text-slate-400" aria-label={t(locale, 'Bloc suivant')}>→</button>
           </div>
           <div className="flex items-center justify-between text-xs text-slate-400">
             <span />
@@ -439,6 +463,15 @@ export default function Questionnaire() {
           <h1 className="text-xl sm:text-2xl font-bold text-slate-800">{current.label}</h1>
           <QuestionRenderer question={current} value={currentValue} onChange={current.id === 'bilan_journal' ? handleJournal : handleAnswer} />
           {current.help && current.type !== 'text' && <p className="mx-auto max-w-md text-sm text-slate-500">{current.help}</p>}
+
+          {(current.id === 'tracking_start_habits' || current.id === 'tracking_start_behaviors') && currentValue === true && (
+            <TrackingPicker
+              kind={current.id === 'tracking_start_habits' ? 'habit' : 'behavior'}
+              preferences={preferences}
+              locale={locale}
+              onToggle={toggleTrackingItem}
+            />
+          )}
         </div>
 
         <div className="pointer-events-none fixed inset-x-5 bottom-36 z-20 mx-auto flex max-w-lg items-center justify-between px-1 py-2 sm:bottom-28">

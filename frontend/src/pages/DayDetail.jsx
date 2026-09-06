@@ -3,13 +3,17 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import ScoreRing from '../components/ScoreRing.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useAppearance } from '../context/AppearanceContext.jsx';
 import { api, todayISO } from '../lib/api';
 import { formatAnswerValue } from '../lib/formatAnswer';
 import { isDateEditable } from '../lib/editableWindow';
+import { translateModuleName, translateQuestion } from '../lib/schemaTranslations.js';
+import { habitById, behaviorById, itemLabel } from '../lib/tracking';
 
 export default function DayDetail() {
   const { date } = useParams();
   const { token } = useAuth();
+  const { locale } = useAppearance();
   const navigate = useNavigate();
   const [modules, setModules] = useState([]);
   const [entry, setEntry] = useState(null);
@@ -78,11 +82,11 @@ export default function DayDetail() {
           if (rows.length === 0) return null;
           return (
             <div key={mod.id} className="card p-5 space-y-3">
-              <h2 className="text-sm font-semibold text-slate-500">{mod.icon} {mod.name}</h2>
+              <h2 className="text-sm font-semibold text-slate-500">{mod.icon} {translateModuleName(mod.name, locale)}</h2>
               <div className="space-y-2">
                 {rows.map(({ question, display }) => (
                   <div key={question.id} className="flex items-start justify-between gap-4 text-sm">
-                    <span className="text-slate-500">{question.label}</span>
+                    <span className="text-slate-500">{translateQuestion(question, locale).label}</span>
                     <span className="font-semibold text-slate-800 text-right">{display}</span>
                   </div>
                 ))}
@@ -91,16 +95,42 @@ export default function DayDetail() {
           );
         })}
 
+        {(() => {
+          const trackingRows = Object.entries(entry?.answers || {})
+            .filter(([id]) => id.startsWith('track_habit_') || id.startsWith('track_behavior_'))
+            .map(([id, value]) => {
+              const isHabit = id.startsWith('track_habit_');
+              const item = isHabit ? habitById(id.slice('track_habit_'.length)) : behaviorById(id.slice('track_behavior_'.length));
+              if (!item) return null;
+              return { id, item, value };
+            })
+            .filter(Boolean);
+          if (trackingRows.length === 0) return null;
+          return (
+            <div className="card p-5 space-y-3">
+              <h2 className="text-sm font-semibold text-slate-500">🌱 {locale === 'en' ? 'Daily tracking' : 'Suivi du jour'}</h2>
+              <div className="space-y-2">
+                {trackingRows.map(({ id, item, value }) => (
+                  <div key={id} className="flex items-start justify-between gap-4 text-sm">
+                    <span className="text-slate-500">{item.icon} {itemLabel(item, locale)}</span>
+                    <span className="font-semibold text-slate-800">{value === true ? (locale === 'en' ? 'Yes' : 'Oui') : value === false ? (locale === 'en' ? 'No' : 'Non') : '—'}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
         {hasData && entry.journalEntry && (
           <div className="card p-5 space-y-2">
-            <h2 className="text-sm font-semibold text-slate-500">📝 Ce que vous avez retenu de cette journée</h2>
+            <h2 className="text-sm font-semibold text-slate-500">📝 {locale === 'en' ? 'What you kept from this day' : 'Ce que vous avez retenu de cette journée'}</h2>
             <p className="text-sm text-slate-700 whitespace-pre-wrap">{entry.journalEntry}</p>
           </div>
         )}
 
         {!editable && (
           <p className="text-center text-xs text-slate-400">
-            <Link to={`/questionnaire?date=${date}`} className="hover:text-brand-600 underline">Corriger quand même</Link>
+            <Link to={`/questionnaire?date=${date}`} className="hover:text-brand-600 underline">{locale === 'en' ? 'Edit anyway' : 'Corriger quand même'}</Link>
           </p>
         )}
       </div>
