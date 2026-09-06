@@ -68,9 +68,9 @@ export function itemLabel(item, locale) {
   return locale === 'en' ? (item?.labelEn || item?.label) : item?.label;
 }
 
-// Une habitude/comportement n'est interrogée qu'à partir du questionnaire suivant son activation.
+// Une habitude/comportement est interrogée dès qu'elle est active (même jour de l'activation).
 function isDue(entry, date) {
-  return entry.active !== false && entry.startDate && entry.startDate < date;
+  return entry.active !== false && entry.startDate && entry.startDate <= date;
 }
 
 export function buildTrackingQuestions(preferences, { date, locale = 'fr' } = {}) {

@@ -74,6 +74,14 @@ function scoreQuestion(question, value) {
       const { min = 1, max = 10 } = question.config || {};
       return clamp(((values.reduce((sum, item) => sum + item, 0) / values.length - min) / (max - min)) * 100);
     }
+    case 'dualcount': {
+      if (!value || typeof value !== 'object') return null;
+      const values = Object.values(value).filter((item) => typeof item === 'number');
+      if (!values.length) return null;
+      const { target = 5, max = 12 } = question.config || {};
+      const total = values.reduce((sum, item) => sum + item, 0);
+      return clamp((total / target) * 100);
+    }
     case 'timeline': {
       // Calcule la moyenne des points de la timeline
       if (!value || typeof value !== 'object') return null;

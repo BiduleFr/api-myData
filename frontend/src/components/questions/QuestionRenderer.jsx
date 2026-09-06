@@ -12,6 +12,7 @@ import TimelineQuestion from './TimelineQuestion.jsx';
 import RatingQuestion from './RatingQuestion.jsx';
 import DurationQuestion from './DurationQuestion.jsx';
 import DualRatingQuestion from './DualRatingQuestion.jsx';
+import DualCountQuestion from './DualCountQuestion.jsx';
 import { useAppearance } from '../../context/AppearanceContext.jsx';
 import { translateQuestion } from '../../lib/schemaTranslations.js';
 
@@ -29,7 +30,8 @@ const REGISTRY = {
   timeline: TimelineQuestion,
   rating: RatingQuestion,
   duration: DurationQuestion,
-  dualrating: DualRatingQuestion
+  dualrating: DualRatingQuestion,
+  dualcount: DualCountQuestion
 };
 
 export default function QuestionRenderer({ question, value, onChange }) {
