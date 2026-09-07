@@ -102,7 +102,7 @@ export default function Questionnaire() {
   );
 
   const flow = useMemo(() => {
-    const base = buildQuestionFlow(modules, preferences, answers, { levelOverride: MODE_LEVEL[mode], mode, moduleLevelOverrides, moduleModes: moduleModeLock });
+    const base = buildQuestionFlow(modules, preferences, answers, { levelOverride: MODE_LEVEL[mode], mode, moduleLevelOverrides, moduleModes: moduleModeLock, date });
     // Suivi quotidien : habitudes et comportements actifs, insérés avant le bilan final.
     const trackingQuestions = buildTrackingQuestions(preferences, { date, locale })
       .filter((q) => preferences[TRACKING_KEY]?.questions?.[q.id]?.enabled !== false);
@@ -166,7 +166,7 @@ export default function Questionnaire() {
 
     clearAutoAdvance();
     if (AUTO_ADVANCE_TYPES.has(current.type)) {
-      const rebuilt = buildQuestionFlow(modules, preferences, next, { levelOverride: MODE_LEVEL[mode], mode, moduleLevelOverrides, moduleModes: moduleModeLock });
+      const rebuilt = buildQuestionFlow(modules, preferences, next, { levelOverride: MODE_LEVEL[mode], mode, moduleLevelOverrides, moduleModes: moduleModeLock, date });
       const rebuiltTracking = buildTrackingQuestions(preferences, { date, locale })
         .filter((q) => preferences[TRACKING_KEY]?.questions?.[q.id]?.enabled !== false);
       const insertAt = rebuilt.findIndex((step) => step.moduleId === 'accomplissement');

@@ -2,18 +2,16 @@ import { useState } from 'react';
 import Layout from '../components/Layout.jsx';
 import { useAppearance } from '../context/AppearanceContext.jsx';
 import { t } from '../lib/i18n.js';
-import ObjectivesPanel from './suivi/ObjectivesPanel.jsx';
 import HabitsPanel from './suivi/HabitsPanel.jsx';
 import BehaviorsPanel from './suivi/BehaviorsPanel.jsx';
 
 const TABS = [
-  { id: 'objectifs', label: 'Objectifs', icon: '🎯' },
   { id: 'habitudes', label: 'Habitudes', icon: '🌱' },
   { id: 'comportements', label: 'Comportements', icon: '🛡️' }
 ];
 
 export default function Suivi() {
-  const [tab, setTab] = useState('objectifs');
+  const [tab, setTab] = useState('habitudes');
   const { locale } = useAppearance();
 
   return (
@@ -38,7 +36,6 @@ export default function Suivi() {
           ))}
         </div>
 
-        {tab === 'objectifs' && <ObjectivesPanel />}
         {tab === 'habitudes' && <HabitsPanel />}
         {tab === 'comportements' && <BehaviorsPanel />}
       </div>

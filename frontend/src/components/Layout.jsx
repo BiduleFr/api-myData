@@ -7,8 +7,8 @@ const LINKS = [
   { to: '/', label: 'Accueil', icon: '🏠' },
   { to: '/statistiques', label: 'Statistiques', icon: '📈' },
   { to: '/suivi', label: 'Suivi', icon: '🎯' },
-  { to: '/conseils', label: 'Conseils', icon: '💡' },
   { to: '/personnaliser', label: 'Personnaliser', icon: '⚙️' },
+  { to: '/conseils', label: 'Conseils', icon: '💡' },
   { to: '/confidentialite', label: 'Données', icon: '🔒' }
 ];
 

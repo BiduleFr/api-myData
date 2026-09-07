@@ -42,7 +42,6 @@ export default function DualCountQuestion({ question, value, onChange }) {
         <p className="mb-2 text-sm font-semibold text-slate-600">{rightLabel}</p>
         {stepper('right', right)}
       </div>
-      {question.help && <p className="text-center text-xs text-slate-400">{question.help}</p>}
     </div>
   );
 }

@@ -897,14 +897,9 @@
             "score": 100
           },
           {
-            "value": "un_peu",
-            "label": "Un peu",
+            "value": "resiste_mais_craque",
+            "label": "J'ai résisté mais j'ai craqué",
             "score": 60
-          },
-          {
-            "value": "beaucoup",
-            "label": "Beaucoup",
-            "score": 85
           },
           {
             "value": "no",
@@ -1802,6 +1797,7 @@
         "level": "avance",
         "weight": 0.5,
         "label": "Avez-vous un objectif ou un but d'épargne clair ?",
+        "frequency": "weekly",
         "options": [
           {
             "value": "non",
@@ -1831,6 +1827,7 @@
         "level": "avance",
         "weight": 1,
         "label": "Quel est votre niveau de sécurité financière ?",
+        "frequency": "weekly",
         "options": [
           {
             "value": "surendette",

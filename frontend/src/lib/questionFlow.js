@@ -57,8 +57,21 @@ export function buildQuestionFlow(modules, preferences, answers, options = {}) {
     if (modPref?.enabled === false) continue;
     const hasLockedMode = Object.hasOwn(moduleModes || {}, mod.id);
     const lockedMode = moduleModes?.[mod.id];
-    const lockedLevel = lockedMode === 'standard' ? undefined : moduleLevelOverrides?.[mod.id];
-    const level = normalizeLevel((hasLockedMode ? lockedLevel : levelOverride) || modPref?.level || 'essentiel');
+    // Le niveau choisi au lancement du questionnaire (rapide/intermédiaire/long)
+    // prime toujours. La préférence personnalisée du module ne s'applique QUE
+    // lorsque le mode choisi est l'intermédiaire (standard) — pas de niveau forcé.
+    const hasExplicitMode = levelOverride !== null && levelOverride !== undefined;
+    let level;
+    if (hasLockedMode && lockedMode !== 'standard') {
+      level = normalizeLevel(moduleLevelOverrides?.[mod.id]);
+    } else if (hasLockedMode && lockedMode === 'standard') {
+      // Mode intermédiaire verrouillé : respecte la préférence personnalisée du module.
+      level = normalizeLevel(modPref?.level || 'essentiel');
+    } else if (hasExplicitMode) {
+      level = normalizeLevel(levelOverride);
+    } else {
+      level = normalizeLevel(modPref?.level || 'essentiel');
+    }
 
     for (const q of mod.questions) {
       const qLevel = normalizeLevel(q.level || 'essentiel');
@@ -66,6 +79,16 @@ export function buildQuestionFlow(modules, preferences, answers, options = {}) {
 
       const qPref = modPref?.questions?.[q.id];
       if (qPref?.enabled === false) continue;
+
+      // Fréquence hebdomadaire : la question n'apparaît qu'en début de semaine
+      // (lundi) ou tant qu'elle n'a pas encore été répondue cette semaine.
+      if (q.frequency === 'weekly' && options.date) {
+        const d = new Date(`${options.date}T00:00:00`);
+        const day = d.getDay(); // 0 = dimanche, 1 = lundi
+        const isWeekStart = day === 1;
+        const alreadyAnsweredThisWeek = answers?.[q.id] !== undefined && answers?.[q.id] !== null;
+        if (!isWeekStart && !alreadyAnsweredThisWeek) continue;
+      }
 
       if (q.dependsOn && !evaluateCondition({ ...q.dependsOn, op: q.dependsOn.op || 'eq' }, answers)) continue;
       if (q.when && !evaluateCondition(q.when, answers)) continue;

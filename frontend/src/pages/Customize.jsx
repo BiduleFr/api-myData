@@ -9,10 +9,10 @@ import { TRACKING_KEY, getTracking, buildTrackingQuestions } from '../lib/tracki
 
 const LEVELS = ['essentiel', 'detaille', 'avance'];
 const LEVEL_LABELS = {
-  simple: 'Essentiel',
-  essentiel: 'Essentiel',
-  detaille: 'Détaillé',
-  avance: 'Avancé'
+  simple: 'Rapide',
+  essentiel: 'Rapide',
+  detaille: 'Intermédiaire',
+  avance: 'Long'
 };
 
 function normalizeLevel(level) {
@@ -155,15 +155,15 @@ export default function Customize() {
         </div>
 
         <div className="space-y-4">
-          <TrackingQuestionsCard preferences={preferences} locale={locale} onToggleQuestion={toggleQuestion} />
-          {modules.map((m) => {
+          {modules.flatMap((m) => {
+            const cards = [];
             const modPref = preferences[m.id] || {};
             const enabled = modPref.enabled !== false;
             const level = normalizeLevel(modPref.level || 'essentiel');
             const visibleQuestions = m.questions.filter((q) => levelAllowed(q.level, level));
             const enabledCount = visibleQuestions.filter((q) => modPref.questions?.[q.id]?.enabled !== false).length;
 
-            return (
+            const moduleCard = (
               <div key={m.id} className="card p-5 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -223,7 +223,8 @@ export default function Customize() {
                               />
                               <span className="flex min-w-0 flex-col">
                                 <span>{dependsOn && <span className="mr-1 text-brand-600">↳</span>}{translated.label}</span>
-                                {locked && <span className="text-xs text-brand-600 font-semibold">{locale === 'en' ? 'Always included (Essential)' : 'Toujours incluse (Essentiel)'}</span>}
+                                {locked && <span className="text-xs text-brand-600 font-semibold">{locale === 'en' ? 'Always included' : 'Toujours incluse'}</span>}
+                                {q.frequency === 'weekly' && <span className="text-xs text-slate-400">{locale === 'en' ? 'Asked once a week (Mondays)' : 'Posée une fois par semaine (le lundi)'}</span>}
                                 {translatedDependsOn && <span className="text-xs text-slate-400">{locale === 'en' ? 'Shown depending on:' : 'Affichée selon :'} {translatedDependsOn}</span>}
                               </span>
                             </label>
@@ -234,6 +235,20 @@ export default function Customize() {
                 )}
               </div>
             );
+
+            cards.push(moduleCard);
+            // La carte Suivi du jour se place juste après le bloc Argent.
+            if (m.id === 'argent') {
+              cards.push(
+                <TrackingQuestionsCard
+                  key="_tracking_card"
+                  preferences={preferences}
+                  locale={locale}
+                  onToggleQuestion={toggleQuestion}
+                />
+              );
+            }
+            return cards;
           })}
         </div>
 
