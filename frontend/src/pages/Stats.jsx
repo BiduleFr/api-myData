@@ -47,7 +47,7 @@ export default function Stats() {
   })();
 
   const formattedAverage =
-    average !== null ? average.toLocaleString('fr-FR', { maximumFractionDigits: 1 }) : '–';
+    average !== null ? average.toLocaleString(locale === 'en' ? 'en-US' : 'fr-FR', { maximumFractionDigits: 1 }) : '–';
 
   return (
     <Layout>
@@ -94,7 +94,7 @@ export default function Stats() {
           {loading ? (
             <div className="text-center text-slate-400 py-10">{t(locale, 'Chargement…')}</div>
           ) : (
-            <LineChart data={data} height={220} />
+            <LineChart data={data} height={220} locale={locale} />
           )}
         </div>
 

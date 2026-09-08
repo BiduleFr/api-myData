@@ -17,14 +17,16 @@ export default function Welcome({ onContinue }) {
 
         <div className="card p-6 text-left space-y-4">
           <p className="text-base text-slate-700">
-            <strong>Comment ça marche :</strong> chaque jour, en environ 2 minutes, vous répondez à quelques
-            questions rapides (sommeil, énergie, humeur…). L'app calcule un score et vous montre votre évolution
-            au fil du temps.
+            <strong>{locale === 'en' ? 'How it works: ' : 'Comment ça marche : '}</strong>
+            {locale === 'en'
+              ? 'every day, in about 2 minutes, you answer a few quick questions (sleep, energy, mood…). The app computes a score and shows your progress over time.'
+              : "chaque jour, en environ 2 minutes, vous répondez à quelques questions rapides (sommeil, énergie, humeur…). L'app calcule un score et vous montre votre évolution au fil du temps."}
           </p>
           <p className="text-base text-slate-700">
-            <strong>Votre vie privée :</strong> ce site enregistre des données personnelles et potentiellement
-            sensibles (humeur, sommeil, santé, habitudes…). Il est donc préférable de ne pouvoir être identifié
-            d'aucune manière : évitez votre vrai nom, votre photo ou toute information qui vous reconnaîtrait.
+            <strong>{locale === 'en' ? 'Your privacy: ' : 'Votre vie privée : '}</strong>
+            {locale === 'en'
+              ? 'this site stores personal and potentially sensitive data (mood, sleep, health, habits…). It is therefore best not to be identifiable in any way: avoid your real name, your photo or any information that would reveal who you are.'
+              : "ce site enregistre des données personnelles et potentiellement sensibles (humeur, sommeil, santé, habitudes…). Il est donc préférable de ne pouvoir être identifié d'aucune manière : évitez votre vrai nom, votre photo ou toute information qui vous reconnaîtrait."}
           </p>
         </div>
 

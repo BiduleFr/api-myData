@@ -30,12 +30,12 @@ export default function TimelineQuestion({ question, value, onChange }) {
       <div className="mb-5 rounded-lg bg-slate-50 px-4 py-3">
         <label className="block text-sm font-semibold text-slate-600">
           {locale === 'en' ? 'Adjust all points' : 'Ajuster tous les points'}
-          <input type="range" min="1" max="5" step="1" value={globalValue} onChange={(event) => changeAll(event.target.value)} className="elan-rating mt-3 w-full" aria-label="Adjust all points" />
+          <input type="range" min="1" max="5" step="1" value={globalValue} onChange={(event) => changeAll(event.target.value)} className="elan-rating mt-3 w-full" aria-label={locale === 'en' ? 'Adjust all points' : 'Ajuster tous les points'} />
         </label>
       </div>
 
       <div className="relative px-4 pt-2 pb-3">
-        <svg viewBox="0 0 100 30" preserveAspectRatio="none" className="pointer-events-none absolute inset-x-4 top-2 h-24 w-[calc(100%-2rem)] overflow-visible" role="img" aria-label="Évolution de la journée">
+        <svg viewBox="0 0 100 30" preserveAspectRatio="none" className="pointer-events-none absolute inset-x-4 top-2 h-24 w-[calc(100%-2rem)] overflow-visible" role="img" aria-label={locale === 'en' ? 'Mood evolution throughout the day' : 'Évolution de la journée'}>
           <polyline
             points={POINTS.map((point, index) => {
               // Les colonnes sont à largeur égale et sans marge : le centre de

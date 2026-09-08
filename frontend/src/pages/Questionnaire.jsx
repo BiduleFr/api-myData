@@ -17,13 +17,13 @@ const CONTEXT_KEY = '_contexte_journee';
 const AUTO_ADVANCE_TYPES = new Set(['boolean', 'choice', 'quickstep']);
 
 const CONTEXT_OPTIONS = [
-  { value: 'normale', label: 'Journée normale', icon: '🙂' },
-  { value: 'repos', label: 'Journée de repos', icon: '🛋️' },
-  { value: 'voyage', label: 'Voyage', icon: '✈️' },
-  { value: 'malade', label: 'Malade', icon: '🤒' },
-  { value: 'evenement_pro', label: 'Événement professionnel', icon: '💼' },
-  { value: 'manque_sommeil', label: 'Manque de sommeil exceptionnel', icon: '😴' },
-  { value: 'autre', label: 'Autre', icon: '✨' }
+  { value: 'normale', labelFr: 'Journée normale', labelEn: 'Normal day', icon: '🙂' },
+  { value: 'repos', labelFr: 'Journée de repos', labelEn: 'Rest day', icon: '🛋️' },
+  { value: 'voyage', labelFr: 'Voyage', labelEn: 'Travel', icon: '✈️' },
+  { value: 'malade', labelFr: 'Malade', labelEn: 'Sick', icon: '🤒' },
+  { value: 'evenement_pro', labelFr: 'Événement professionnel', labelEn: 'Work event', icon: '💼' },
+  { value: 'manque_sommeil', labelFr: 'Manque de sommeil exceptionnel', labelEn: 'Unusual lack of sleep', icon: '😴' },
+  { value: 'autre', labelFr: 'Autre', labelEn: 'Other', icon: '✨' }
 ];
 
 const MODE_LEVEL = {
@@ -33,9 +33,9 @@ const MODE_LEVEL = {
 };
 
 const MODES = [
-  { value: 'rapide', label: 'Rapide', hint: '~1-2 min', icon: '⚡' },
-  { value: 'standard', label: 'Intermédiaire', hint: 'votre sélection habituelle', icon: '🙂' },
-  { value: 'approfondi', label: 'Long', hint: 'toutes les questions', icon: '🔍' }
+  { value: 'rapide', label: 'Rapide', hintFr: '~1-2 min', hintEn: '~1-2 min', icon: '⚡' },
+  { value: 'standard', label: 'Intermédiaire', hintFr: 'votre sélection habituelle', hintEn: 'your usual selection', icon: '🙂' },
+  { value: 'approfondi', label: 'Long', hintFr: 'toutes les questions', hintEn: 'all questions', icon: '🔍' }
 ];
 
 function moduleStatus(mod, preferences, answers) {
@@ -253,19 +253,21 @@ export default function Questionnaire() {
       <Layout>
         <div className="max-w-lg mx-auto space-y-6 text-center py-10">
           <span className="text-4xl">🔒</span>
-          <h1 className="text-xl font-bold text-slate-800">Journée du {date}</h1>
+          <h1 className="text-xl font-bold text-slate-800">{locale === 'en' ? `Day of ${date}` : `Journée du ${date}`}</h1>
           <p className="text-sm text-slate-400">
-            Cette journée date de plus de {EDITABLE_WINDOW_DAYS} jours. Elle est en lecture seule pour préserver la fiabilité de vos statistiques.
+            {locale === 'en'
+              ? `This day is more than ${EDITABLE_WINDOW_DAYS} days old. It is read-only to preserve the reliability of your statistics.`
+              : `Cette journée date de plus de ${EDITABLE_WINDOW_DAYS} jours. Elle est en lecture seule pour préserver la fiabilité de vos statistiques.`}
           </p>
           <div className="card p-5 text-left space-y-2">
             {modules.filter((m) => answers && Object.keys(answers).some((k) => m.questions.some((q) => q.id === k))).map((m) => (
-              <div key={m.id} className="text-sm text-slate-500">{m.icon} {m.name}</div>
+              <div key={m.id} className="text-sm text-slate-500">{m.icon} {translateModuleName(m.name, locale)}</div>
             ))}
-            {Object.keys(answers).length === 0 && <p className="text-sm text-slate-400">Aucune réponse enregistrée.</p>}
+            {Object.keys(answers).length === 0 && <p className="text-sm text-slate-400">{locale === 'en' ? 'No answer recorded.' : 'Aucune réponse enregistrée.'}</p>}
           </div>
           <div className="flex justify-center gap-3">
-            <button onClick={() => navigate('/statistiques')} className="btn-secondary">Voir les statistiques</button>
-            <button onClick={() => { setForceEdit(true); setPhase('flow'); }} className="btn-ghost text-sm">Modifier quand même</button>
+            <button onClick={() => navigate('/statistiques')} className="btn-secondary">{locale === 'en' ? 'View statistics' : 'Voir les statistiques'}</button>
+            <button onClick={() => { setForceEdit(true); setPhase('flow'); }} className="btn-ghost text-sm">{locale === 'en' ? 'Edit anyway' : 'Modifier quand même'}</button>
           </div>
         </div>
       </Layout>
@@ -293,7 +295,7 @@ export default function Questionnaire() {
               >
                 <span className="text-xl">{m.icon}</span>
                 <span className="text-xs font-bold">{m.label}</span>
-                <span className={`text-[10px] ${mode === m.value ? 'text-white/80' : 'text-slate-400'}`}>{m.hint}</span>
+                <span className={`text-[10px] ${mode === m.value ? 'text-white/80' : 'text-slate-400'}`}>{locale === 'en' ? m.hintEn : m.hintFr}</span>
               </button>
             ))}
           </div>
@@ -316,7 +318,7 @@ export default function Questionnaire() {
                   </span>
                   <span className="flex items-center gap-2 text-xs text-slate-400">
                     <span>{answered}/{total}</span>
-                    <span className={`w-2.5 h-2.5 rounded-full ${STATUS_DOT[status]}`} title={STATUS_LABEL[status]} />
+                    <span className={`w-2.5 h-2.5 rounded-full ${STATUS_DOT[status]}`} title={t(locale, STATUS_LABEL[status])} />
                   </span>
                 </button>
               );
@@ -334,7 +336,7 @@ export default function Questionnaire() {
                     currentContext === opt.value ? 'bg-brand-600 text-white border-brand-600' : 'bg-white border-slate-200 hover:border-brand-300'
                   }`}
                 >
-                  <span>{opt.icon}</span> {opt.label}
+                  <span>{opt.icon}</span> {locale === 'en' ? opt.labelEn : opt.labelFr}
                 </button>
               ))}
             </div>
@@ -358,7 +360,7 @@ export default function Questionnaire() {
           <div className="card p-5 text-left space-y-2">
             {modules.filter((m) => result.moduleScores[m.id] !== undefined).map((m) => (
               <div key={m.id} className="flex items-center justify-between text-sm">
-                <span className="text-slate-500">{m.icon} {m.name}</span>
+                <span className="text-slate-500">{m.icon} {translateModuleName(m.name, locale)}</span>
                 <span className="font-bold text-slate-800">{result.moduleScores[m.id]}</span>
               </div>
             ))}
@@ -374,22 +376,22 @@ export default function Questionnaire() {
       <Layout>
         <div className="max-w-lg mx-auto space-y-8 text-center">
           <div>
-            <p className="text-sm text-brand-600 font-semibold">Dernière étape · facultative</p>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-800 mt-2">Qu'est-ce que vous voulez retenir de cette journée ?</h1>
-            <p className="text-sm text-slate-400 mt-2">Quelques mots suffisent. Cette note ne modifie pas votre score.</p>
+            <p className="text-sm text-brand-600 font-semibold">{locale === 'en' ? 'Last step · optional' : 'Dernière étape · facultative'}</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800 mt-2">{locale === 'en' ? 'What do you want to remember from this day?' : "Qu'est-ce que vous voulez retenir de cette journée ?"}</h1>
+            <p className="text-sm text-slate-400 mt-2">{locale === 'en' ? "A few words are enough. This note doesn't change your score." : 'Quelques mots suffisent. Cette note ne modifie pas votre score.'}</p>
           </div>
           <textarea
             value={journalEntry}
             onChange={(e) => handleJournal(e.target.value)}
-            placeholder="Un moment, une pensée, une réussite…"
+            placeholder={locale === 'en' ? 'A moment, a thought, a win…' : 'Un moment, une pensée, une réussite…'}
             rows={6}
             className="w-full rounded-2xl border border-slate-200 px-5 py-4 text-base text-left focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none"
           />
           <div className="flex items-center justify-between">
-            <button onClick={() => setPhase('overview')} className="btn-ghost">← Retour</button>
-            <button onClick={finish} className="btn-primary">Enregistrer ma journée ✓</button>
+            <button onClick={() => setPhase('overview')} className="btn-ghost">← {t(locale, 'Retour')}</button>
+            <button onClick={finish} className="btn-primary">{t(locale, 'Enregistrer ma journée ✓')}</button>
           </div>
-          <button onClick={finish} className="btn-ghost text-sm">Passer le journal</button>
+          <button onClick={finish} className="btn-ghost text-sm">{locale === 'en' ? 'Skip the journal' : 'Passer le journal'}</button>
         </div>
       </Layout>
     );
@@ -416,7 +418,7 @@ export default function Questionnaire() {
       <div className="max-w-lg mx-auto space-y-8 pb-24">
         {forceEdit && (
           <div className="text-center text-xs text-amber-600 bg-amber-50 rounded-xl py-2 px-3">
-            Modification d'une journée ancienne ({date})
+            {locale === 'en' ? `Editing an old day (${date})` : `Modification d'une journée ancienne (${date})`}
           </div>
         )}
         <div className="space-y-5">

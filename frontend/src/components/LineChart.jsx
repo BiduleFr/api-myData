@@ -1,14 +1,14 @@
 import { useState } from 'react';
 
 // Graphique en ligne SVG interactif avec tooltip tactile et survol.
-export default function LineChart({ data = [], height = 180, color = '#6a3fe3' }) {
+export default function LineChart({ data = [], height = 180, color = '#6a3fe3', locale = 'fr' }) {
   const [activePoint, setActivePoint] = useState(null);
 
   const points = data.filter((d) => d && d.value !== null && d.value !== undefined);
   if (points.length < 2) {
     return (
       <div className="flex items-center justify-center text-sm text-slate-400" style={{ height }}>
-        Pas encore assez de données à afficher (au moins 2 journées nécessaires).
+        {locale === 'en' ? 'Not enough data to display yet (at least 2 days needed).' : 'Pas encore assez de données à afficher (au moins 2 journées nécessaires).'}
       </div>
     );
   }
@@ -34,7 +34,7 @@ export default function LineChart({ data = [], height = 180, color = '#6a3fe3' }
     if (!dStr) return '';
     try {
       const d = new Date(`${dStr}T00:00:00`);
-      return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+      return d.toLocaleDateString(locale === 'en' ? 'en-US' : 'fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
     } catch {
       return dStr;
     }
@@ -123,7 +123,7 @@ export default function LineChart({ data = [], height = 180, color = '#6a3fe3' }
         >
           <span className="text-[10px] text-slate-300">{formatDate(activePoint.date)}</span>
           <span className="font-bold text-sm text-brand-300">
-            Score : {activePoint.numValue.toLocaleString('fr-FR', { maximumFractionDigits: 1 })}
+            {locale === 'en' ? 'Score' : 'Score'} : {activePoint.numValue.toLocaleString(locale === 'en' ? 'en-US' : 'fr-FR', { maximumFractionDigits: 1 })}
           </span>
         </div>
       )}

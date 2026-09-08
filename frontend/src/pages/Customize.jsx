@@ -8,12 +8,21 @@ import { translateModuleName, translateQuestion } from '../lib/schemaTranslation
 import { TRACKING_KEY, getTracking, buildTrackingQuestions } from '../lib/tracking';
 
 const LEVELS = ['essentiel', 'detaille', 'avance'];
-const LEVEL_LABELS = {
+const LEVEL_LABELS_FR = {
   simple: 'Rapide',
   essentiel: 'Rapide',
   detaille: 'Intermédiaire',
   avance: 'Long'
 };
+const LEVEL_LABELS_EN = {
+  simple: 'Quick',
+  essentiel: 'Quick',
+  detaille: 'Medium',
+  avance: 'Long'
+};
+function levelLabel(level, locale) {
+  return (locale === 'en' ? LEVEL_LABELS_EN : LEVEL_LABELS_FR)[level];
+}
 
 function normalizeLevel(level) {
   if (!level || level === 'simple') return 'essentiel';
@@ -139,7 +148,7 @@ export default function Customize() {
   if (loading) {
     return (
       <Layout>
-        <div className="animate-pulse text-slate-400 text-center py-20">Chargement…</div>
+        <div className="animate-pulse text-slate-400 text-center py-20">{locale === 'en' ? 'Loading…' : 'Chargement…'}</div>
       </Layout>
     );
   }
@@ -148,9 +157,11 @@ export default function Customize() {
     <Layout>
       <div className="space-y-6 animate-fade-up">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-800">Personnaliser mon suivi</h1>
+          <h1 className="text-2xl font-extrabold text-slate-800">{locale === 'en' ? 'Customize my tracking' : 'Personnaliser mon suivi'}</h1>
           <p className="text-slate-400 mt-1 text-sm">
-            Configurez une fois vos préférences, profitez ensuite d’un questionnaire quotidien simple.
+            {locale === 'en'
+              ? 'Set up your preferences once, then enjoy a simple daily questionnaire.'
+              : 'Configurez une fois vos préférences, profitez ensuite d’un questionnaire quotidien simple.'}
           </p>
         </div>
 
@@ -170,7 +181,7 @@ export default function Customize() {
                     <span className="text-2xl">{m.icon}</span>
                     <div>
                       <p className="font-bold text-slate-800">{translateModuleName(m.name, locale)}</p>
-                      <p className="text-xs text-slate-400">{LEVEL_LABELS[level]} · {enabledCount} indicateurs actifs</p>
+                      <p className="text-xs text-slate-400">{levelLabel(level, locale)} · {enabledCount} {locale === 'en' ? 'active indicators' : 'indicateurs actifs'}</p>
                     </div>
                   </div>
                   <button
@@ -193,7 +204,7 @@ export default function Customize() {
                               level === lvl ? 'bg-brand-100 text-brand-700' : 'text-slate-400 hover:bg-slate-100'
                             }`}
                           >
-                            {LEVEL_LABELS[lvl]}
+                            {levelLabel(lvl, locale)}
                           </button>
                         ))}
                       </div>
@@ -211,7 +222,6 @@ export default function Customize() {
                           const displayQuestion = level === 'essentiel' ? applyModeOverride(q, 'rapide') : q;
                           const locked = isEssentialChain(q, questionsById) || q.required;
                           const translated = translateQuestion(displayQuestion, locale);
-                          const translatedDependsOn = dependsOn ? (translateQuestion(questionsById.get((q.when?.all || q.when?.any || (q.dependsOn ? [q.dependsOn] : []))[0]?.questionId) || {}, locale).label || dependsOn) : null;
                           return (
                             <label key={q.id} className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-600 ${dependsOn ? 'ml-6 border-l-2 border-brand-200 bg-brand-50/50' : 'border border-slate-100'}`}>
                               <input
@@ -225,7 +235,6 @@ export default function Customize() {
                                 <span>{dependsOn && <span className="mr-1 text-brand-600">↳</span>}{translated.label}</span>
                                 {locked && <span className="text-xs text-brand-600 font-semibold">{locale === 'en' ? 'Always included' : 'Toujours incluse'}</span>}
                                 {q.frequency === 'weekly' && <span className="text-xs text-slate-400">{locale === 'en' ? 'Asked once a week (Mondays)' : 'Posée une fois par semaine (le lundi)'}</span>}
-                                {translatedDependsOn && <span className="text-xs text-slate-400">{locale === 'en' ? 'Shown depending on:' : 'Affichée selon :'} {translatedDependsOn}</span>}
                               </span>
                             </label>
                           );
@@ -254,7 +263,7 @@ export default function Customize() {
 
         <div className="sticky bottom-16 sm:bottom-4 flex justify-center">
           <button onClick={save} className="btn-primary shadow-soft">
-            {saved ? 'Enregistré ✓' : 'Enregistrer mes préférences'}
+            {saved ? (locale === 'en' ? 'Saved ✓' : 'Enregistré ✓') : (locale === 'en' ? 'Save my preferences' : 'Enregistrer mes préférences')}
           </button>
         </div>
       </div>

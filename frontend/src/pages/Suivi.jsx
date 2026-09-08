@@ -19,7 +19,7 @@ export default function Suivi() {
       <div className="space-y-6 animate-fade-up">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-800">{t(locale, 'Suivi')}</h1>
-          <p className="text-sm text-slate-400 mt-1">{t(locale, 'Objectifs, habitudes positives et comportements à réduire.')}</p>
+          <p className="text-sm text-slate-400 mt-1">{locale === 'en' ? 'Positive habits and behaviors to reduce.' : 'Habitudes positives et comportements à réduire.'}</p>
         </div>
 
         <div className="flex gap-2">

@@ -1,14 +1,15 @@
-export default function ScoreRing({ score, size = 160, label = 'Score du jour' }) {
+export default function ScoreRing({ score, size = 160, label, locale = 'fr' }) {
   const radius = (size - 16) / 2;
   const circumference = 2 * Math.PI * radius;
   const safeScore = score ?? 0;
   const offset = circumference - (safeScore / 100) * circumference;
 
   const color = safeScore >= 75 ? '#6a3fe3' : safeScore >= 50 ? '#7c5cf0' : '#ff9f5b';
+  const displayLabel = label ?? (locale === 'en' ? "Today's score" : 'Score du jour');
 
   const formattedScore =
     score !== null && score !== undefined
-      ? Number(score).toLocaleString('fr-FR', { maximumFractionDigits: 1 })
+      ? Number(score).toLocaleString(locale === 'en' ? 'en-US' : 'fr-FR', { maximumFractionDigits: 1 })
       : '–';
 
   return (
@@ -34,7 +35,7 @@ export default function ScoreRing({ score, size = 160, label = 'Score du jour' }
         <span className="text-3xl font-extrabold text-slate-800 tabular-nums">
           {formattedScore}
         </span>
-        <span className="text-xs text-slate-400 mt-1">{label}</span>
+        <span className="text-xs text-slate-400 mt-1">{displayLabel}</span>
       </div>
     </div>
   );

@@ -70,8 +70,12 @@ const EN = {
   'Chargement…': 'Loading…',
   'Non renseigné': 'Not filled in',
   'Terminée': 'Completed',
+  'Terminé': 'Completed',
   'En brouillon': 'Draft',
   'Non commencée': 'Not started',
+  'Non commencé': 'Not started',
+  'En cours': 'In progress',
+  'Désactivé': 'Disabled',
   "Aujourd'hui": 'Today',
 
   // Statistiques

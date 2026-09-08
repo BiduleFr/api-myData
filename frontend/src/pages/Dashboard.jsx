@@ -96,7 +96,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <Layout>
-        <div className="animate-pulse text-slate-400 text-center py-20">Chargement de votre journée…</div>
+        <div className="animate-pulse text-slate-400 text-center py-20">{locale === 'en' ? 'Loading your day…' : 'Chargement de votre journée…'}</div>
       </Layout>
     );
   }
@@ -126,7 +126,7 @@ export default function Dashboard() {
         </div>
 
         <div className="card p-8 flex flex-col sm:flex-row items-center gap-8">
-          <ScoreRing score={entry?.globalScore ?? null} />
+          <ScoreRing score={entry?.globalScore ?? null} locale={locale} />
           <div className="flex-1 text-center sm:text-left">
             <p className="text-sm text-slate-400 mb-3">
               {entry?.globalScore != null
@@ -163,7 +163,7 @@ export default function Dashboard() {
             <h2 className="text-sm font-semibold text-slate-500">{t(locale, 'Évolution récente')}</h2>
             <Link to="/statistiques" className="text-sm text-brand-600 font-semibold">{t(locale, 'Voir les statistiques →')}</Link>
           </div>
-          <LineChart data={history.map((h) => ({ date: h.date, value: h.globalScore }))} height={220} />
+          <LineChart data={history.map((h) => ({ date: h.date, value: h.globalScore }))} height={220} locale={locale} />
         </div>
 
         <div className="card p-6">
@@ -178,7 +178,7 @@ export default function Dashboard() {
               onChange={(e) => setSearchDate(e.target.value)}
               max={todayISO()}
               className="mb-3 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
-              aria-label="Rechercher une journée par date"
+              aria-label={locale === 'en' ? 'Search a day by date' : 'Rechercher une journée par date'}
             />
           )}
           <div className="space-y-2">
@@ -191,7 +191,7 @@ export default function Dashboard() {
               const scoreBadge = e?.globalScore != null ? (
                 <span className="font-bold bg-brand-50 px-2 py-0.5 rounded-lg">
                   <span className={scoreColorClass(Number(e.globalScore))}>
-                    {Number(e.globalScore).toLocaleString('fr-FR', { maximumFractionDigits: 1 })}
+                    {Number(e.globalScore).toLocaleString(locale === 'en' ? 'en-US' : 'fr-FR', { maximumFractionDigits: 1 })}
                   </span>
                   <span className="text-slate-400">/100</span>
                 </span>
@@ -203,7 +203,7 @@ export default function Dashboard() {
                 return (
                   <div key={d} className="flex items-center justify-between text-sm rounded-xl px-3 py-2 opacity-60">
                     <span className="flex items-center gap-2 text-slate-500 font-medium">{d}</span>
-                    <span className="text-xs text-slate-400">Non renseigné</span>
+                    <span className="text-xs text-slate-400">{t(locale, 'Non renseigné')}</span>
                   </div>
                 );
               }
@@ -220,7 +220,7 @@ export default function Dashboard() {
                   <span className="flex items-center gap-2 text-slate-700 font-medium">
                     <span className={`w-2.5 h-2.5 rounded-full ${STATUS_DOT[status]}`} />
                     {isToday ? t(locale, "Aujourd'hui") : d}
-                    {!editable && <span title="Journée non modifiable">🔒</span>}
+                    {!editable && <span title={locale === 'en' ? 'Day not editable' : 'Journée non modifiable'}>🔒</span>}
                   </span>
                   <span className="flex items-center gap-3 text-xs text-slate-500">
                     {scoreBadge}

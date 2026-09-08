@@ -9,6 +9,7 @@ import { formatAnswerValue } from '../lib/formatAnswer';
 import { isDateEditable } from '../lib/editableWindow';
 import { translateModuleName, translateQuestion } from '../lib/schemaTranslations.js';
 import { habitById, behaviorById, itemLabel } from '../lib/tracking';
+import { t } from '../lib/i18n.js';
 
 export default function DayDetail() {
   const { date } = useParams();
@@ -32,7 +33,7 @@ export default function DayDetail() {
   if (loading) {
     return (
       <Layout>
-        <div className="animate-pulse text-slate-400 text-center py-20">Chargement de la journée…</div>
+        <div className="animate-pulse text-slate-400 text-center py-20">{locale === 'en' ? 'Loading the day…' : 'Chargement de la journée…'}</div>
       </Layout>
     );
   }
@@ -44,31 +45,31 @@ export default function DayDetail() {
     <Layout>
       <div className="max-w-2xl mx-auto space-y-8 animate-fade-up">
         <div className="flex items-center justify-between">
-          <button onClick={() => navigate(-1)} className="btn-ghost">← Retour</button>
+          <button onClick={() => navigate(-1)} className="btn-ghost">← {t(locale, 'Retour')}</button>
           {editable ? (
-            <Link to={`/questionnaire?date=${date}`} className="btn-secondary text-sm">Modifier cette journée</Link>
+            <Link to={`/questionnaire?date=${date}`} className="btn-secondary text-sm">{locale === 'en' ? 'Edit this day' : 'Modifier cette journée'}</Link>
           ) : (
-            <span className="text-sm text-slate-400">🔒 Journée non modifiable</span>
+            <span className="text-sm text-slate-400">🔒 {locale === 'en' ? 'Day not editable' : 'Journée non modifiable'}</span>
           )}
         </div>
 
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-extrabold text-slate-800">
-            {new Date(`${date}T00:00:00`).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+            {new Date(`${date}T00:00:00`).toLocaleDateString(locale === 'en' ? 'en-US' : 'fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </h1>
-          {hasData && <ScoreRing score={entry?.globalScore ?? null} label="Score de la journée" />}
+          {hasData && <ScoreRing score={entry?.globalScore ?? null} label={locale === 'en' ? 'Score for the day' : 'Score de la journée'} locale={locale} />}
         </div>
 
         {!hasData && (
-          <p className="text-center text-sm text-slate-400">Aucune réponse n'a été enregistrée pour cette journée.</p>
+          <p className="text-center text-sm text-slate-400">{locale === 'en' ? 'No answer was recorded for this day.' : "Aucune réponse n'a été enregistrée pour cette journée."}</p>
         )}
 
         {hasData && Object.keys(entry?.moduleScores || {}).length > 0 && (
           <div className="card p-5 space-y-2">
-            <h2 className="text-sm font-semibold text-slate-500 mb-2">Scores par domaine</h2>
+            <h2 className="text-sm font-semibold text-slate-500 mb-2">{locale === 'en' ? 'Scores by area' : 'Scores par domaine'}</h2>
             {modules.filter((m) => entry.moduleScores[m.id] !== undefined).map((m) => (
               <div key={m.id} className="flex items-center justify-between text-sm">
-                <span className="text-slate-500">{m.icon} {m.name}</span>
+                <span className="text-slate-500">{m.icon} {translateModuleName(m.name, locale)}</span>
                 <span className="font-bold text-slate-800">{entry.moduleScores[m.id]}</span>
               </div>
             ))}

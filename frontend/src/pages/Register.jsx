@@ -24,15 +24,15 @@ export default function Register() {
     const cleanEmail = email.trim();
 
     if (!cleanUser) {
-      setError('Veuillez choisir un pseudo.');
+      setError(locale === 'en' ? 'Please choose a username.' : 'Veuillez choisir un pseudo.');
       return;
     }
     if (password.length < 8) {
-      setError('Le mot de passe doit comporter au moins 8 caractères.');
+      setError(locale === 'en' ? 'The password must be at least 8 characters long.' : 'Le mot de passe doit comporter au moins 8 caractères.');
       return;
     }
     if (!acceptTerms) {
-      setError('Veuillez accepter les conditions d\'utilisation et la politique de confidentialité.');
+      setError(locale === 'en' ? 'Please accept the terms of use and the privacy policy.' : 'Veuillez accepter les conditions d\'utilisation et la politique de confidentialité.');
       return;
     }
 
@@ -41,7 +41,7 @@ export default function Register() {
       await register(cleanUser, password, cleanEmail);
       navigate('/');
     } catch (err) {
-      setError(err.message || 'Erreur lors de la création du compte.');
+      setError(err.message || (locale === 'en' ? 'Error while creating the account.' : 'Erreur lors de la création du compte.'));
     } finally {
       setLoading(false);
     }
@@ -59,9 +59,9 @@ export default function Register() {
 
         <div className="bg-brand-50/70 border border-brand-100 rounded-2xl p-4 text-xs text-slate-700 space-y-1.5">
           <p className="font-bold text-brand-900 flex items-center gap-1.5">
-            <span>🛡️</span> Vos données restent sous votre contrôle
+            <span>🛡️</span> {locale === 'en' ? 'Your data stays under your control' : 'Vos données restent sous votre contrôle'}
           </p>
-          <p className="text-slate-600">Choisissez simplement un pseudo. Les détails sont disponibles dans notre politique de confidentialité.</p>
+          <p className="text-slate-600">{locale === 'en' ? 'Just choose a username. Details are available in our privacy policy.' : 'Choisissez simplement un pseudo. Les détails sont disponibles dans notre politique de confidentialité.'}</p>
         </div>
 
         <form onSubmit={handleSubmit} autoComplete="on" className="flex flex-col gap-4">
@@ -85,7 +85,7 @@ export default function Register() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
-            <p className="text-xs text-slate-400 mt-2">Facultatif : utile pour récupérer l'accès au compte.</p>
+            <p className="text-xs text-slate-400 mt-2">{locale === 'en' ? 'Optional: useful to recover access to your account.' : "Facultatif : utile pour récupérer l'accès au compte."}</p>
           </div>
 
           <label className="flex items-start gap-2.5 text-xs text-slate-600 pt-1 cursor-pointer select-none">
@@ -97,13 +97,13 @@ export default function Register() {
               required
             />
             <span>
-              J'ai lu et j'accepte les{' '}
+              {locale === 'en' ? 'I have read and accept the ' : "J'ai lu et j'accepte les "}
               <Link to="/conditions" target="_blank" className="text-brand-600 font-semibold underline">
-                Conditions Générales d'Utilisation
+                {locale === 'en' ? 'Terms of Use' : "Conditions Générales d'Utilisation"}
               </Link>{' '}
-              et la{' '}
+              {locale === 'en' ? 'and the ' : 'et la '}
               <Link to="/confidentialite" target="_blank" className="text-brand-600 font-semibold underline">
-                Politique de Confidentialité
+                {locale === 'en' ? 'Privacy Policy' : 'Politique de Confidentialité'}
               </Link>.
             </span>
           </label>

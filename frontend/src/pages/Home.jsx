@@ -1,14 +1,16 @@
 import Welcome from './Welcome.jsx';
 import Dashboard from './Dashboard.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useAppearance } from '../context/AppearanceContext.jsx';
 
 export default function Home() {
   const { user, token, isGuest, loading, startGuestSession } = useAuth();
+  const { locale } = useAppearance();
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-slate-400">Chargement…</div>
+        <div className="animate-pulse text-slate-400">{locale === 'en' ? 'Loading…' : 'Chargement…'}</div>
       </div>
     );
   }
