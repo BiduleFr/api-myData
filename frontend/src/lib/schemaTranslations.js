@@ -9,6 +9,7 @@ export const MODULE_NAME_EN = {
   'Travail': 'Work',
   'Mental': 'Mind',
   'Famille et proches': 'Family & loved ones',
+  'Écrans': 'Screens',
   'Argent': 'Money',
   'Accomplissement': 'Accomplishment',
   'Suivi du jour': 'Daily tracking'
@@ -90,7 +91,16 @@ export const QUESTION_LABEL_EN = {
   'Racontez globalement votre journée et ses points forts pour vous en souvenir': 'Briefly describe your day and its highlights so you can remember it',
   "C'était une journée spéciale ?": 'Was it a special day?',
   'Meilleur moment de la journee': 'Best moment of the day',
-  'Une chose à améliorer demain': 'One thing to improve tomorrow'
+  'Une chose à améliorer demain': 'One thing to improve tomorrow',
+  "Combien de temps avez-vous passé aujourd'hui devant des écrans pour votre usage personnel ?": 'How much time did you spend on screens today for personal use?',
+  "Comment avez-vous principalement utilisé vos écrans aujourd'hui ?": 'How did you mainly use your screens today?',
+  'À quel point avez-vous eu tendance à utiliser vos écrans machinalement, sans réelle intention ?': 'How much did you tend to use your screens mindlessly, without real intention?',
+  "À quel point avez-vous eu le sentiment de maîtriser votre utilisation des écrans aujourd'hui ?": 'How much did you feel in control of your screen use today?',
+  "Avez-vous utilisé vos écrans à des moments où vous auriez préféré faire autre chose ?": 'Did you use your screens at times when you would have preferred to do something else?',
+  "Qu'est-ce que cela a principalement remplacé ?": 'What did it mainly replace?',
+  "Quel impact votre utilisation des écrans a-t-elle eu globalement sur votre journée ?": 'What overall impact did your screen use have on your day?',
+  "Avez-vous réussi à avoir suffisamment de moments sans écran aujourd'hui ?": 'Did you manage to have enough screen-free moments today?',
+  "Globalement, êtes-vous satisfait de votre utilisation des écrans aujourd'hui ?": 'Overall, are you satisfied with your screen use today?'
 };
 
 export const OPTION_LABEL_EN = {
@@ -211,7 +221,19 @@ export const OPTION_LABEL_EN = {
   "Oui, j'ai appris quelque chose d'important": 'Yes, I learned something important',
   "Pas aujourd'hui": 'Not today',
   'Un peu exceptionnelle': 'Somewhat exceptional',
-  'Très spéciale': 'Very special'
+  'Très spéciale': 'Very special',
+  'Réseaux sociaux': 'Social media',
+  'Vidéos / streaming': 'Videos / streaming',
+  'Jeux': 'Games',
+  'Communication': 'Communication',
+  'Internet / actualités': 'Internet / news',
+  'Lecture / apprentissage': 'Reading / learning',
+  'Sommeil / repos': 'Sleep / rest',
+  'Sport / activité physique': 'Sport / physical activity',
+  'Travail / tâche importante': 'Work / important task',
+  'Temps avec des proches': 'Time with loved ones',
+  'Loisirs sans écran': 'Screen-free leisure',
+  'Temps dehors': 'Time outdoors'
 };
 
 export const HELP_EN = {

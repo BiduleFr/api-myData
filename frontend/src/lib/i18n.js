@@ -6,6 +6,7 @@ const EN = {
   'Suivi': 'Tracking',
   'Conseils': 'Advice',
   'Personnaliser': 'Customize',
+  'Infos': 'Info',
   'Données': 'Data',
   'Déconnexion': 'Sign out',
   'Connexion': 'Sign in',

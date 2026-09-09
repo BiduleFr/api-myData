@@ -9,7 +9,7 @@ const LINKS = [
   { to: '/suivi', label: 'Suivi', icon: '🎯' },
   { to: '/personnaliser', label: 'Personnaliser', icon: '⚙️' },
   { to: '/conseils', label: 'Conseils', icon: '💡' },
-  { to: '/confidentialite', label: 'Données', icon: '🔒' }
+  { to: '/a-propos', label: 'Infos', icon: 'ℹ️' }
 ];
 
 export default function Layout({ children }) {

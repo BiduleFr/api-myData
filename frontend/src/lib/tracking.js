@@ -48,8 +48,21 @@ export function getTracking(preferences) {
   const raw = preferences?.[TRACKING_KEY] || {};
   return {
     habits: Array.isArray(raw.habits) ? raw.habits : [],
-    behaviors: Array.isArray(raw.behaviors) ? raw.behaviors : []
+    behaviors: Array.isArray(raw.behaviors) ? raw.behaviors : [],
+    customHabits: Array.isArray(raw.customHabits) ? raw.customHabits : [],
+    customBehaviors: Array.isArray(raw.customBehaviors) ? raw.customBehaviors : []
   };
+}
+
+// Les habitudes/comportements personnalisés utilisent un ID stable basé sur un identifiant unique,
+// jamais sur le texte affiché, pour que les données historiques restent liées au bon élément.
+export function createCustomId(kind) {
+  return `custom_${kind}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+}
+
+export function customItemById(id, preferences) {
+  const tracking = getTracking(preferences);
+  return tracking.customHabits.find((h) => h.id === id) || tracking.customBehaviors.find((b) => b.id === id) || null;
 }
 
 export function habitById(id) {
@@ -78,38 +91,39 @@ export function buildTrackingQuestions(preferences, { date, locale = 'fr' } = {}
   const questions = [];
   const moduleName = locale === 'en' ? 'Daily tracking' : 'Suivi du jour';
 
-  for (const entry of tracking.habits.filter((item) => isDue(item, date))) {
-    const habit = habitById(entry.id);
-    if (!habit) continue;
+  const addQuestion = (kind, item) => {
+    const isCustom = item.id.startsWith('custom_');
+    const label = item.label;
     questions.push({
-      id: trackQuestionId('habit', habit.id),
+      id: trackQuestionId(kind, item.id),
       type: 'boolean',
       level: 'essentiel',
       weight: 0,
       label: locale === 'en'
-        ? `Did you keep up your habit today: ${habit.labelEn}?`
-        : `Avez-vous fait votre habitude aujourd'hui : ${habit.label} ?`,
+        ? (kind === 'habit' ? `Did you keep up your habit today: ${label}?` : `Did you engage in this behavior today: ${label}?`)
+        : (kind === 'habit' ? `Avez-vous fait votre habitude aujourd'hui : ${label} ?` : `Avez-vous eu ce comportement aujourd'hui : ${label} ?`),
       moduleId: 'suivi',
       moduleName,
-      moduleIcon: habit.icon || '🌱'
+      moduleIcon: item.icon || (kind === 'habit' ? '🌱' : '🛡️')
     });
+  };
+
+  for (const entry of tracking.habits.filter((item) => isDue(item, date))) {
+    const habit = habitById(entry.id);
+    if (habit) addQuestion('habit', { ...habit, icon: habit.icon || '🌱' });
+  }
+
+  for (const entry of tracking.customHabits.filter((item) => isDue(item, date))) {
+    addQuestion('habit', entry);
   }
 
   for (const entry of tracking.behaviors.filter((item) => isDue(item, date))) {
     const behavior = behaviorById(entry.id);
-    if (!behavior) continue;
-    questions.push({
-      id: trackQuestionId('behavior', behavior.id),
-      type: 'boolean',
-      level: 'essentiel',
-      weight: 0,
-      label: locale === 'en'
-        ? `Did you engage in this behavior today: ${behavior.labelEn}?`
-        : `Avez-vous eu ce comportement aujourd'hui : ${behavior.label} ?`,
-      moduleId: 'suivi',
-      moduleName,
-      moduleIcon: behavior.icon || '🛡️'
-    });
+    if (behavior) addQuestion('behavior', { ...behavior, icon: behavior.icon || '🛡️' });
+  }
+
+  for (const entry of tracking.customBehaviors.filter((item) => isDue(item, date))) {
+    addQuestion('behavior', entry);
   }
 
   return questions;

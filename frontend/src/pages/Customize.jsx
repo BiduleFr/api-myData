@@ -233,7 +233,6 @@ export default function Customize() {
                               />
                               <span className="flex min-w-0 flex-col">
                                 <span>{dependsOn && <span className="mr-1 text-brand-600">↳</span>}{translated.label}</span>
-                                {locked && <span className="text-xs text-brand-600 font-semibold">{locale === 'en' ? 'Always included' : 'Toujours incluse'}</span>}
                                 {q.frequency === 'weekly' && <span className="text-xs text-slate-400">{locale === 'en' ? 'Asked once a week (Mondays)' : 'Posée une fois par semaine (le lundi)'}</span>}
                               </span>
                             </label>

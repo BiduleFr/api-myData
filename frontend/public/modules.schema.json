@@ -1637,6 +1637,275 @@
     ]
   },
   {
+    "id": "ecrans",
+    "name": "Écrans",
+    "icon": "📱",
+    "description": "Temps d'écran, usage et sentiment de maîtrise",
+    "weight": 0.1,
+    "questions": [
+      {
+        "id": "ecrans_duree",
+        "type": "duration",
+        "level": "essentiel",
+        "required": true,
+        "weight": 0,
+        "label": "Combien de temps avez-vous passé aujourd'hui devant des écrans pour votre usage personnel ?",
+        "config": {
+          "values": [
+            0,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+            55,
+            60,
+            75,
+            90,
+            105,
+            120,
+            135,
+            150,
+            165,
+            180,
+            195,
+            210,
+            225,
+            240,
+            270,
+            300,
+            330,
+            360,
+            390,
+            420,
+            450,
+            480,
+            510,
+            540,
+            570,
+            600,
+            630,
+            660,
+            690,
+            720,
+            750,
+            780,
+            810,
+            840,
+            870,
+            900,
+            930,
+            960,
+            990,
+            1020,
+            1050,
+            1080,
+            1110,
+            1140,
+            1170,
+            1200,
+            1230,
+            1260,
+            1290,
+            1320,
+            1350,
+            1380,
+            1410,
+            1440
+          ],
+          "target": 120,
+          "invert": true,
+          "defaultValue": 0
+        }
+      },
+      {
+        "id": "ecrans_usage",
+        "type": "multichoice",
+        "level": "essentiel",
+        "weight": 0,
+        "label": "Comment avez-vous principalement utilisé vos écrans aujourd'hui ?",
+        "options": [
+          {
+            "value": "reseaux_sociaux",
+            "label": "Réseaux sociaux"
+          },
+          {
+            "value": "videos_streaming",
+            "label": "Vidéos / streaming"
+          },
+          {
+            "value": "jeux",
+            "label": "Jeux"
+          },
+          {
+            "value": "communication",
+            "label": "Communication"
+          },
+          {
+            "value": "actualites",
+            "label": "Internet / actualités"
+          },
+          {
+            "value": "lecture_apprentissage",
+            "label": "Lecture / apprentissage"
+          },
+          {
+            "value": "autre",
+            "label": "Autre"
+          }
+        ]
+      },
+      {
+        "id": "ecrans_automatique",
+        "type": "rating",
+        "level": "avance",
+        "weight": 0.6,
+        "label": "À quel point avez-vous eu tendance à utiliser vos écrans machinalement, sans réelle intention ?",
+        "config": {
+          "min": 0,
+          "max": 10,
+          "step": 0.5,
+          "invert": true,
+          "defaultValue": 5,
+          "labels": [
+            "Jamais",
+            "Parfois",
+            "Très souvent"
+          ]
+        }
+      },
+      {
+        "id": "ecrans_maitrise",
+        "type": "rating",
+        "level": "avance",
+        "weight": 0.8,
+        "label": "À quel point avez-vous eu le sentiment de maîtriser votre utilisation des écrans aujourd'hui ?",
+        "config": {
+          "min": 0,
+          "max": 10,
+          "step": 0.5,
+          "defaultValue": 5,
+          "labels": [
+            "Pas du tout",
+            "Moyennement",
+            "Totalement"
+          ]
+        }
+      },
+      {
+        "id": "ecrans_remplacement_bool",
+        "type": "boolean",
+        "level": "avance",
+        "weight": 0,
+        "label": "Avez-vous utilisé vos écrans à des moments où vous auriez préféré faire autre chose ?"
+      },
+      {
+        "id": "ecrans_remplacement_quoi",
+        "type": "choice",
+        "level": "avance",
+        "weight": 0,
+        "label": "Qu'est-ce que cela a principalement remplacé ?",
+        "options": [
+          {
+            "value": "sommeil_repos",
+            "label": "Sommeil / repos"
+          },
+          {
+            "value": "sport_activite",
+            "label": "Sport / activité physique"
+          },
+          {
+            "value": "travail_tache",
+            "label": "Travail / tâche importante"
+          },
+          {
+            "value": "temps_proches",
+            "label": "Temps avec des proches"
+          },
+          {
+            "value": "loisirs_sans_ecran",
+            "label": "Loisirs sans écran"
+          },
+          {
+            "value": "temps_dehors",
+            "label": "Temps dehors"
+          },
+          {
+            "value": "autre",
+            "label": "Autre"
+          }
+        ],
+        "when": {
+          "all": [
+            {
+              "questionId": "ecrans_remplacement_bool",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "ecrans_impact",
+        "type": "rating",
+        "level": "avance",
+        "weight": 1,
+        "label": "Quel impact votre utilisation des écrans a-t-elle eu globalement sur votre journée ?",
+        "config": {
+          "min": 0,
+          "max": 10,
+          "step": 0.5,
+          "defaultValue": 5,
+          "labels": [
+            "Très négatif",
+            "Aucun impact",
+            "Très positif"
+          ]
+        }
+      },
+      {
+        "id": "ecrans_moments_sans",
+        "type": "rating",
+        "level": "avance",
+        "weight": 0.6,
+        "label": "Avez-vous réussi à avoir suffisamment de moments sans écran aujourd'hui ?",
+        "config": {
+          "min": 0,
+          "max": 10,
+          "step": 0.5,
+          "defaultValue": 5,
+          "labels": [
+            "Pas du tout",
+            "Moyennement",
+            "Oui, largement"
+          ]
+        }
+      },
+      {
+        "id": "ecrans_satisfaction",
+        "type": "rating",
+        "level": "essentiel",
+        "weight": 1,
+        "label": "Globalement, êtes-vous satisfait de votre utilisation des écrans aujourd'hui ?",
+        "config": {
+          "min": 0,
+          "max": 10,
+          "step": 0.5,
+          "defaultValue": 5,
+          "labels": [
+            "Pas du tout satisfait",
+            "Moyennement",
+            "Très satisfait"
+          ]
+        }
+      }
+    ]
+  },
+  {
     "id": "argent",
     "name": "Argent",
     "icon": "💶",

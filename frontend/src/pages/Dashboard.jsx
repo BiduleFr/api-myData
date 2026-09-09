@@ -79,15 +79,14 @@ export default function Dashboard() {
     Promise.all([
       api.getConfig(),
       api.getEntry(date, token),
-      api.getHistory({ limit: 14 }, token),
       api.getHistory({ limit: 120 }, token),
       api.getGoals(token)
     ])
-      .then(([cfg, todayEntry, hist, fullHist, gs]) => {
+      .then(([cfg, todayEntry, hist, gs]) => {
         setConfig(cfg.modules);
         setEntry(todayEntry);
-        setHistory(hist);
-        setFullHistory(fullHist);
+        setHistory(hist.slice(-14));
+        setFullHistory(hist);
         setGoals(gs || []);
       })
       .finally(() => setLoading(false));

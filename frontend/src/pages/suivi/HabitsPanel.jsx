@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useAppearance } from '../../context/AppearanceContext.jsx';
 import { api, todayISO } from '../../lib/api';
-import { HABITS, TRACKING_KEY, getTracking, habitById, itemLabel, trackQuestionId } from '../../lib/tracking';
+import { HABITS, TRACKING_KEY, getTracking, habitById, itemLabel, trackQuestionId, createCustomId } from '../../lib/tracking';
 
 function habitStats(history, habitId) {
   const qid = trackQuestionId('habit', habitId);
@@ -27,6 +27,7 @@ export default function HabitsPanel() {
   const [preferences, setPreferences] = useState({});
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [customTitle, setCustomTitle] = useState('');
   const today = todayISO();
 
   useEffect(() => {
@@ -52,6 +53,24 @@ export default function HabitsPanel() {
     api.savePreferences(nextPrefs, token);
   }
 
+  function toggleCustom(listKey, itemId) {
+    const list = tracking[listKey];
+    const nextList = list.map((item) => (item.id === itemId ? { ...item, active: item.active === false } : item));
+    const nextPrefs = { ...preferences, [TRACKING_KEY]: { ...tracking, [listKey]: nextList } };
+    setPreferences(nextPrefs);
+    api.savePreferences(nextPrefs, token);
+  }
+
+  function addCustomHabit(e) {
+    e.preventDefault();
+    if (!customTitle.trim()) return;
+    const nextCustom = [...tracking.customHabits, { id: createCustomId('habit'), label: customTitle.trim(), startDate: today, active: true }];
+    const nextPrefs = { ...preferences, [TRACKING_KEY]: { ...tracking, customHabits: nextCustom } };
+    setPreferences(nextPrefs);
+    api.savePreferences(nextPrefs, token);
+    setCustomTitle('');
+  }
+
   if (loading) {
     return <div className="animate-pulse text-slate-400 text-center py-10">{locale === 'en' ? 'Loading…' : 'Chargement…'}</div>;
   }
@@ -61,7 +80,17 @@ export default function HabitsPanel() {
 
   return (
     <div className="space-y-6">
-      {tracked.length === 0 && (
+      <form onSubmit={addCustomHabit} className="card p-4 flex gap-3">
+        <input
+          value={customTitle}
+          onChange={(e) => setCustomTitle(e.target.value)}
+          placeholder={locale === 'en' ? 'New personal habit…' : 'Nouvelle habitude personnelle…'}
+          className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
+        />
+        <button type="submit" className="btn-primary text-sm">{locale === 'en' ? 'Add' : 'Ajouter'}</button>
+      </form>
+
+      {tracked.length === 0 && tracking.customHabits.length === 0 && (
         <p className="text-sm text-slate-400">
           {locale === 'en'
             ? 'No habit tracked yet. Start one below or from the daily questionnaire.'
@@ -70,6 +99,29 @@ export default function HabitsPanel() {
       )}
 
       <div className="space-y-3">
+        {tracking.customHabits.map((entry) => {
+          const stats = habitStats(history, entry.id);
+          const rate = stats.answered > 0 ? Math.round((stats.done / stats.answered) * 100) : null;
+          const isActive = entry.active !== false;
+          return (
+            <div key={entry.id} className={`card p-4 space-y-2 ${isActive ? '' : 'opacity-60'}`}>
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-semibold text-slate-800">🌱 {entry.label}</p>
+                <button onClick={() => toggleCustom('habits', entry.id)} className="text-xs text-slate-400 hover:text-red-500">
+                  {isActive ? (locale === 'en' ? 'Stop' : 'Arrêter') : (locale === 'en' ? 'Resume' : 'Reprendre')}
+                </button>
+              </div>
+              <p className="text-xs text-slate-500">
+                {locale === 'en'
+                  ? `${stats.done} successful days out of ${stats.answered}${rate !== null ? ` · ${rate}%` : ''}${stats.streak > 0 ? ` · 🔥 ${stats.streak} days in a row` : ''}`
+                  : `${stats.done} jours réussis sur ${stats.answered}${rate !== null ? ` · ${rate}%` : ''}${stats.streak > 0 ? ` · 🔥 ${stats.streak} jours d'affilée` : ''}`}
+              </p>
+              <p className="text-[11px] text-slate-400">
+                {locale === 'en' ? `Started on ${entry.startDate} · personal` : `Commencée le ${entry.startDate} · personnelle`}
+              </p>
+            </div>
+          );
+        })}
         {tracked.map((entry) => {
           const habit = habitById(entry.id);
           if (!habit) return null;
