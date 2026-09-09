@@ -33,7 +33,7 @@ const CONTACT_CATEGORIES = [
 ];
 
 export default function About() {
-  const { locale } = useAppearance();
+  const { locale, theme, setTheme } = useAppearance();
   const [contactForm, setContactForm] = useState({
     category: 'question',
     email: '',
@@ -319,6 +319,25 @@ export default function About() {
               </button>
             </form>
           )}
+        </section>
+
+        {/* Apparence */}
+        <section className="card p-6 sm:p-8 space-y-4">
+          <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+            <span>🌗</span> {locale === 'en' ? 'Appearance' : 'Apparence'}
+          </h2>
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-slate-600">
+              {locale === 'en' ? 'Switch between light and dark mode for the whole site.' : 'Basculer entre le mode clair et le mode sombre pour l\'ensemble du site.'}
+            </p>
+            <button
+              type="button"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="btn-secondary text-sm whitespace-nowrap"
+            >
+              {theme === 'dark' ? (locale === 'en' ? '☀️ Light mode' : '☀️ Mode clair') : (locale === 'en' ? '🌙 Dark mode' : '🌙 Mode sombre')}
+            </button>
+          </div>
         </section>
 
         {/* Liens de bas de page */}

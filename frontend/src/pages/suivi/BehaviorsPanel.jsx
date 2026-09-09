@@ -66,6 +66,13 @@ export default function BehaviorsPanel() {
     api.savePreferences(nextPrefs, token);
   }
 
+  function removeCustom(listKey, itemId) {
+    const nextList = tracking[listKey].filter((item) => item.id !== itemId);
+    const nextPrefs = { ...preferences, [TRACKING_KEY]: { ...tracking, [listKey]: nextList } };
+    setPreferences(nextPrefs);
+    api.savePreferences(nextPrefs, token);
+  }
+
   function addCustomBehavior(e) {
     e.preventDefault();
     if (!customTitle.trim()) return;
@@ -111,9 +118,22 @@ export default function BehaviorsPanel() {
             <div key={entry.id} className={`card p-4 space-y-2 ${isActive ? '' : 'opacity-60'}`}>
               <div className="flex items-center justify-between gap-3">
                 <p className="font-semibold text-slate-800">🛡️ {entry.label}</p>
-                <button onClick={() => toggleCustom('customBehaviors', entry.id)} className="text-xs text-slate-400 hover:text-red-500">
-                  {isActive ? (locale === 'en' ? 'Stop' : 'Arrêter') : (locale === 'en' ? 'Resume' : 'Reprendre')}
-                </button>
+                <div className="flex items-center gap-2">
+                  {isActive ? (
+                    <button onClick={() => toggleCustom('customBehaviors', entry.id)} className="text-xs text-slate-400 hover:text-red-500">
+                      {locale === 'en' ? 'Stop' : 'Arrêter'}
+                    </button>
+                  ) : (
+                    <>
+                      <button onClick={() => toggleCustom('customBehaviors', entry.id)} className="text-xs text-slate-400 hover:text-brand-600">
+                        {locale === 'en' ? 'Resume' : 'Reprendre'}
+                      </button>
+                      <button onClick={() => removeCustom('customBehaviors', entry.id)} className="text-xs text-slate-400 hover:text-red-500">
+                        {locale === 'en' ? 'Delete' : 'Supprimer'}
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
               <p className="text-xs text-slate-500">
                 {locale === 'en'

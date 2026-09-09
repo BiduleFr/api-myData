@@ -46,7 +46,6 @@ export default function Layout({ children }) {
           </nav>
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => setLocale(locale === 'fr' ? 'en' : 'fr')} className="btn-ghost px-2 text-xs" aria-label={t(locale, 'Changer de langue')}>{locale.toUpperCase()}</button>
-            <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="btn-ghost px-2 text-sm" aria-label={t(locale, 'Changer de thème')}>{theme === 'dark' ? '☀️' : '🌙'}</button>
             {user?.username && (
               <span className="hidden sm:inline text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">
                 {user.username}
@@ -68,7 +67,7 @@ export default function Layout({ children }) {
               </>
             ) : (
               <>
-                <Link to="/a-propos" className="hidden sm:inline btn-ghost text-sm">{t(locale, 'À propos')}</Link>
+                <Link to="/a-propos" className="hidden sm:inline btn-ghost text-sm whitespace-nowrap">{t(locale, 'À propos')}</Link>
                 <Link to="/connexion" className="btn-ghost text-sm font-semibold text-brand-600">{t(locale, 'Se connecter')}</Link>
               </>
             )}
