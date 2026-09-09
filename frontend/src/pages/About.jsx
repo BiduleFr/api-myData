@@ -135,8 +135,13 @@ export default function About() {
           </h2>
           <p className="text-sm text-slate-600 leading-relaxed">
             {locale === 'en'
-              ? 'Find out how your data is managed, exported and deleted in our privacy policy.'
-              : "Retrouvez les informations sur la gestion, l'exportation et la suppression de vos données dans la politique de confidentialité."}
+              ? 'Your data is never sold, never used for advertising and never shared with third parties. In guest mode, everything stays on your device. With an account, it is encrypted and stored securely. You can export or delete everything at any time.'
+              : 'Vos données ne sont jamais vendues, jamais utilisées pour la publicité et jamais partagées avec des tiers. En mode invité, tout reste sur votre appareil. Avec un compte, elles sont chiffrées et stockées en sécurité. Vous pouvez tout exporter ou supprimer à tout moment.'}
+          </p>
+          <p className="text-sm text-slate-600 leading-relaxed">
+            {locale === 'en'
+              ? 'Since this app handles sensitive well-being data, we recommend choosing a neutral pseudonym and avoiding any information that could identify you (real name, photo, address, etc.).'
+              : "Comme cette application traite des données de bien-être sensibles, nous vous conseillons de choisir un pseudonyme neutre et d'éviter toute information qui pourrait vous identifier (vrai nom, photo, adresse, etc.)."}
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
             <Link to="/confidentialite" className="btn-secondary text-sm">

@@ -68,7 +68,7 @@ export default function Layout({ children }) {
               </>
             ) : (
               <>
-                <Link to="/a-propos" className="hidden sm:inline btn-ghost text-sm">{t(locale, 'À propos')}</Link>
+                <Link to="/a-propos" className="hidden sm:inline btn-ghost text-sm">{t(locale, 'Infos')}</Link>
                 <Link to="/connexion" className="btn-ghost text-sm font-semibold text-brand-600">{t(locale, 'Se connecter')}</Link>
               </>
             )}
@@ -82,7 +82,7 @@ export default function Layout({ children }) {
         <div className="max-w-3xl mx-auto px-5 flex flex-wrap justify-center items-center gap-x-4 gap-y-2">
           <Link to="/" className="hover:text-brand-600 transition-colors">{t(locale, 'Accueil')}</Link>
           <span>•</span>
-          <Link to="/a-propos" className="hover:text-brand-600 transition-colors">{t(locale, 'À propos & Équipe')}</Link>
+          <Link to="/a-propos" className="hover:text-brand-600 transition-colors">{t(locale, 'Infos')}</Link>
           <span>•</span>
           <Link to="/conditions" className="hover:text-brand-600 transition-colors">{t(locale, "Conditions d'utilisation")}</Link>
           <span>•</span>
